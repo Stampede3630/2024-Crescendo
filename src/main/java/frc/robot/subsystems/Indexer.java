@@ -8,6 +8,7 @@ import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -37,14 +38,14 @@ public class Indexer extends SubsystemBase implements Loggable{
     // This method will be called once per scheduler run
   }
 
-  @Config.NumberSlider
+  @Config.NumberSlider(defaultValue = .65)
   public void setVelocity(double velocity) {
     this.velocity = velocity;
   }
 
 
   public Command velocityCommand(DoubleSupplier _velocity) {
-    return Commands.runOnce(() -> m_indexMotor.setControl(new VelocityTorqueCurrentFOC(_velocity.getAsDouble())));
+    return Commands.runOnce(() -> m_indexMotor.setControl(new DutyCycleOut(_velocity.getAsDouble())));
   }
 
   public Command run() {
