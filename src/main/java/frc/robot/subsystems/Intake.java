@@ -16,9 +16,10 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
 
-public class Intake extends SubsystemBase {
+public class Intake extends SubsystemBase implements Loggable{
     private TalonFX m_intakeMotor = new TalonFX(0, "CANIVORE");
     private double velocity = 10;
 
@@ -36,7 +37,7 @@ public class Intake extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-    @Config.NumberSlider
+  @Config.NumberSlider
   public void setVelocity(double velocity) {
     this.velocity = velocity;
   }

@@ -18,9 +18,10 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
 
-public class Shooter extends SubsystemBase {
+public class Shooter extends SubsystemBase implements Loggable{
   /** Creates a new Shooter. */
   private TalonFX m_shootMotor = new TalonFX(2, "CANIVORE");
   private double velocity = 10;
