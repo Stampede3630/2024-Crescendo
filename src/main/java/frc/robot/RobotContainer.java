@@ -14,6 +14,8 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.LEDs.LEDMode;
 import frc.robot.subsystems.*;
 import io.github.oblarg.oblog.Logger;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -34,6 +36,9 @@ public class RobotContainer {
   private final Indexer m_indexer = new Indexer();
   private final LEDs m_leds = LEDs.getInstance(0, 10);
   private final Pneumatics m_lift = new Pneumatics();
+  private final PhotonVision m_pv = new PhotonVision("Camera_Module_v1", new Transform3d(0,0.02241,0.05026, new Rotation3d()));
+    private final PhotonVision m_pv2 = new PhotonVision("PV2", new Transform3d());
+
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
