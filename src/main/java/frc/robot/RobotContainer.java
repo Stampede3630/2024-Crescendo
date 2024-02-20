@@ -22,7 +22,14 @@ import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.LEDs.LEDMode;
+import frc.robot.subsystems.*;
+import io.github.oblarg.oblog.Logger;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -40,6 +47,11 @@ public class RobotContainer {
   private final Shooter m_shooter = new Shooter();
   private final Intake m_intake = new Intake();
   private final Indexer m_indexer = new Indexer();
+  private final LEDs m_leds = LEDs.getInstance(0, 10);
+  private final Pneumatics m_lift = new Pneumatics();
+  private final PhotonVision m_pv = new PhotonVision("Camera_Module_v1", new Transform3d(0,0.02241,0.05026, new Rotation3d()));
+    private final PhotonVision m_pv2 = new PhotonVision("PV2", new Transform3d());
+
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -57,6 +69,9 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+    Logger.configureLoggingAndConfig(this, false);
+    m_leds.setRGB(0,0,255);
+    m_leds.setMode(LEDMode.SOLID);
   }
 
   /**
@@ -73,10 +88,28 @@ public class RobotContainer {
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
 
+    new Trigger(DriverStation::isEnabled)
+      .onTrue(Commands.runOnce(() -> {m_leds.setRGB(255, 90, 0);m_leds.setMode(LEDMode.SOLID);}, m_leds).alongWith(Commands.print("ENABLED")))
+      .onFalse(Commands.runOnce(() -> {m_leds.setRGB(0, 255, 0);m_leds.setMode(LEDMode.SOLID);}, m_leds).alongWith(Commands.print("DISABLED")).ignoringDisable(true));
+
+
+   
+
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+
+    // these should NOT need to be run "reapeatedly"
+    m_driverController.rightTrigger()
+      .whileTrue(m_shooter.run())
+      .whileFalse(m_shooter.stop());
+    
+    m_driverController.leftTrigger()
+      .whileTrue(m_intake.run().alongWith(m_indexer.run()))
+      .whileFalse(m_intake.stop().alongWith(m_indexer.stop()));
+    
   }
+  
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
