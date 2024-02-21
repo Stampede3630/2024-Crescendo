@@ -39,6 +39,7 @@ public class RobotContainer {
   private double MaxAngularRate = 1.5 * Math.PI;
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  private final pivot m_pivot = new pivot();
   private final Shooter m_shooter = new Shooter();
   private final Intake m_intake = new Intake();
   private final Indexer m_indexer = new Indexer();
@@ -92,7 +93,7 @@ public class RobotContainer {
     }
     drivetrain.registerTelemetry(logger::telemeterize);  
 
-
+    m_driverController.x().whileTrue(m_pivot.run());
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.

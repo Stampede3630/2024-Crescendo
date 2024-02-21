@@ -22,11 +22,17 @@ import frc.robot.util.Configable;
 
 public class Indexer extends SubsystemBase implements Configable {
       private TalonFX m_indexMotor = new TalonFX(1, "CANIVORE");
+      private TalonFX ovalizer = new TalonFX(15, "CANIVORE");
       private double velocity = 10;
 
   /** Creates a new Indexer. */
   public Indexer() {
     m_indexMotor.getConfigurator().apply(new TalonFXConfiguration()
+      .withMotorOutput(new MotorOutputConfigs()
+        .withNeutralMode(NeutralModeValue.Brake)
+        .withInverted(InvertedValue.Clockwise_Positive))
+    );
+    ovalizer.getConfigurator().apply(new TalonFXConfiguration()
       .withMotorOutput(new MotorOutputConfigs()
         .withNeutralMode(NeutralModeValue.Brake)
         .withInverted(InvertedValue.Clockwise_Positive))
@@ -47,9 +53,14 @@ public class Indexer extends SubsystemBase implements Configable {
   public Command velocityCommand(DoubleSupplier _velocity) {
     return Commands.startEnd(() -> m_indexMotor.setControl(new DutyCycleOut(_velocity.getAsDouble())), () -> {}, this);
   }
+  
+  public Command velocityOvalizerCommand(DoubleSupplier _velocity) {
+    return Commands.startEnd(() -> ovalizer.setControl(new DutyCycleOut(_velocity.getAsDouble())), () -> {}, this);
+  }
+
 
   public Command run() {
-    return velocityCommand(() -> velocity);
+    return velocityCommand(() -> velocity).alongWith(velocityOvalizerCommand(() -> velocity));
   }
 
   public Command stop() {
