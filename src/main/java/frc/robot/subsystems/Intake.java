@@ -21,15 +21,16 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Config;
 
 public class Intake extends SubsystemBase implements Loggable{
-    private TalonFX m_intakeMotor = new TalonFX(0, "CANIVORE");
+    private TalonFX m_intakeMotor = new TalonFX(16, "CANIVORE");
     private double velocity = 10;
 
   /** Creates a new Intake. */
+
   public Intake() {
     m_intakeMotor.getConfigurator().apply(new TalonFXConfiguration()
       .withMotorOutput(new MotorOutputConfigs()
         .withNeutralMode(NeutralModeValue.Brake)
-        .withInverted(InvertedValue.Clockwise_Positive))
+        .withInverted(InvertedValue.CounterClockwise_Positive))
     );
   }
 

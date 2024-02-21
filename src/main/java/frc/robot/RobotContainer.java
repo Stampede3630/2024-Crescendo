@@ -17,10 +17,6 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.Indexer;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Shooter;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.LEDs.LEDMode;
 import frc.robot.subsystems.*;
@@ -53,7 +49,7 @@ public class RobotContainer {
     private final PhotonVision m_pv2 = new PhotonVision("PV2", new Transform3d());
 
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
+  // Replace with CommandPS4Controller or Commandm_driverController if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain;
@@ -66,6 +62,57 @@ public class RobotContainer {
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
   private final Telemetry logger = new Telemetry(MaxSpeed);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
+
+  
+  private void configureBindings() {
+    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+
+    new Trigger(m_exampleSubsystem::exampleCondition)
+        .onTrue(new ExampleCommand(m_exampleSubsystem));
+
+    new Trigger(DriverStation::isEnabled)
+      .onTrue(Commands.runOnce(() -> {m_leds.setRGB(255, 90, 0);m_leds.setMode(LEDMode.SOLID);}, m_leds).alongWith(Commands.print("ENABLED")))
+      .onFalse(Commands.runOnce(() -> {m_leds.setRGB(0, 255, 0);m_leds.setMode(LEDMode.SOLID);}, m_leds).alongWith(Commands.print("DISABLED")).ignoringDisable(true));
+
+    drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
+        drivetrain.applyRequest(() -> drive.withVelocityX(-m_driverController.getLeftY() * MaxSpeed) // Drive forward with
+                                                                                           // negative Y (forward)
+            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+            .withRotationalRate(-m_driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+        ));
+
+    m_driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
+    m_driverController.b().whileTrue(drivetrain
+        .applyRequest(() -> point.withModuleDirection(new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
+
+    // reset the field-centric heading on left bumper press
+    m_driverController.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
+
+    if (Utils.isSimulation()) {
+      drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
+    }
+    drivetrain.registerTelemetry(logger::telemeterize);  
+
+
+
+   
+
+    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
+    // cancelling on release.
+    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+
+    
+    // these should NOT need to be run "reapeatedly"
+    m_driverController.rightTrigger()
+      .whileTrue(m_shooter.run())
+      .whileFalse(m_shooter.stop());
+    
+    m_driverController.leftTrigger()
+      .whileTrue(m_intake.run().alongWith(m_indexer.run()))
+      .whileFalse(m_intake.stop().alongWith(m_indexer.stop()));
+    
+  }
+  
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
@@ -80,36 +127,12 @@ public class RobotContainer {
    * predicate, or via the named factories in {@link
    * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
    * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
+   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.Commandm_driverController Flight
+   * m_driverControllers}.
    */
-  private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
 
-    new Trigger(DriverStation::isEnabled)
-      .onTrue(Commands.runOnce(() -> {m_leds.setRGB(255, 90, 0);m_leds.setMode(LEDMode.SOLID);}, m_leds).alongWith(Commands.print("ENABLED")))
-      .onFalse(Commands.runOnce(() -> {m_leds.setRGB(0, 255, 0);m_leds.setMode(LEDMode.SOLID);}, m_leds).alongWith(Commands.print("DISABLED")).ignoringDisable(true));
-
-
-   
-
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-
-    // these should NOT need to be run "reapeatedly"
-    m_driverController.rightTrigger()
-      .whileTrue(m_shooter.run())
-      .whileFalse(m_shooter.stop());
     
-    m_driverController.leftTrigger()
-      .whileTrue(m_intake.run().alongWith(m_indexer.run()))
-      .whileFalse(m_intake.stop().alongWith(m_indexer.stop()));
-    
-  }
-  
+
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

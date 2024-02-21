@@ -24,7 +24,7 @@ import io.github.oblarg.oblog.annotations.Config;
 
 public class Shooter extends SubsystemBase implements Loggable{
   /** Creates a new Shooter. */
-  private TalonFX m_shootMotor = new TalonFX(2, "CANIVORE");
+  private TalonFX m_shootMotor = new TalonFX(14, "CANIVORE");
   private double velocity = 10;
   public Shooter() {
     m_shootMotor.getConfigurator().apply(new TalonFXConfiguration()
@@ -52,6 +52,7 @@ public class Shooter extends SubsystemBase implements Loggable{
 
   public Command run() {
     return velocityCommand(() -> velocity);
+    
   }
 
   public Command stop() {
