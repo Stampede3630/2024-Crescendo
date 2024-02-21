@@ -50,6 +50,8 @@ public class Shooter extends SubsystemBase implements Configable {
         .withNeutralMode(NeutralModeValue.Brake)
         .withInverted(InvertedValue.Clockwise_Positive))
     );
+        super.setDefaultCommand(stop());
+
 
   }
 
@@ -65,7 +67,7 @@ public class Shooter extends SubsystemBase implements Configable {
 
 
   public Command velocityCommand(DoubleSupplier _velocity) {
-    return Commands.startEnd(() -> m_shootMotor.setControl(new DutyCycleOut(_velocity.getAsDouble())), () -> {});
+    return startEnd(() -> m_shootMotor.setControl(new DutyCycleOut(_velocity.getAsDouble())), () -> {});
   }
 
   public Command run() {
@@ -75,9 +77,5 @@ public class Shooter extends SubsystemBase implements Configable {
 
   public Command stop() {
     return velocityCommand(() -> 0);
-  }
-  @Override
-  public void setDefaultCommand(Command defaultCommand) {
-    super.setDefaultCommand(stop());
   }
 }

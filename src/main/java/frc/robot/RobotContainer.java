@@ -112,6 +112,9 @@ public class RobotContainer {
 //    Logger.configureLoggingAndConfig(this, false);
     m_leds.setRGB(0,0,255);
     m_leds.setMode(LEDMode.SOLID);
+
+    m_indexer.setDefaultCommand(m_indexer.stop());
+    
   }
 
   /**

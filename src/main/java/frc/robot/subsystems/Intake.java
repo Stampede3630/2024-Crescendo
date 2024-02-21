@@ -31,9 +31,11 @@ public class Intake extends SubsystemBase implements Configable {
   public Intake() {
     m_intakeMotor.getConfigurator().apply(new TalonFXConfiguration()
       .withMotorOutput(new MotorOutputConfigs()
-        .withNeutralMode(NeutralModeValue.Brake)
+        .withNeutralMode(NeutralModeValue.Coast)
         .withInverted(InvertedValue.CounterClockwise_Positive))
     );
+    super.setDefaultCommand(stop());
+
   }
 
   @Override
@@ -57,10 +59,5 @@ public class Intake extends SubsystemBase implements Configable {
 
   public Command stop() {
     return velocityCommand(() -> 0);
-  }
-
-  @Override
-  public void setDefaultCommand(Command defaultCommand) {
-    super.setDefaultCommand(stop());
   }
 }
