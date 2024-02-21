@@ -18,6 +18,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.LEDs.LEDMode;
+import frc.robot.util.ConfigManager;
 import frc.robot.subsystems.*;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -41,6 +42,8 @@ public class RobotContainer {
   private final Intake m_intake = new Intake();
   private final Indexer m_indexer = new Indexer();
   private final LEDs m_leds = LEDs.getInstance(0, 10);
+  private ConfigManager cm;
+
   // private final Pneumatics m_lift = new Pneumatics();
   // private final PhotonVision m_pv = new PhotonVision("Camera_Module_v1", new Transform3d(0,0.02241,0.05026, new Rotation3d()));
     // private final PhotonVision m_pv2 = new PhotonVision("PV2", new Transform3d());
@@ -105,6 +108,10 @@ public class RobotContainer {
 //      .whileFalse(m_intake.stop().alongWith(m_indexer.stop()));
     
   }
+
+  public void periodic() {
+    cm.update();
+  }
   
   public RobotContainer() {
     // Configure the trigger bindings
@@ -112,6 +119,8 @@ public class RobotContainer {
 //    Logger.configureLoggingAndConfig(this, false);
     m_leds.setRGB(0,0,255);
     m_leds.setMode(LEDMode.SOLID);
+    cm = new ConfigManager("HelloTable");
+    cm.configure(this);
 
     m_indexer.setDefaultCommand(m_indexer.stop());
     

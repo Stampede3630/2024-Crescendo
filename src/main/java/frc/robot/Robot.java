@@ -25,7 +25,6 @@ public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-  private ConfigManager cm;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -39,8 +38,7 @@ public class Robot extends LoggedRobot {
     org.littletonrobotics.junction.Logger.addDataReceiver(new NT4Publisher());
     org.littletonrobotics.junction.Logger.start();
     DriverStation.silenceJoystickConnectionWarning(true);
-    cm = new ConfigManager("HelloTable");
-    cm.configure(this);
+
   }
 
   /**
@@ -57,7 +55,7 @@ public class Robot extends LoggedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    cm.update();
+    m_robotContainer.periodic();
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
