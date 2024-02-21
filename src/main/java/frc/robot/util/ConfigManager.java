@@ -37,7 +37,9 @@ public class ConfigManager {
         System.out.println(rootClass);
 
         Set<Field> configableFields = Arrays.stream(rootClass.getDeclaredFields())
+//        configableFields.forEach(System.out::println);
                 .filter(f -> f.getType().isInstance(Configable.class)).collect(Collectors.toUnmodifiableSet());
+
         System.out.println(configableFields);
         Set<Configable> configables = new HashSet<>();
         for (Field configable : configableFields) {
