@@ -17,10 +17,10 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Config;
+import frc.robot.util.Configable;
 
-public class Intake extends SubsystemBase implements Loggable{
+
+public class Intake extends SubsystemBase implements Configable {
     private TalonFX m_intakeMotor = new TalonFX(16, "CANIVORE");
     private double velocity = 10;
 
@@ -39,14 +39,14 @@ public class Intake extends SubsystemBase implements Loggable{
     // This method will be called once per scheduler run
   }
 
-  @Config.NumberSlider(defaultValue = .654)
+//  @Config.NumberSlider(defaultValue = .654)
   public void setVelocity(double velocity) {
     this.velocity = velocity;
   }
 
 
   public Command velocityCommand(DoubleSupplier _velocity) {
-    return Commands.runOnce(() -> m_intakeMotor.setControl(new DutyCycleOut(_velocity.getAsDouble())));
+    return Commands.startEnd(() -> m_intakeMotor.setControl(new DutyCycleOut(_velocity.getAsDouble())), () -> {}, this);
   }
 
   public Command run() {

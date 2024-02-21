@@ -19,10 +19,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Config;
+import frc.robot.util.Configable;
 
-public class Shooter extends SubsystemBase implements Loggable{
+public class Shooter extends SubsystemBase implements Configable {
   /** Creates a new Shooter. */
   private TalonFX m_shootMotor = new TalonFX(14, "CANIVORE");
   private double velocity = 10;
@@ -40,14 +39,14 @@ public class Shooter extends SubsystemBase implements Loggable{
     // This method will be called once per scheduler run
   }
 
-  @Config.NumberSlider(defaultValue = -.62)
+//  @Config.NumberSlider(defaultValue = -.62)
   public void setVelocity(double velocity) {
     this.velocity = velocity;
   }
 
 
   public Command velocityCommand(DoubleSupplier _velocity) {
-    return Commands.runOnce(() -> m_shootMotor.setControl(new DutyCycleOut(_velocity.getAsDouble())));
+    return Commands.startEnd(() -> m_shootMotor.setControl(new DutyCycleOut(_velocity.getAsDouble())), () -> {});
   }
 
   public Command run() {

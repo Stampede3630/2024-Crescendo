@@ -20,7 +20,6 @@ import frc.robot.commands.ExampleCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.LEDs.LEDMode;
 import frc.robot.subsystems.*;
-import io.github.oblarg.oblog.Logger;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -95,8 +94,6 @@ public class RobotContainer {
 
 
 
-   
-
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
@@ -104,19 +101,19 @@ public class RobotContainer {
     
     // these should NOT need to be run "reapeatedly"
     m_driverController.rightTrigger()
-      .whileTrue(m_shooter.run())
-      .whileFalse(m_shooter.stop());
+      .whileTrue(m_shooter.run());
+//      .whileFalse(m_shooter.stop());
     
     m_driverController.leftTrigger()
-      .whileTrue(m_intake.run().alongWith(m_indexer.run()))
-      .whileFalse(m_intake.stop().alongWith(m_indexer.stop()));
+      .whileTrue(m_intake.run().alongWith(m_indexer.run()));
+//      .whileFalse(m_intake.stop().alongWith(m_indexer.stop()));
     
   }
   
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
-    Logger.configureLoggingAndConfig(this, false);
+//    Logger.configureLoggingAndConfig(this, false);
     m_leds.setRGB(0,0,255);
     m_leds.setMode(LEDMode.SOLID);
   }
