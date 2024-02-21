@@ -17,15 +17,12 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
-import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.LEDs.LEDMode;
 import frc.robot.subsystems.*;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
@@ -39,14 +36,14 @@ public class RobotContainer {
   private double MaxAngularRate = 1.5 * Math.PI;
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final pivot m_pivot = new pivot();
+  private final Pivot m_pivot = new Pivot();
   private final Shooter m_shooter = new Shooter();
   private final Intake m_intake = new Intake();
   private final Indexer m_indexer = new Indexer();
   private final LEDs m_leds = LEDs.getInstance(0, 10);
-  private final Pneumatics m_lift = new Pneumatics();
-  private final PhotonVision m_pv = new PhotonVision("Camera_Module_v1", new Transform3d(0,0.02241,0.05026, new Rotation3d()));
-    private final PhotonVision m_pv2 = new PhotonVision("PV2", new Transform3d());
+  // private final Pneumatics m_lift = new Pneumatics();
+  // private final PhotonVision m_pv = new PhotonVision("Camera_Module_v1", new Transform3d(0,0.02241,0.05026, new Rotation3d()));
+    // private final PhotonVision m_pv2 = new PhotonVision("PV2", new Transform3d());
 
 
   // Replace with CommandPS4Controller or Commandm_driverController if needed
@@ -99,13 +96,11 @@ public class RobotContainer {
     // cancelling on release.
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
-    
-    // these should NOT need to be run "reapeatedly"
-    m_driverController.rightTrigger()
+    m_driverController.leftTrigger() // intake
       .whileTrue(m_shooter.run());
 //      .whileFalse(m_shooter.stop());
     
-    m_driverController.leftTrigger()
+    m_driverController.rightTrigger() // shoot
       .whileTrue(m_intake.run().alongWith(m_indexer.run()));
 //      .whileFalse(m_intake.stop().alongWith(m_indexer.stop()));
     

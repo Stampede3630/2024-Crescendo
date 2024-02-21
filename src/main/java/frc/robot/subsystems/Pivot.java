@@ -8,7 +8,6 @@ import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -18,13 +17,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class pivot extends SubsystemBase {
+public class Pivot extends SubsystemBase {
   /** Creates a new pivot. */
 
-  private TalonFX pivotor = new TalonFX(17, "CANIVORE");
+  private TalonFX m_pivotMotor = new TalonFX(17, "CANIVORE");
   private double position = 5;
-    public pivot() {
-      pivotor.getConfigurator().apply(new TalonFXConfiguration()
+    public Pivot() {
+      m_pivotMotor.getConfigurator().apply(new TalonFXConfiguration()
         .withMotorOutput(new MotorOutputConfigs()
           .withNeutralMode(NeutralModeValue.Brake)
           .withInverted(InvertedValue.Clockwise_Positive))
@@ -33,7 +32,7 @@ public class pivot extends SubsystemBase {
     }
  
     public Command positionCommand(DoubleSupplier _position) {
-      return Commands.startEnd(() -> pivotor.setControl(new PositionDutyCycle(_position.getAsDouble())), () -> {}, this);
+      return Commands.startEnd(() -> m_pivotMotor.setControl(new PositionDutyCycle(_position.getAsDouble())), () -> {}, this);
     }
 
     public Command run() {

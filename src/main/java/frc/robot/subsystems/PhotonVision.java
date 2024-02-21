@@ -53,18 +53,18 @@ public class PhotonVision extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    photonPoseEstimator.update().ifPresent(ep -> {
-      Pose2d pose = ep.estimatedPose.toPose2d();
-      akitPose[0] = pose.getX();
-        akitPose[1] = pose.getY();
-      akitPose[2] = pose.getRotation().getRadians();
-      Logger.recordOutput("MyPose"+camera.getName(), ep.estimatedPose);
-    }); 
-    // PhotonPipelineResult r = camera.getLatestResult();
-    // SmartDashboard.putBoolean("pose?", ep != null);
-    // if (r.getBestTarget() != null)
-    // SmartDashboard.putNumber("woohoo", r.getBestTarget().getFiducialId());
-        SmartDashboard.putNumberArray("akitPose, "+camera.getName(), akitPose);
+    // photonPoseEstimator.update().ifPresent(ep -> {
+    //   Pose2d pose = ep.estimatedPose.toPose2d();
+    //   akitPose[0] = pose.getX();
+    //     akitPose[1] = pose.getY();
+    //   akitPose[2] = pose.getRotation().getRadians();
+    //   Logger.recordOutput("MyPose"+camera.getName(), ep.estimatedPose);
+    // }); 
+    // // PhotonPipelineResult r = camera.getLatestResult();
+    // // SmartDashboard.putBoolean("pose?", ep != null);
+    // // if (r.getBestTarget() != null)
+    // // SmartDashboard.putNumber("woohoo", r.getBestTarget().getFiducialId());
+    //     SmartDashboard.putNumberArray("akitPose, "+camera.getName(), akitPose);
 
 }
 }

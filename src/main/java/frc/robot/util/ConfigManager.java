@@ -1,5 +1,9 @@
 package frc.robot.util;
 
+import edu.wpi.first.networktables.DoubleEntry;
+import edu.wpi.first.networktables.EntryBase;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.Topic;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ConfigurationBuilder;
@@ -12,8 +16,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ConfigManager {
-    private String title;
+    private String tableRoot;
 
+    public ConfigManager(String tableRoot) {
+        this.tableRoot = tableRoot;
+    }
+
+    Set<FieldData> fields = new HashSet<>();
     public void configure(Object root) {
         Reflections reflections = new Reflections(
                 new ConfigurationBuilder()
@@ -23,10 +32,13 @@ public class ConfigManager {
                                 Scanners.FieldsAnnotated,
                                 Scanners.SubTypes
                         ));
-        Set<Class<? extends Configable>> classes = reflections.getSubTypesOf(Configable.class);
 
         Class<?> rootClass = root.getClass();
-        Set<Field> configableFields = Arrays.stream(rootClass.getDeclaredFields()).filter(f -> f.getType().isInstance(Configable.class)).collect(Collectors.toUnmodifiableSet());
+        System.out.println(rootClass);
+
+        Set<Field> configableFields = Arrays.stream(rootClass.getDeclaredFields())
+                .filter(f -> f.getType().isInstance(Configable.class)).collect(Collectors.toUnmodifiableSet());
+        System.out.println(configableFields);
         Set<Configable> configables = new HashSet<>();
         for (Field configable : configableFields) {
             try {
@@ -34,18 +46,72 @@ public class ConfigManager {
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
+            System.out.println(configable);
         }
         for (Configable c : configables) {
-            Set<Field> fields = Arrays.stream(c.getDeclaredFields()).filter(f -> f.getAnnotation(Config.class) != null).collect(Collectors.toUnmodifiableSet());
-            Set<Method> methods = Arrays.stream(c.getDeclaredMethods()).filter(m -> m.getAnnotation(Config.class) != null).collect(Collectors.toUnmodifiableSet());
-            for (Field f : fields) {
-                String name = f.getAnnotation(Config.class).name();
-                c.
+            Set<FieldData> myFields = Arrays.stream(c.getClass().getDeclaredFields()).filter(f -> f.getAnnotation(Config.class) != null)
+                    .map(f -> new FieldData(f, c, f.getAnnotation(Config.class).name()))
+                    .collect(Collectors.toUnmodifiableSet());
+            fields.addAll(myFields);
+        }
+
+        for (FieldData f : fields) {
+            if (f.field.getType().isInstance(Double.class)) {
+                try {
+                    f.setTopic(NetworkTableInstance.getDefault().getTable(tableRoot).getDoubleTopic(f.name).getEntry(f.field.getDouble(f.object)));
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+                System.out.println(f.name);
             }
-//            System.out.println(c);
-//            System.out.println(fields);
-//            System.out.println(methods);
-//            System.out.println("-------------------------");
+        }
+
+//        fields.forEach(f -> System.out.println(f.field.getName()));
+
+    }
+
+    public void update() {
+        for (FieldData f : fields) {
+            try {
+                f.field.set(f.object, f.getTopic().get());
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+    }
+
+    private class FieldData {
+        private Field field;
+        private Object object;
+        private String name;
+        private DoubleEntry topic;
+
+        public FieldData(Field field, Object object, String name) {
+            this.field = field;
+            this.object = object;
+            this.name = name;
+//            this.topic = topic;
+        }
+
+        public Field getField() {
+            return field;
+        }
+
+        public Object getObject() {
+            return object;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public DoubleEntry getTopic() {
+            return topic;
+        }
+
+        public void setTopic(DoubleEntry topic) {
+            this.topic = topic;
         }
     }
 }

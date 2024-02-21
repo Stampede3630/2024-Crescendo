@@ -17,12 +17,14 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.Config;
 import frc.robot.util.Configable;
 
 
 public class Intake extends SubsystemBase implements Configable {
     private TalonFX m_intakeMotor = new TalonFX(16, "CANIVORE");
-    private double velocity = 10;
+    @Config
+    private double velocity = .654;
 
   /** Creates a new Intake. */
 
@@ -55,5 +57,10 @@ public class Intake extends SubsystemBase implements Configable {
 
   public Command stop() {
     return velocityCommand(() -> 0);
+  }
+
+  @Override
+  public void setDefaultCommand(Command defaultCommand) {
+    super.setDefaultCommand(stop());
   }
 }
