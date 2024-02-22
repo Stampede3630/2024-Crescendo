@@ -21,14 +21,6 @@ public class ConfigManager {
 
     Set<FieldData> fields = new HashSet<>();
     public void configure(Object root) {
-        Reflections reflections = new Reflections(
-                new ConfigurationBuilder()
-                        .forPackage(".frc.robot")
-                        .addScanners(
-                                Scanners.MethodsAnnotated,
-                                Scanners.FieldsAnnotated,
-                                Scanners.SubTypes
-                        ));
 
         Class<?> rootClass = root.getClass();
 //        System.out.println(rootClass);

@@ -93,7 +93,7 @@ dependencies {
 
 //    implementation "com.github.Oblarg:Oblog:5.1.0"
     implementation 'org.reflections:reflections:0.10.2'
-
+    implementation 'com.github.shueja:Monologue:v1.0.0-beta5'
         def akitJson = new groovy.json.JsonSlurper().parseText(new File(projectDir.getAbsolutePath() + "/vendordeps/AdvantageKit.json").text)
     annotationProcessor "org.littletonrobotics.akit.junction:junction-autolog:$akitJson.version"
 
