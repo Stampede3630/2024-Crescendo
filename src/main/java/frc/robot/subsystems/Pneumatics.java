@@ -13,10 +13,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Pneumatics extends SubsystemBase {
   /** Creates a new Pneumatics. */
   private PneumaticHub m_ph = new PneumaticHub(2);
-  private DoubleSolenoid m_lift = m_ph.makeDoubleSolenoid(3, 7);
+  private DoubleSolenoid m_lift = m_ph.makeDoubleSolenoid(0, 2);
   public Pneumatics() {
     m_lift.set(DoubleSolenoid.Value.kOff);
     m_ph.enableCompressorDigital();
+    super.setDefaultCommand(off());
   }
 
   public Command up() {

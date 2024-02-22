@@ -23,7 +23,7 @@ import frc.robot.util.Configable;
 public class Indexer extends SubsystemBase implements Configable {
       private TalonFX m_indexMotor = new TalonFX(13, "CANIVORE");
       private TalonFX ovalizer = new TalonFX(15, "CANIVORE");
-      private double velocity = .9;
+      private double velocity = .3;
 
   /** Creates a new Indexer. */
   public Indexer() {
@@ -62,8 +62,8 @@ public class Indexer extends SubsystemBase implements Configable {
 
 
   public Command run() {
-    return velocityCommand(() -> velocity);
-    // .andThen(velocityOvalizerCommand(() -> 2))
+    return velocityCommand(() -> velocity)
+    .andThen(velocityOvalizerCommand(() -> .2));
   }
 
   public Command stop() {
