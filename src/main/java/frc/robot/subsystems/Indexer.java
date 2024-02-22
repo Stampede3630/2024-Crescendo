@@ -62,10 +62,12 @@ public class Indexer extends SubsystemBase implements Configable {
 
 
   public Command run() {
-    return velocityCommand(() -> velocity)
-    .andThen(velocityOvalizerCommand(() -> .2));
+    return Commands.startEnd(()-> {
+      m_indexMotor.setControl(new DutyCycleOut(velocity));
+      ovalizer.setControl(new DutyCycleOut(-velocity));
+  },() -> {}, this
+    );
   }
-
   public Command stop() {
     return velocityCommand(() -> 0);
   }
