@@ -1,10 +1,6 @@
 package frc.robot.util;
 
 import edu.wpi.first.networktables.*;
-import org.reflections.Reflections;
-import org.reflections.scanners.Scanners;
-import org.reflections.util.ConfigurationBuilder;
-
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.EnumSet;
