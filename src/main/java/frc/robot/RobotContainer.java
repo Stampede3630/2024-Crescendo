@@ -42,6 +42,7 @@ public class RobotContainer {
   private final Intake m_intake = new Intake();
   private final Indexer m_indexer = new Indexer();
   private final LEDs m_leds = LEDs.getInstance(0, 10);
+  private final Pneumatics m_pneumatics = new Pneumatics();
   private ConfigManager cm;
 
   // private final Pneumatics m_lift = new Pneumatics();
@@ -66,6 +67,7 @@ public class RobotContainer {
   
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+
 
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
@@ -106,6 +108,11 @@ public class RobotContainer {
     m_driverController.rightTrigger() // shoot
       .whileTrue(m_intake.run().alongWith(m_indexer.run()));
 //      .whileFalse(m_intake.stop().alongWith(m_indexer.stop()));
+
+    m_driverController.y()
+      .whileTrue(m_pneumatics.up());
+    m_driverController.x()
+      .whileTrue(m_pneumatics.down());
     
   }
 
