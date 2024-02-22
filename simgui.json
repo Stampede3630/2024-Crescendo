@@ -18,6 +18,13 @@
       "/SmartDashboard/Module 3": "Mechanism2d"
     }
   },
+  "NetworkTables": {
+    "transitory": {
+      "HelloTable": {
+        "open": true
+      }
+    }
+  },
   "NetworkTables Info": {
     "visible": true
   }

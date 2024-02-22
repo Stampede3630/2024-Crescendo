@@ -109,9 +109,6 @@ public class RobotContainer {
     
   }
 
-  public void periodic() {
-    cm.update();
-  }
   
   public RobotContainer() {
     // Configure the trigger bindings
