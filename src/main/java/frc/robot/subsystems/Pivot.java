@@ -25,6 +25,7 @@ public class Pivot extends SubsystemBase implements Configable {
   private TalonFX m_pivotMotor = new TalonFX(17, "CANIVORE");
   @Config(name = "Pivot position")
   private double position = 5;
+  private PositionDutyCycle m_positionDutyCycle = new PositionDutyCycle(position);
     public Pivot() {
       m_pivotMotor.getConfigurator().apply(new TalonFXConfiguration()
         .withMotorOutput(new MotorOutputConfigs()
@@ -35,7 +36,7 @@ public class Pivot extends SubsystemBase implements Configable {
     }
  
     public Command positionCommand(DoubleSupplier _position) {
-      return Commands.startEnd(() -> m_pivotMotor.setControl(new PositionDutyCycle(_position.getAsDouble())), () -> {}, this);
+      return Commands.startEnd(() -> m_pivotMotor.setControl(m_positionDutyCycle.withPosition(_position.getAsDouble())), () -> {}, this);
     }
 
     public Command run() {

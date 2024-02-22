@@ -31,9 +31,10 @@ import static edu.wpi.first.units.Units.Volts;
 
 public class Shooter extends SubsystemBase implements Configable {
   /** Creates a new Shooter. */
-  private TalonFX m_shootMotor = new TalonFX(14, "CANIVORE");
+  private final TalonFX m_shootMotor = new TalonFX(14, "CANIVORE");
   @Config(name = "Shooter velocity")
-  private double velocity = -.62;
+  private double dutyCycle = .62;
+  private final DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0,true,false,false,false);
   private VoltageOut m_sysidControl;
   private SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
           new SysIdRoutine.Config(
@@ -50,7 +51,7 @@ public class Shooter extends SubsystemBase implements Configable {
     m_shootMotor.getConfigurator().apply(new TalonFXConfiguration()
       .withMotorOutput(new MotorOutputConfigs()
         .withNeutralMode(NeutralModeValue.Brake)
-        .withInverted(InvertedValue.Clockwise_Positive))
+        .withInverted(InvertedValue.CounterClockwise_Positive))
     );
         super.setDefaultCommand(stop());
 
@@ -63,21 +64,21 @@ public class Shooter extends SubsystemBase implements Configable {
   }
 
 //  @Config.NumberSlider(defaultValue = -.62)
-  public void setVelocity(double velocity) {
-    this.velocity = velocity;
-  }
+public void setDutyCycle(double dutyCycle) {
+  this.dutyCycle = dutyCycle;
+}
 
 
-  public Command velocityCommand(DoubleSupplier _velocity) {
-    return startEnd(() -> m_shootMotor.setControl(new DutyCycleOut(_velocity.getAsDouble())), () -> {});
+  public Command dutyCycleCommand(DoubleSupplier _dutyCycle) {
+    return startEnd(() -> m_shootMotor.setControl(m_dutyCycleOut.withOutput(_dutyCycle.getAsDouble())), () -> {});
   }
 
   public Command run() {
-    return velocityCommand(() -> velocity);
+    return dutyCycleCommand(() -> dutyCycle);
     
   }
 
   public Command stop() {
-    return velocityCommand(() -> 0);
+    return dutyCycleCommand(() -> 0);
   }
 }

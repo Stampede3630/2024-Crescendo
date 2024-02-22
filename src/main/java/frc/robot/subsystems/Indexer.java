@@ -9,22 +9,22 @@ import java.util.function.DoubleSupplier;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.Config;
 import frc.robot.util.Configable;
 
 
 public class Indexer extends SubsystemBase implements Configable {
-      private TalonFX m_indexMotor = new TalonFX(13, "CANIVORE");
+      private final TalonFX m_indexMotor = new TalonFX(13, "CANIVORE");
       @Config(name = "Indexer velocity")
-    private double velocity = .3;
+    private double dutyCycle = .3;
+
+      private final DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0, true, false, false, false);
 
   /** Creates a new Indexer. */
   public Indexer() {
@@ -43,24 +43,21 @@ public class Indexer extends SubsystemBase implements Configable {
   }
 
 //  @Config.NumberSlider(defaultValue = .65)
-  public void setVelocity(double velocity) {
-    this.velocity = velocity;
+  public void setDutyCycle(double dutyCycle) {
+    this.dutyCycle = dutyCycle;
   }
 
 
-  public Command velocityCommand(DoubleSupplier _velocity) {
-    return startEnd(() -> m_indexMotor.setControl(new DutyCycleOut(_velocity.getAsDouble())), () -> {});
+  public Command dutyCycleCommand(DoubleSupplier _dutyCycle) {
+    return startEnd(() -> m_indexMotor.setControl(m_dutyCycleOut.withOutput(_dutyCycle.getAsDouble())), () -> {});
   }
 
 
   public Command run() {
-//    return Commands.startEnd(()-> {
-//      m_indexMotor.setControl(new DutyCycleOut(velocity));
-//  },() -> {}, this
-//    );
-    return velocityCommand(() -> velocity);
+
+    return dutyCycleCommand(() -> dutyCycle);
   }
   public Command stop() {
-    return velocityCommand(() -> 0);
+    return dutyCycleCommand(() -> 0);
   }
 }

@@ -22,9 +22,10 @@ import frc.robot.util.Configable;
 
 
 public class Intake extends SubsystemBase implements Configable {
-    private TalonFX m_intakeMotor = new TalonFX(16, "CANIVORE");
+    private final TalonFX m_intakeMotor = new TalonFX(16, "CANIVORE");
     @Config(name = "Intake Velocity")
-    private double velocity = .654;
+    private double dutyCycle = .654;
+    private final DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0, true, false, false, false);
 
 
   /** Creates a new Intake. */
@@ -45,20 +46,20 @@ public class Intake extends SubsystemBase implements Configable {
   }
 
 //  @Config.NumberSlider(defaultValue = .654)
-  public void setVelocity(double velocity) {
-    this.velocity = velocity;
-  }
+public void setDutyCycle(double dutyCycle) {
+  this.dutyCycle = dutyCycle;
+}
 
 
-  public Command velocityCommand(DoubleSupplier _velocity) {
-    return Commands.startEnd(() -> m_intakeMotor.setControl(new DutyCycleOut(_velocity.getAsDouble())), () -> {}, this);
+  public Command dutyCycleCommand(DoubleSupplier _dutyCycle) {
+    return startEnd(() -> m_intakeMotor.setControl(m_dutyCycleOut.withOutput(_dutyCycle.getAsDouble())), () -> {});
   }
 
   public Command run() {
-    return velocityCommand(() -> velocity);
+    return dutyCycleCommand(() -> dutyCycle);
   }
 
   public Command stop() {
-    return velocityCommand(() -> 0);
+    return dutyCycleCommand(() -> 0);
   }
 }
