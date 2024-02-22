@@ -43,6 +43,7 @@ public class RobotContainer {
   private final Indexer m_indexer = new Indexer();
   private final LEDs m_leds = LEDs.getInstance(0, 10);
   private final Pneumatics m_pneumatics = new Pneumatics();
+  private final SideBySide m_sideBySide = new SideBySide();
   private ConfigManager cm;
 
   // private final Pneumatics m_lift = new Pneumatics();
@@ -106,7 +107,11 @@ public class RobotContainer {
 //      .whileFalse(m_shooter.stop());
     
     m_driverController.rightTrigger() // shoot
-      .whileTrue(m_intake.run().alongWith(m_indexer.run()));
+      .whileTrue(
+              m_intake.run()
+              .alongWith(m_indexer.run())
+              .alongWith(m_sideBySide.run()
+      ));
 //      .whileFalse(m_intake.stop().alongWith(m_indexer.stop()));
 
     m_driverController.y()

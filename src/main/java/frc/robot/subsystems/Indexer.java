@@ -17,24 +17,20 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.Config;
 import frc.robot.util.Configable;
 
 
 public class Indexer extends SubsystemBase implements Configable {
       private TalonFX m_indexMotor = new TalonFX(13, "CANIVORE");
-      private TalonFX ovalizer = new TalonFX(15, "CANIVORE");
-      private double velocity = .3;
+      @Config(name = "Indexer velocity")
+    private double velocity = .3;
 
   /** Creates a new Indexer. */
   public Indexer() {
     m_indexMotor.getConfigurator().apply(new TalonFXConfiguration()
       .withMotorOutput(new MotorOutputConfigs()
         .withNeutralMode(NeutralModeValue.Coast)
-        .withInverted(InvertedValue.Clockwise_Positive))
-    );
-    ovalizer.getConfigurator().apply(new TalonFXConfiguration()
-      .withMotorOutput(new MotorOutputConfigs()
-        .withNeutralMode(NeutralModeValue.Brake)
         .withInverted(InvertedValue.Clockwise_Positive))
     );
 
@@ -53,20 +49,16 @@ public class Indexer extends SubsystemBase implements Configable {
 
 
   public Command velocityCommand(DoubleSupplier _velocity) {
-    return Commands.startEnd(() -> m_indexMotor.setControl(new DutyCycleOut(_velocity.getAsDouble())), () -> {}, this);
-  }
-  
-  public Command velocityOvalizerCommand(DoubleSupplier _velocity) {
-    return Commands.startEnd(() -> ovalizer.setControl(new DutyCycleOut(_velocity.getAsDouble())), () -> {}, this);
+    return startEnd(() -> m_indexMotor.setControl(new DutyCycleOut(_velocity.getAsDouble())), () -> {});
   }
 
 
   public Command run() {
-    return Commands.startEnd(()-> {
-      m_indexMotor.setControl(new DutyCycleOut(velocity));
-      ovalizer.setControl(new DutyCycleOut(-velocity));
-  },() -> {}, this
-    );
+//    return Commands.startEnd(()-> {
+//      m_indexMotor.setControl(new DutyCycleOut(velocity));
+//  },() -> {}, this
+//    );
+    return velocityCommand(() -> velocity);
   }
   public Command stop() {
     return velocityCommand(() -> 0);

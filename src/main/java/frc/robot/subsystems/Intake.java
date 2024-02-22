@@ -23,11 +23,9 @@ import frc.robot.util.Configable;
 
 public class Intake extends SubsystemBase implements Configable {
     private TalonFX m_intakeMotor = new TalonFX(16, "CANIVORE");
-    @Config(name = "myIntakeVlocity")
+    @Config(name = "Intake Velocity")
     private double velocity = .654;
 
-    @Config(name = "boohah")
-    private long myIntVolocty = 37;
 
   /** Creates a new Intake. */
 

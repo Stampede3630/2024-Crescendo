@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.util.Config;
 import frc.robot.util.Configable;
 
 import static edu.wpi.first.units.Units.Volts;
@@ -31,6 +32,7 @@ import static edu.wpi.first.units.Units.Volts;
 public class Shooter extends SubsystemBase implements Configable {
   /** Creates a new Shooter. */
   private TalonFX m_shootMotor = new TalonFX(14, "CANIVORE");
+  @Config(name = "Shooter velocity")
   private double velocity = -.62;
   private VoltageOut m_sysidControl;
   private SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
