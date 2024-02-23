@@ -20,8 +20,8 @@ import frc.robot.util.Configable;
 
 
 public class Indexer extends SubsystemBase implements Configable {
-      private final TalonFX m_indexMotor = new TalonFX(13, "CANIVORE");
-      @Config(name = "Indexer velocity")
+    private final TalonFX m_indexMotor = new TalonFX(13, "CANIVORE");
+    @Config(name = "Indexer velocity")
     private double dutyCycle = .5;
 
       private final DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0, true, false, false, false);

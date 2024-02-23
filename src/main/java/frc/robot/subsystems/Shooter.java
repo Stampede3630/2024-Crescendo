@@ -53,7 +53,7 @@ public class Shooter extends SubsystemBase implements Configable {
         .withNeutralMode(NeutralModeValue.Brake)
         .withInverted(InvertedValue.Clockwise_Positive))
     );
-        super.setDefaultCommand(run());
+        super.setDefaultCommand(stop());
 
 
   }
@@ -63,10 +63,9 @@ public class Shooter extends SubsystemBase implements Configable {
     // This method will be called once per scheduler run
   }
 
-//  @Config.NumberSlider(defaultValue = -.62)
-public void setDutyCycle(double dutyCycle) {
-  this.dutyCycle = dutyCycle;
-}
+  public void setDutyCycle(double dutyCycle) {
+    this.dutyCycle = dutyCycle;
+  }
 
 
   public Command dutyCycleCommand(DoubleSupplier _dutyCycle) {

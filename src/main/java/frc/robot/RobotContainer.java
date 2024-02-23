@@ -19,6 +19,8 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.LEDs.LEDMode;
 import frc.robot.util.ConfigManager;
+import monologue.Logged;
+import monologue.Monologue;
 import frc.robot.subsystems.*;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -32,7 +34,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
-public class RobotContainer {
+public class RobotContainer implements Logged{
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps;
   private double MaxAngularRate = 1.5 * Math.PI;
   // The robot's subsystems and commands are defined here...
@@ -109,7 +111,10 @@ public class RobotContainer {
                 .alongWith(m_sideBySide.run()
           ));
 //      .whileFalse(m_shooter.stop());
-    
+    m_driverController.povLeft().whileTrue(m_pivot.left()).whileFalse(m_pivot.dutyCycleCommand(() -> 0));
+    m_driverController.povRight().whileTrue(m_pivot.right()).whileFalse(m_pivot.dutyCycleCommand(() -> 0));
+    m_driverController.povUp().whileTrue(m_pivot.resetToZero());
+
     m_driverController.rightTrigger() // shoot
       .whileTrue(
               m_intake.run()
@@ -133,10 +138,9 @@ public class RobotContainer {
     m_leds.setRGB(0,0,255);
     m_leds.setMode(LEDMode.SOLID);
     cm = new ConfigManager("HelloTable");
-    cm.configure(this);
+    cm.configure(this);    
+    Monologue.setupMonologue(this, "/Robot", false, false);
 
-    m_indexer.setDefaultCommand(m_indexer.stop());
-    
   }
 
   /**

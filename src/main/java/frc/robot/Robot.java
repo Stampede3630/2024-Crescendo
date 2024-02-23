@@ -33,7 +33,6 @@ public class Robot extends TimedRobot implements Logged{
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     DriverStation.silenceJoystickConnectionWarning(true);
-    Monologue.setupMonologue(this, "Robot", false, true);
 //    DataLogManager.start();
 //    DriverStation.startDataLog(DataLogManager.getLog());
   }
@@ -51,7 +50,7 @@ public class Robot extends TimedRobot implements Logged{
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
-    Monologue.setFileOnly(DriverStation.isFMSAttached());
+    // Monologue.setFileOnly(DriverStation.isFMSAttached());
     Monologue.updateAll();
     CommandScheduler.getInstance().run();
   }
