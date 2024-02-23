@@ -114,7 +114,8 @@ public class RobotContainer {
       .whileTrue(
               m_intake.run()
               .alongWith(m_indexer.run())
-        );
+              .alongWith(m_sideBySide.run()
+      ));
 //      .whileFalse(m_intake.stop().alongWith(m_indexer.stop()));
 
     m_driverController.y()
