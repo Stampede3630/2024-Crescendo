@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Pneumatics extends SubsystemBase {
   /** Creates a new Pneumatics. */
   private PneumaticHub m_ph = new PneumaticHub(2);
-  private DoubleSolenoid m_lift = m_ph.makeDoubleSolenoid(0, 2);
+  private DoubleSolenoid m_lift = m_ph.makeDoubleSolenoid(2,0);
   public Pneumatics() {
     m_lift.set(DoubleSolenoid.Value.kOff);
     m_ph.enableCompressorDigital();
@@ -27,7 +27,7 @@ public class Pneumatics extends SubsystemBase {
     return Commands.runOnce(() -> m_lift.set(DoubleSolenoid.Value.kReverse), this);
   }
   public Command off() {
-    return Commands.runOnce(() -> m_lift.set(DoubleSolenoid.Value.kOff), this);
+    return startEnd(() -> m_lift.set(DoubleSolenoid.Value.kOff), () -> {});
 
   }
 

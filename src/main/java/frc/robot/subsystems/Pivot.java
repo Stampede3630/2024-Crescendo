@@ -16,6 +16,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.util.Config;
 import frc.robot.util.Configable;
 
@@ -23,6 +24,8 @@ public class Pivot extends SubsystemBase implements Configable {
   /** Creates a new pivot. */
 
   private TalonFX m_pivotMotor = new TalonFX(17, "CANIVORE");
+
+  // private SysIdRoutine 
   @Config(name = "Pivot position")
   private double position = 5;
   private PositionDutyCycle m_positionDutyCycle = new PositionDutyCycle(position);
