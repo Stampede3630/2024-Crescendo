@@ -24,7 +24,7 @@ import frc.robot.util.Configable;
 public class Intake extends SubsystemBase implements Configable {
     private final TalonFX m_intakeMotor = new TalonFX(16, "CANIVORE");
     @Config(name = "Intake Velocity")
-    private double dutyCycle = .654;
+    private double dutyCycle = .8;
     private final DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0, true, false, false, false);
 
 

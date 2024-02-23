@@ -17,7 +17,8 @@ import java.util.function.DoubleSupplier;
 public class SideBySide extends SubsystemBase implements Configable {
     private final TalonFX m_motor = new TalonFX(15, "CANIVORE");
     @Config(name = "sideBySide velocity")
-    private double dutyCycle = .62;
+    private double dutyCycle = .65;
+    // private double sideDutyCycle = .8;
     private final DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0,true,false,false,false);
     public SideBySide() {
         m_motor.getConfigurator().apply(new TalonFXConfiguration()

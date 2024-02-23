@@ -103,15 +103,18 @@ public class RobotContainer {
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
     m_driverController.leftTrigger() // intake
-      .whileTrue(m_shooter.run());
+      .whileTrue(
+                m_shooter.run()
+                .alongWith(m_indexer.run())
+                .alongWith(m_sideBySide.run()
+          ));
 //      .whileFalse(m_shooter.stop());
     
     m_driverController.rightTrigger() // shoot
       .whileTrue(
               m_intake.run()
               .alongWith(m_indexer.run())
-              .alongWith(m_sideBySide.run()
-      ));
+        );
 //      .whileFalse(m_intake.stop().alongWith(m_indexer.stop()));
 
     m_driverController.y()

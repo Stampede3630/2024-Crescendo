@@ -33,7 +33,7 @@ public class Shooter extends SubsystemBase implements Configable {
   /** Creates a new Shooter. */
   private final TalonFX m_shootMotor = new TalonFX(14, "CANIVORE");
   @Config(name = "Shooter velocity")
-  private double dutyCycle = .62;
+  private double dutyCycle = .8;
   private final DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0,true,false,false,false);
   private VoltageOut m_sysidControl;
   private SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
@@ -51,9 +51,9 @@ public class Shooter extends SubsystemBase implements Configable {
     m_shootMotor.getConfigurator().apply(new TalonFXConfiguration()
       .withMotorOutput(new MotorOutputConfigs()
         .withNeutralMode(NeutralModeValue.Brake)
-        .withInverted(InvertedValue.CounterClockwise_Positive))
+        .withInverted(InvertedValue.Clockwise_Positive))
     );
-        super.setDefaultCommand(stop());
+        super.setDefaultCommand(run());
 
 
   }
@@ -76,6 +76,10 @@ public void setDutyCycle(double dutyCycle) {
   public Command run() {
     return dutyCycleCommand(() -> dutyCycle);
     
+  }
+
+  public Command idleSpeed(){
+    return dutyCycleCommand(()->(dutyCycle*0.5)); //def a better way of doing this
   }
 
   public Command stop() {
