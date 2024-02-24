@@ -53,7 +53,7 @@ public class Shooter extends SubsystemBase implements Configable {
         .withNeutralMode(NeutralModeValue.Brake)
         .withInverted(InvertedValue.Clockwise_Positive))
     );
-    super.setDefaultCommand(stop());
+    super.setDefaultCommand(idle());
 
 
   }
@@ -77,11 +77,15 @@ public class Shooter extends SubsystemBase implements Configable {
     
   }
 
-  public Command idleSpeed(){
-    return dutyCycleCommand(()->(dutyCycle*0.5)); //def a better way of doing this
+  public Command idle(){
+    return dutyCycleCommand(()->0.2);
   }
 
   public Command stop() {
     return dutyCycleCommand(() -> 0);
+  }
+
+  public boolean upToSpeed() {
+    return m_shootMotor.getVelocity().refresh().getValue()>1;
   }
 }

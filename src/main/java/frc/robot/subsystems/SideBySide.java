@@ -46,4 +46,8 @@ public class SideBySide extends SubsystemBase implements Configable {
     public Command stop() {
         return dutyCycleCommand(() -> 0);
     }
+
+    public Command reverse() {
+        return dutyCycleCommand(() -> -dutyCycle);
+    }
 }

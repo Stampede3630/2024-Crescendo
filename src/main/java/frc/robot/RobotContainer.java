@@ -99,14 +99,16 @@ public class RobotContainer implements Logged{
     }
     drivetrain.registerTelemetry(logger::telemeterize);  
 
-    m_driverController.x().whileTrue(m_pivot.run());
-
+    m_driverController.rightBumper().whileTrue(
+      m_intake.outtake()
+              .alongWith(m_indexer.reverse())
+              .alongWith(m_sideBySide.reverse())
+    );
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
     m_driverController.leftTrigger()
       .whileTrue(
-                m_shooter.run().raceWith(Commands.waitSeconds(2))
+                m_shooter.run().until(m_shooter::upToSpeed).withTimeout(2)
                         .andThen(
                                 m_indexer.run()
                                 .alongWith(m_sideBySide.run())

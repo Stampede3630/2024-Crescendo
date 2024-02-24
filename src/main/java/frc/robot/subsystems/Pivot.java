@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
+import java.util.function.Function;
 
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -38,7 +39,7 @@ public class Pivot extends SubsystemBase implements Configable, Logged {
   private PositionDutyCycle m_positionDutyCycle = new PositionDutyCycle(position);
   private DutyCycleOut m_dutyCycle = new DutyCycleOut(0, true, false, false, false);
 
-  // PIVOT RANGE OF MOTION IS 58.17431640625 pm 1.0ish\[]
+  // PIVOT RANGE OF MOTION IS 58.17431640625 pm 1.0ish
   public Pivot() {
     m_pivotMotor.getConfigurator().apply(new TalonFXConfiguration()
         .withMotorOutput(new MotorOutputConfigs()
@@ -46,6 +47,11 @@ public class Pivot extends SubsystemBase implements Configable, Logged {
             .withInverted(InvertedValue.Clockwise_Positive)));
   }
 
+  private Function<Double, Double> rollDegreesToPosition = (angle) -> 0.001761*angle*angle + 0.1123*angle -4.363 + 5.817; // TODO, recalibrate pigeon s.t. our 0 angle is at one of the hard stops or parallel with robot frame
+
+  public Command resetToPigeon() {
+    return Commands.runOnce(() -> m_pivotMotor.setPosition(rollDegreesToPosition.apply(pigeonRoll())));
+  }
   @Log
   public double pigeonRoll() {
     return Math.toDegrees(TunerConstants.DriveTrain.getPigeon2().getRotation3d().getX());
@@ -81,10 +87,6 @@ public class Pivot extends SubsystemBase implements Configable, Logged {
   }
   public Command right() {
     return dutyCycleCommand(() -> -dutyCycle);
-  }
-
-  public Command run() {
-    return positionCommand(() -> position);
   }
 
   @Override

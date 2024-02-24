@@ -55,6 +55,8 @@ public void setDutyCycle(double dutyCycle) {
     return startEnd(() -> m_intakeMotor.setControl(m_dutyCycleOut.withOutput(_dutyCycle.getAsDouble())), () -> {});
   }
 
+  public Command outtake() {return dutyCycleCommand(() -> -dutyCycle);}
+
   public Command run() {
     return dutyCycleCommand(() -> dutyCycle);
   }
