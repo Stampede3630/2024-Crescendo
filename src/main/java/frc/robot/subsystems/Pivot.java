@@ -14,6 +14,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -45,14 +46,16 @@ public class Pivot extends SubsystemBase implements Configable, Logged {
             .withInverted(InvertedValue.Clockwise_Positive)));
   }
 
+  @Log
+  public double pigeonRoll() {
+    return Math.toDegrees(TunerConstants.DriveTrain.getPigeon2().getRotation3d().getX());
+  }
+
   public Command save() {
     return Commands.runOnce(() -> {
-      TunerConstants.DriveTrain.getPigeon2().getRotation3d().getQuaternion();
+      Quaternion q = TunerConstants.DriveTrain.getPigeon2().getRotation3d().getQuaternion();
+      log("wowie", q.getW()+","+q.getX()+","+q.getY()+","+q.getZ()+","+m_pivotMotor.getPosition());
     });
-  }
-  @Log
-  public double myTest() {
-    return 124.3;
   }
 
   @Log.NT

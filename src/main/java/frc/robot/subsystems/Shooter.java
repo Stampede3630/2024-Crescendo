@@ -53,7 +53,7 @@ public class Shooter extends SubsystemBase implements Configable {
         .withNeutralMode(NeutralModeValue.Brake)
         .withInverted(InvertedValue.Clockwise_Positive))
     );
-        super.setDefaultCommand(stop());
+//        super.setDefaultCommand(stop());
 
 
   }
@@ -69,7 +69,7 @@ public class Shooter extends SubsystemBase implements Configable {
 
 
   public Command dutyCycleCommand(DoubleSupplier _dutyCycle) {
-    return startEnd(() -> m_shootMotor.setControl(m_dutyCycleOut.withOutput(_dutyCycle.getAsDouble())), () -> {});
+    return runOnce(() -> m_shootMotor.setControl(m_dutyCycleOut.withOutput(_dutyCycle.getAsDouble())));
   }
 
   public Command run() {

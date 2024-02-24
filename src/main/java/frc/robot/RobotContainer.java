@@ -46,6 +46,7 @@ public class RobotContainer implements Logged{
   private final LEDs m_leds = LEDs.getInstance(0, 10);
   private final Pneumatics m_pneumatics = new Pneumatics();
   private final SideBySide m_sideBySide = new SideBySide();
+  private final I2CDisplay m_display = new I2CDisplay();
   private ConfigManager cm;
 
   // private final Pneumatics m_lift = new Pneumatics();
@@ -103,23 +104,24 @@ public class RobotContainer implements Logged{
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-
-    m_driverController.leftTrigger() // intake
+    m_driverController.leftTrigger()
       .whileTrue(
-                m_shooter.run()
-                .alongWith(m_indexer.run())
-                .alongWith(m_sideBySide.run()
-          ));
+                m_shooter.run().andThen(Commands.waitSeconds(3)).andThen(
+                                m_indexer.run()
+                                        .alongWith(m_sideBySide.run()
+
+                        )
+
+          )).whileFalse(m_shooter.stop());
 //      .whileFalse(m_shooter.stop());
     m_driverController.povLeft().whileTrue(m_pivot.left()).whileFalse(m_pivot.dutyCycleCommand(() -> 0));
     m_driverController.povRight().whileTrue(m_pivot.right()).whileFalse(m_pivot.dutyCycleCommand(() -> 0));
     m_driverController.povUp().whileTrue(m_pivot.resetToZero());
 
-    m_driverController.rightTrigger() // shoot
+    m_driverController.rightTrigger()
       .whileTrue(
               m_intake.run()
-              .alongWith(m_indexer.run())
-              .alongWith(m_sideBySide.run()
+              .alongWith(m_indexer.run()
       ));
 //      .whileFalse(m_intake.stop().alongWith(m_indexer.stop()));
 
