@@ -32,7 +32,7 @@ import static edu.wpi.first.units.Units.Volts;
 public class Shooter extends SubsystemBase implements Configable {
   /** Creates a new Shooter. */
   private final TalonFX m_shootMotor = new TalonFX(14, "CANIVORE");
-  @Config(name = "Shooter velocity")
+  @Config(name = "Shooter duty cycle")
   private double dutyCycle = .8;
   private final DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0,true,false,false,false);
   private VoltageOut m_sysidControl;
@@ -53,7 +53,7 @@ public class Shooter extends SubsystemBase implements Configable {
         .withNeutralMode(NeutralModeValue.Brake)
         .withInverted(InvertedValue.Clockwise_Positive))
     );
-//        super.setDefaultCommand(stop());
+    super.setDefaultCommand(stop());
 
 
   }

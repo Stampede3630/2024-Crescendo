@@ -106,13 +106,13 @@ public class RobotContainer implements Logged{
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
     m_driverController.leftTrigger()
       .whileTrue(
-                m_shooter.run().andThen(Commands.waitSeconds(3)).andThen(
+                m_shooter.run().raceWith(Commands.waitSeconds(2))
+                        .andThen(
                                 m_indexer.run()
-                                        .alongWith(m_sideBySide.run()
+                                .alongWith(m_sideBySide.run())
 
                         )
-
-          )).whileFalse(m_shooter.stop());
+      );
 //      .whileFalse(m_shooter.stop());
     m_driverController.povLeft().whileTrue(m_pivot.left()).whileFalse(m_pivot.dutyCycleCommand(() -> 0));
     m_driverController.povRight().whileTrue(m_pivot.right()).whileFalse(m_pivot.dutyCycleCommand(() -> 0));
