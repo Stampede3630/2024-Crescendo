@@ -13,6 +13,10 @@ public class I2CDisplay extends SubsystemBase implements Logged {
     }
     @Annotations.Log.NT
     public double getPot() {
-        return board.getPot().getVoltage();
+        return board.getPot().getAverageVoltage();
+    }
+
+    public void display(String s) {
+        board.display(s);
     }
 }

@@ -69,7 +69,7 @@ public class Shooter extends SubsystemBase implements Configable {
 
 
   public Command dutyCycleCommand(DoubleSupplier _dutyCycle) {
-    return runOnce(() -> m_shootMotor.setControl(m_dutyCycleOut.withOutput(_dutyCycle.getAsDouble())));
+    return startEnd(() -> m_shootMotor.setControl(m_dutyCycleOut.withOutput(_dutyCycle.getAsDouble())), () -> {});
   }
 
   public Command run() {
@@ -81,11 +81,15 @@ public class Shooter extends SubsystemBase implements Configable {
     return dutyCycleCommand(()->0.2);
   }
 
+  public Command reverse() {
+    return dutyCycleCommand(() -> -0.65);
+  }
+
   public Command stop() {
     return dutyCycleCommand(() -> 0);
   }
 
   public boolean upToSpeed() {
-    return m_shootMotor.getVelocity().refresh().getValue()>1;
+    return m_shootMotor.getVelocity().refresh().getValue()>50;
   }
 }

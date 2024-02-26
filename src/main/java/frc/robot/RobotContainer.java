@@ -7,6 +7,7 @@ package frc.robot;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -25,6 +26,7 @@ import frc.robot.subsystems.*;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -65,10 +67,10 @@ public class RobotContainer implements Logged{
                                                                // driving in open loop
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+  private final SwerveRequest.FieldCentricFacingAngle faceAngle = new SwerveRequest.FieldCentricFacingAngle();
   private final Telemetry logger = new Telemetry(MaxSpeed);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
 
-  
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
@@ -87,9 +89,9 @@ public class RobotContainer implements Logged{
             .withRotationalRate(-m_driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
         ));
 
-    m_driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
-    m_driverController.b().whileTrue(drivetrain
-        .applyRequest(() -> point.withModuleDirection(new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
+    // m_driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
+    // m_driverController.b().whileTrue(drivetrain
+    //     .applyRequest(() -> point.withModuleDirection(new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
 
     // reset the field-centric heading on left bumper press
     m_driverController.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
@@ -99,26 +101,33 @@ public class RobotContainer implements Logged{
     }
     drivetrain.registerTelemetry(logger::telemeterize);  
 
-    m_driverController.rightBumper().whileTrue(
+    m_driverController.b().whileTrue(
       m_intake.outtake()
-              .alongWith(m_indexer.reverse())
-              .alongWith(m_sideBySide.reverse())
+              .alongWith(m_indexer.reverse(), m_sideBySide.reverse(), m_shooter.reverse())
     );
+
+    m_driverController.rightStick() // back right button, align to the source-
+      .whileTrue(drivetrain.applyRequest(() -> faceAngle.withVelocityX(-m_driverController.getLeftY() * MaxSpeed) // Drive forward with
+                                                                                           // negative Y (forward)
+            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+            .withTargetDirection(DriverStation.getAlliance().orElse(Alliance.Red).equals(Alliance.Red) ? Rotation2d.fromDegrees(60) : Rotation2d.fromDegrees(300))
+        ));
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     m_driverController.leftTrigger()
       .whileTrue(
-                m_shooter.run().until(m_shooter::upToSpeed).withTimeout(2)
-                        .andThen(
-                                m_indexer.run()
-                                .alongWith(m_sideBySide.run())
-
-                        )
+                m_shooter.run()
+                .alongWith(
+                  Commands.waitUntil(m_shooter::upToSpeed)
+                    .withTimeout(3)
+                  .andThen(m_indexer.run()
+                    .alongWith(m_sideBySide.run()))
+                )
       );
 //      .whileFalse(m_shooter.stop());
-    m_driverController.povLeft().whileTrue(m_pivot.left()).whileFalse(m_pivot.dutyCycleCommand(() -> 0));
-    m_driverController.povRight().whileTrue(m_pivot.right()).whileFalse(m_pivot.dutyCycleCommand(() -> 0));
-    m_driverController.povUp().whileTrue(m_pivot.resetToZero());
+    m_driverController.povUp().whileTrue(m_pivot.left()).whileFalse(m_pivot.dutyCycleCommand(() -> 0));
+    m_driverController.povDown().whileTrue(m_pivot.right()).whileFalse(m_pivot.dutyCycleCommand(() -> 0));
+    m_driverController.povLeft().whileTrue(m_pivot.resetToZero());
 
     m_driverController.rightTrigger()
       .whileTrue(
@@ -127,6 +136,7 @@ public class RobotContainer implements Logged{
       ));
 //      .whileFalse(m_intake.stop().alongWith(m_indexer.stop()));
 
+    m_driverController.a().whileTrue(m_shooter.reverse().alongWith(m_sideBySide.run(), m_indexer.run(), m_intake.run()));
     m_driverController.y()
       .whileTrue(m_pneumatics.up());
     m_driverController.x()
@@ -145,6 +155,7 @@ public class RobotContainer implements Logged{
     cm.configure(this);    
     Monologue.setupMonologue(this, "/Robot", false, false);
 
+
   }
 
   /**
@@ -162,11 +173,17 @@ public class RobotContainer implements Logged{
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
+   *  
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
+    // return new PathPlannerAuto("New Auto");
+    // return m_shooter.run()
+    //             .alongWith(Commands.waitUntil(m_shooter::upToSpeed).withTimeout(3).
+    //             andThen(m_indexer.run()
+    //                             .alongWith(m_sideBySide.run()))
+    //             ).andThen(Commands.waitSeconds(5));
+    return Commands.none();
   }
 }
