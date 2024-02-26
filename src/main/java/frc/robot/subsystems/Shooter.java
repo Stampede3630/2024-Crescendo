@@ -34,9 +34,10 @@ public class Shooter extends SubsystemBase implements Configable {
   private final TalonFX m_shootMotor = new TalonFX(14, "CANIVORE");
   @Config(name = "Shooter duty cycle")
   private double dutyCycle = .8;
+  private static final Shooter instance = new Shooter();
   private final DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0,true,false,false,false);
   private VoltageOut m_sysidControl;
-  private SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
+  private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
           new SysIdRoutine.Config(
                   null,         // Default ramp rate is acceptable
                   Volts.of(4), // Reduce dynamic voltage to 4 to prevent motor brownout
@@ -47,17 +48,19 @@ public class Shooter extends SubsystemBase implements Configable {
                   (Measure<Voltage> volts)-> m_shootMotor.setControl(m_sysidControl.withOutput(volts.in(Volts))),
                   null,
                   this));
-  public Shooter() {
+
+  private Shooter() {
     m_shootMotor.getConfigurator().apply(new TalonFXConfiguration()
       .withMotorOutput(new MotorOutputConfigs()
         .withNeutralMode(NeutralModeValue.Brake)
         .withInverted(InvertedValue.Clockwise_Positive))
     );
     super.setDefaultCommand(idle());
-
-
   }
 
+  public static Shooter getInstance() {
+    return instance;
+  }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

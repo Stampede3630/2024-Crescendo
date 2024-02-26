@@ -16,11 +16,13 @@ import java.util.function.DoubleSupplier;
 
 public class SideBySide extends SubsystemBase implements Configable {
     private final TalonFX m_motor = new TalonFX(15, "CANIVORE");
+    private static final SideBySide instance = new SideBySide();
     @Config(name = "sideBySide velocity")
     private double dutyCycle = .65;
     // private double sideDutyCycle = .8;
     private final DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0,true,false,false,false);
-    public SideBySide() {
+
+    private SideBySide() {
         m_motor.getConfigurator().apply(new TalonFXConfiguration()
                 .withMotorOutput(new MotorOutputConfigs()
                         .withNeutralMode(NeutralModeValue.Brake)
@@ -28,6 +30,10 @@ public class SideBySide extends SubsystemBase implements Configable {
         );
 
         setDefaultCommand(stop());
+    }
+
+    public static SideBySide getInstance() {
+        return instance;
     }
     public void setDutyCycle(double dutyCycle) {
         this.dutyCycle = dutyCycle;

@@ -1,15 +1,20 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.hardware.REVDigitBoard;
 import monologue.Annotations;
 import monologue.Logged;
 
 public class I2CDisplay extends SubsystemBase implements Logged {
-    private REVDigitBoard board = new REVDigitBoard();
-    public I2CDisplay() {
+    private static final I2CDisplay instance = new I2CDisplay();
+    private final REVDigitBoard board = new REVDigitBoard();
 
+    private I2CDisplay() {
+
+    }
+
+    public static I2CDisplay getInstance() {
+        return instance;
     }
     @Annotations.Log.NT
     public double getPot() {

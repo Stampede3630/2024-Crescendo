@@ -28,26 +28,28 @@ import monologue.Annotations.Log;
 
 public class Pivot extends SubsystemBase implements Configable, Logged {
   /** Creates a new pivot. */
-
+  private static final Pivot instance = new Pivot();
   private TalonFX m_pivotMotor = new TalonFX(17, "CANIVORE");
-
-  // private SysIdRoutine
   @Config(name = "Pivot position")
   private double position = 5;
   @Config(name = "Num Pivot DutyCycle beans (0 to 1)")
   private double dutyCycle = .2;
   private PositionDutyCycle m_positionDutyCycle = new PositionDutyCycle(position);
   private DutyCycleOut m_dutyCycle = new DutyCycleOut(0, true, false, false, false);
+  private Function<Double, Double> rollDegreesToPosition = (angle) -> 0.001761 * angle * angle + 0.1123 * angle - 4.363 + 5.817; // TODO, recalibrate pigeon s.t. our 0 angle is at one of the hard stops or parallel with robot frame
 
   // PIVOT RANGE OF MOTION IS 58.17431640625 pm 1.0ish
-  public Pivot() {
+  private Pivot() {
     m_pivotMotor.getConfigurator().apply(new TalonFXConfiguration()
         .withMotorOutput(new MotorOutputConfigs()
             .withNeutralMode(NeutralModeValue.Brake)
             .withInverted(InvertedValue.Clockwise_Positive)));
   }
 
-  private Function<Double, Double> rollDegreesToPosition = (angle) -> 0.001761*angle*angle + 0.1123*angle -4.363 + 5.817; // TODO, recalibrate pigeon s.t. our 0 angle is at one of the hard stops or parallel with robot frame
+  public static Pivot getInstance() {
+    return instance;
+  }
+
 
   public Command resetToPigeon() {
     return Commands.runOnce(() -> m_pivotMotor.setPosition(rollDegreesToPosition.apply(pigeonRoll())));
@@ -61,6 +63,7 @@ public class Pivot extends SubsystemBase implements Configable, Logged {
     return Commands.runOnce(() -> {
       Quaternion q = TunerConstants.DriveTrain.getPigeon2().getRotation3d().getQuaternion();
       log("wowie", q.getW()+","+q.getX()+","+q.getY()+","+q.getZ()+","+m_pivotMotor.getPosition());
+//      log("wowieYPR", q.getW()+","+q.getX()+","+q.getY()+","+q.getZ()+","+m_pivotMotor.getPosition());
     });
   }
 

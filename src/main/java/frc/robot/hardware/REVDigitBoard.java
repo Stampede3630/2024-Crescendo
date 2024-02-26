@@ -20,14 +20,15 @@ public class REVDigitBoard {
 	 * boolean getButtonB() : button B on the board
 	 * double getPot() : potentiometer value
 	 */
-	
-	private I2C i2c;
-	private DigitalInput buttonA, buttonB;
-	private AnalogInput pot;
+
+	private final I2C i2c;
+	private final DigitalInput buttonA;
+	private final DigitalInput buttonB;
+	private final AnalogInput pot;
 
 	
 	private byte[][] charreg;
-	private final Map charmap;
+	private final Map<Character, Integer> charmap;
 	
 	public REVDigitBoard() {
 		i2c = new I2C(Port.kMXP, 0x70);

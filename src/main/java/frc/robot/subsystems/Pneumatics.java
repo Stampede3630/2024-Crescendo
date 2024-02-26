@@ -11,15 +11,20 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Pneumatics extends SubsystemBase {
+  private static final Pneumatics instance = new Pneumatics();
   /** Creates a new Pneumatics. */
-  private PneumaticHub m_ph = new PneumaticHub(2);
-  private DoubleSolenoid m_lift = m_ph.makeDoubleSolenoid(2,0);
-  public Pneumatics() {
+  private final PneumaticHub m_ph = new PneumaticHub(2);
+  private final DoubleSolenoid m_lift = m_ph.makeDoubleSolenoid(2, 0);
+
+  private Pneumatics() {
     m_lift.set(DoubleSolenoid.Value.kOff);
     m_ph.enableCompressorDigital();
     super.setDefaultCommand(off());
   }
 
+  public static Pneumatics getInstance() {
+    return instance;
+  }
   public Command up() {
     return Commands.runOnce(() -> m_lift.set(DoubleSolenoid.Value.kForward), this);
   }

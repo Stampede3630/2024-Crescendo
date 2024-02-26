@@ -7,24 +7,20 @@ package frc.robot;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.TunerConstants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.LEDs.LEDMode;
 import frc.robot.util.ConfigManager;
 import monologue.Logged;
 import monologue.Monologue;
 import frc.robot.subsystems.*;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -37,56 +33,41 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer implements Logged{
-  private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps;
-  private double MaxAngularRate = 1.5 * Math.PI;
-  // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final Pivot m_pivot = new Pivot();
-  private final Shooter m_shooter = new Shooter();
-  private final Intake m_intake = new Intake();
-  private final Indexer m_indexer = new Indexer();
-  private final LEDs m_leds = LEDs.getInstance(0, 10);
-  private final Pneumatics m_pneumatics = new Pneumatics();
-  private final SideBySide m_sideBySide = new SideBySide();
-  private final I2CDisplay m_display = new I2CDisplay();
+  private final double maxSpeed = TunerConstants.kSpeedAt12VoltsMps;
+  private final double maxAngularRate = 1.5 * Math.PI;
+  private final Pivot m_pivot = Pivot.getInstance();
+  private final Shooter m_shooter = Shooter.getInstance();
+  private final Intake m_intake = Intake.getInstance();
+  private final Indexer m_indexer = Indexer.getInstance();
+  private final LEDs m_leds = LEDs.getInstance();
+  private final Pneumatics m_pneumatics = Pneumatics.getInstance();
+  private final SideBySide m_sideBySide = SideBySide.getInstance();
+  private final I2CDisplay m_display = I2CDisplay.getInstance();
   private ConfigManager cm;
-
-  // private final Pneumatics m_lift = new Pneumatics();
-  // private final PhotonVision m_pv = new PhotonVision("Camera_Module_v1", new Transform3d(0,0.02241,0.05026, new Rotation3d()));
-    // private final PhotonVision m_pv2 = new PhotonVision("PV2", new Transform3d());
-
-
-  // Replace with CommandPS4Controller or Commandm_driverController if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain;
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-      .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+          .withDeadband(maxSpeed * 0.1).withRotationalDeadband(maxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
                                                                // driving in open loop
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
   private final SwerveRequest.FieldCentricFacingAngle faceAngle = new SwerveRequest.FieldCentricFacingAngle();
-  private final Telemetry logger = new Telemetry(MaxSpeed);
+  private final Telemetry logger = new Telemetry(maxSpeed);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
 
   private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-
-
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
-
     new Trigger(DriverStation::isEnabled)
       .onTrue(Commands.runOnce(() -> {m_leds.setRGB(255, 90, 0);m_leds.setMode(LEDMode.SOLID);}, m_leds).alongWith(Commands.print("ENABLED")))
       .onFalse(Commands.runOnce(() -> {m_leds.setRGB(0, 255, 0);m_leds.setMode(LEDMode.SOLID);}, m_leds).alongWith(Commands.print("DISABLED")).ignoringDisable(true));
 
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-        drivetrain.applyRequest(() -> drive.withVelocityX(-m_driverController.getLeftY() * MaxSpeed) // Drive forward with
+            drivetrain.applyRequest(() -> drive.withVelocityX(-m_driverController.getLeftY() * maxSpeed) // Drive forward with
                                                                                            // negative Y (forward)
-            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-            .withRotationalRate(-m_driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                    .withVelocityY(-m_driverController.getLeftX() * maxSpeed) // Drive left with negative X (left)
+                    .withRotationalRate(-m_driverController.getRightX() * maxAngularRate) // Drive counterclockwise with negative X (left)
         ));
 
     // m_driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
@@ -107,9 +88,9 @@ public class RobotContainer implements Logged{
     );
 
     m_driverController.rightStick() // back right button, align to the source-
-      .whileTrue(drivetrain.applyRequest(() -> faceAngle.withVelocityX(-m_driverController.getLeftY() * MaxSpeed) // Drive forward with
+            .whileTrue(drivetrain.applyRequest(() -> faceAngle.withVelocityX(-m_driverController.getLeftY() * maxSpeed) // Drive forward with
                                                                                            // negative Y (forward)
-            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                    .withVelocityY(-m_driverController.getLeftX() * maxSpeed) // Drive left with negative X (left)
             .withTargetDirection(DriverStation.getAlliance().orElse(Alliance.Red).equals(Alliance.Red) ? Rotation2d.fromDegrees(60) : Rotation2d.fromDegrees(300))
         ));
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,

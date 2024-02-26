@@ -21,13 +21,14 @@ import frc.robot.util.Configable;
 
 public class Indexer extends SubsystemBase implements Configable {
     private final TalonFX m_indexMotor = new TalonFX(13, "CANIVORE");
+  private static final Indexer instance = new Indexer();
     @Config(name = "Indexer velocity")
     private double dutyCycle = .5;
 
       private final DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0, true, false, false, false);
 
   /** Creates a new Indexer. */
-  public Indexer() {
+  private Indexer() {
     m_indexMotor.getConfigurator().apply(new TalonFXConfiguration()
       .withMotorOutput(new MotorOutputConfigs()
         .withNeutralMode(NeutralModeValue.Coast)
@@ -37,6 +38,9 @@ public class Indexer extends SubsystemBase implements Configable {
     setDefaultCommand(stop());
   }
 
+  public static Indexer getInstance() {
+    return instance;
+  }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
