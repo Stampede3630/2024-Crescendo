@@ -56,6 +56,7 @@ public class ConfigManager {
 //        f.field.getGenericType().
         switch (e.value.getType()) {
 //            case kDouble -> f.setValue(e.value.getValue());
+            // case kBoolean -> f.setValue(e);
             case kInteger -> f.setValue(((Number)e.value.getValue()).intValue());
             default -> f.setValue(e.value.getValue());
 //            case k

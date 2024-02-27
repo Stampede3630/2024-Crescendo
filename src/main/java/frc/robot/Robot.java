@@ -33,7 +33,7 @@ public class Robot extends TimedRobot implements Logged{
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     DriverStation.silenceJoystickConnectionWarning(true);
-//    DataLogManager.start();
+   DataLogManager.start();
 //    DriverStation.startDataLog(DataLogManager.getLog());
   }
 

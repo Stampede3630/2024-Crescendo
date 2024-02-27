@@ -87,6 +87,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency,
             SwerveModuleConstants... modules) {
         super(driveTrainConstants, OdometryUpdateFrequency, modules);
+        getPigeon2().reset();
+        // seedFieldRelative();
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -94,6 +96,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
+        getPigeon2().reset();
+        // seedFieldRelative();
         configurePathPlanner();
         if (Utils.isSimulation()) {
             startSimThread();

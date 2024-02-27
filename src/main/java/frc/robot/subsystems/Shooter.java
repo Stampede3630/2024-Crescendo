@@ -48,6 +48,8 @@ public class Shooter extends SubsystemBase implements Configable {
                   (Measure<Voltage> volts)-> m_shootMotor.setControl(m_sysidControl.withOutput(volts.in(Volts))),
                   null,
                   this));
+  @Config(name="Shooter idle on?")
+  private boolean idleEnable = true;
 
   private Shooter() {
     m_shootMotor.getConfigurator().apply(new TalonFXConfiguration()
@@ -81,7 +83,7 @@ public class Shooter extends SubsystemBase implements Configable {
   }
 
   public Command idle(){
-    return dutyCycleCommand(()->0.2);
+    return dutyCycleCommand(()->idleEnable ? 0.2 : 0);
   }
 
   public Command reverse() {

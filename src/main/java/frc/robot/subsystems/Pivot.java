@@ -16,6 +16,9 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.geometry.Quaternion;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.util.datalog.StringLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,7 +29,7 @@ import frc.robot.util.Configable;
 import monologue.Logged;
 import monologue.Annotations.Log;
 
-public class Pivot extends SubsystemBase implements Configable, Logged {
+public class Pivot extends SubsystemBase implements Configable {
   /** Creates a new pivot. */
   private static final Pivot instance = new Pivot();
   private TalonFX m_pivotMotor = new TalonFX(17, "CANIVORE");
@@ -37,13 +40,15 @@ public class Pivot extends SubsystemBase implements Configable, Logged {
   private PositionDutyCycle m_positionDutyCycle = new PositionDutyCycle(position);
   private DutyCycleOut m_dutyCycle = new DutyCycleOut(0, true, false, false, false);
   private Function<Double, Double> rollDegreesToPosition = (angle) -> 0.001761 * angle * angle + 0.1123 * angle - 4.363 + 5.817; // TODO, recalibrate pigeon s.t. our 0 angle is at one of the hard stops or parallel with robot frame
-
+  private StringLogEntry myStringLog = new StringLogEntry(DataLogManager.getLog(), "/pivot/angle");
   // PIVOT RANGE OF MOTION IS 58.17431640625 pm 1.0ish
   private Pivot() {
     m_pivotMotor.getConfigurator().apply(new TalonFXConfiguration()
         .withMotorOutput(new MotorOutputConfigs()
             .withNeutralMode(NeutralModeValue.Brake)
             .withInverted(InvertedValue.Clockwise_Positive)));
+    myStringLog.append("W,X,Y,Z,Yaw,Pitch,Roll,Pos");
+
   }
 
   public static Pivot getInstance() {
@@ -61,9 +66,9 @@ public class Pivot extends SubsystemBase implements Configable, Logged {
 
   public Command save() {
     return Commands.runOnce(() -> {
-      Quaternion q = TunerConstants.DriveTrain.getPigeon2().getRotation3d().getQuaternion();
-      log("wowie", q.getW()+","+q.getX()+","+q.getY()+","+q.getZ()+","+m_pivotMotor.getPosition());
-//      log("wowieYPR", q.getW()+","+q.getX()+","+q.getY()+","+q.getZ()+","+m_pivotMotor.getPosition());
+      Rotation3d rot = TunerConstants.DriveTrain.getPigeon2().getRotation3d();
+      Quaternion q = rot.getQuaternion();
+      myStringLog.append(q.getW()+","+q.getX()+","+q.getY()+","+q.getZ()+","+rot.getZ()+","+rot.getY()+","+rot.getX()+","+m_pivotMotor.getPosition().getValue());
     });
   }
 

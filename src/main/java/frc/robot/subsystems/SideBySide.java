@@ -18,7 +18,7 @@ public class SideBySide extends SubsystemBase implements Configable {
     private final TalonFX m_motor = new TalonFX(15, "CANIVORE");
     private static final SideBySide instance = new SideBySide();
     @Config(name = "sideBySide velocity")
-    private double dutyCycle = .65;
+    private double dutyCycle = 1;
     // private double sideDutyCycle = .8;
     private final DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0,true,false,false,false);
 
