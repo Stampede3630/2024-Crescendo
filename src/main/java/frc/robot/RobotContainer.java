@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.TunerConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.LEDs.LEDMode;
+import frc.robot.util.AutoCommandFinder;
 import frc.robot.util.ConfigManager;
 import monologue.Logged;
 import frc.robot.subsystems.*;
@@ -51,6 +52,23 @@ public class RobotContainer implements Logged{
   private final SwerveRequest.FieldCentricFacingAngle faceAngle = new SwerveRequest.FieldCentricFacingAngle();
   private final Telemetry logger = new Telemetry(maxSpeed);
 
+  public RobotContainer() {
+    // Configure the trigger bindings
+    configureBindings();
+//    Logger.configureLoggingAndConfig(this, false);
+    m_leds.setRGB(0,0,255);
+    m_leds.setMode(LEDMode.SOLID);
+    cm = new ConfigManager("HelloTable");
+
+    cm.configure(this);
+    // Monologue.setupMonologue(this, "/Robot", false, false);
+    try (PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev)) {
+      pdh.setSwitchableChannel(true);
+    }
+    AutoCommandFinder.addAutos();
+
+  }
+
   private void configureBindings() {
     new Trigger(DriverStation::isEnabled)
       .onTrue(Commands.runOnce(() -> {m_leds.setRGB(255, 90, 0);m_leds.setMode(LEDMode.SOLID);}, m_leds).alongWith(Commands.print("ENABLED")))
@@ -63,9 +81,7 @@ public class RobotContainer implements Logged{
                     .withRotationalRate(-m_driverController.getRightX() * maxAngularRate) // Drive counterclockwise with negative X (left)
         ));
 
-    // m_driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
-    // m_driverController.b().whileTrue(drivetrain
-    //     .applyRequest(() -> point.withModuleDirection(new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
+    m_driverController.start().whileTrue(m_pivot.seedToPigeon());
 
     // reset the field-centric heading on left bumper press
     m_driverController.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
@@ -73,7 +89,7 @@ public class RobotContainer implements Logged{
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     }
-    drivetrain.registerTelemetry(logger::telemeterize);  
+    drivetrain.registerTelemetry(logger::telemeterize);
 
     m_driverController.b().whileTrue(
       m_intake.outtake()
@@ -100,8 +116,8 @@ public class RobotContainer implements Logged{
 //      .whileFalse(m_shooter.stop());
     m_driverController.povUp().whileTrue(m_pivot.left()).whileFalse(m_pivot.dutyCycleCommand(() -> 0));
     m_driverController.povDown().whileTrue(m_pivot.right()).whileFalse(m_pivot.dutyCycleCommand(() -> 0));
-    m_driverController.povLeft().whileTrue(m_pivot.resetToZero());
-    m_driverController.rightBumper().onTrue(m_pivot.save().andThen(Commands.print("SAVED")));
+//    m_driverController.povLeft().whileTrue(m_pivot.resetToZero());
+//    m_driverController.rightBumper().onTrue(m_pivot.save().andThen(Commands.print("SAVED")));
     m_driverController.rightTrigger()
       .whileTrue(
               m_intake.run()
@@ -114,23 +130,6 @@ public class RobotContainer implements Logged{
       .whileTrue(m_pneumatics.up());
     m_driverController.x()
       .whileTrue(m_pneumatics.down());
-    
-  }
-
-  
-  public RobotContainer() {
-    // Configure the trigger bindings
-    configureBindings();
-//    Logger.configureLoggingAndConfig(this, false);
-    m_leds.setRGB(0,0,255);
-    m_leds.setMode(LEDMode.SOLID);
-    cm = new ConfigManager("HelloTable");
-    
-    cm.configure(this);    
-    // Monologue.setupMonologue(this, "/Robot", false, false);
-    try (PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev)) {
-      pdh.setSwitchableChannel(true);
-    }
 
   }
   public Command getAutonomousCommand() {
