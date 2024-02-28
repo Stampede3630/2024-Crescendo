@@ -30,19 +30,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer implements Logged{
   private final double maxSpeed = TunerConstants.kSpeedAt12VoltsMps;
   private final double maxAngularRate = 1.5 * Math.PI;
-  private final Pivot m_pivot = Pivot.getInstance();
-  private final Shooter m_shooter = Shooter.getInstance();
-  private final Intake m_intake = Intake.getInstance();
-  private final Indexer m_indexer = Indexer.getInstance();
-  private final LEDs m_leds = LEDs.getInstance();
-  private final Pneumatics m_pneumatics = Pneumatics.getInstance();
-  private final SideBySide m_sideBySide = SideBySide.getInstance();
-  private final I2CDisplay m_display = I2CDisplay.getInstance();
-  private final Amp m_amp = Amp.getInstance();
   private ConfigManager cm;
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
+//DRIVETRAIN subsytem  
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain;
   private final SwerveRequest.FieldCentric drive = 
     new SwerveRequest.FieldCentric()
@@ -53,6 +45,20 @@ public class RobotContainer implements Logged{
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
   private final SwerveRequest.FieldCentricFacingAngle faceAngle = new SwerveRequest.FieldCentricFacingAngle();
   private final Telemetry logger = new Telemetry(maxSpeed);
+  
+//ALL teh "UHver" subsystems      
+  private final Pivot m_pivot = Pivot.getInstance();
+  private final Shooter m_shooter = Shooter.getInstance();
+  private final Intake m_intake = Intake.getInstance();
+  private final Indexer m_indexer = Indexer.getInstance();
+  private final LEDs m_leds = LEDs.getInstance();
+  private final Pneumatics m_pneumatics = Pneumatics.getInstance();
+  private final SideBySide m_sideBySide = SideBySide.getInstance();
+  private final I2CDisplay m_display = I2CDisplay.getInstance();
+  private final Amp m_amp = Amp.getInstance();
+
+
+
 
   public RobotContainer() {
     // Configure the trigger bindings
