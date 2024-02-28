@@ -34,7 +34,7 @@ public class RobotContainer implements Logged{
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
-//DRIVETRAIN subsytem  
+//DRIVETRAIN subsystem  
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain;
   private final SwerveRequest.FieldCentric drive = 
     new SwerveRequest.FieldCentric()
@@ -61,13 +61,12 @@ public class RobotContainer implements Logged{
 
 
   public RobotContainer() {
-    // Configure the trigger bindings
     configureBindings();
-//    Logger.configureLoggingAndConfig(this, false);
+    //Logger.configureLoggingAndConfig(this, false);
     m_leds.setRGB(0,0,255);
     m_leds.setMode(LEDMode.SOLID);
+    
     cm = new ConfigManager("HelloTable");
-
     cm.configure(this);
     // Monologue.setupMonologue(this, "/Robot", false, false);
     try (PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev)) {
@@ -101,6 +100,7 @@ public class RobotContainer implements Logged{
         .withVelocityY(-m_driverController.getLeftX() * maxSpeed) // Drive left with negative X (left)
         .withTargetDirection(DriverStation.getAlliance().orElse(Alliance.Red).equals(Alliance.Red) ? Rotation2d.fromDegrees(60) : Rotation2d.fromDegrees(300))
         ));   // cancelling on release.
+
     drivetrain.registerTelemetry(logger::telemeterize);
     
     if (Utils.isSimulation()) {
