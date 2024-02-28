@@ -38,6 +38,7 @@ public class RobotContainer implements Logged{
   private final Pneumatics m_pneumatics = Pneumatics.getInstance();
   private final SideBySide m_sideBySide = SideBySide.getInstance();
   private final I2CDisplay m_display = I2CDisplay.getInstance();
+  private final Amp m_amp = Amp.getInstance();
   private ConfigManager cm;
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
@@ -125,7 +126,7 @@ public class RobotContainer implements Logged{
       ));
 //      .whileFalse(m_intake.stop().alongWith(m_indexer.stop()));
 
-    m_driverController.a().whileTrue(m_shooter.reverse().alongWith(m_sideBySide.run(), m_indexer.run(), m_intake.run()));
+    m_driverController.a().whileTrue(m_shooter.reverse().alongWith(m_sideBySide.run(), m_indexer.run(), m_intake.run(), m_amp.run()));
     m_driverController.y()
       .whileTrue(m_pneumatics.up());
     m_driverController.x()
