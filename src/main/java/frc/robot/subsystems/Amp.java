@@ -28,9 +28,8 @@ public class Amp extends SubsystemBase implements Configable{
   private static final Amp instance = new Amp();
   /** Creates a new Amp. */
   private final CANSparkFlex m_ampMotor = new CANSparkFlex(1,MotorType.kBrushless);
-  private double dutyCycle = .8;
+  private double dutyCycle = .4;
   public Amp() {
-    super.setDefaultCommand(stop());
 
   }
 
