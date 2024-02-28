@@ -52,6 +52,7 @@ public class Shooter extends SubsystemBase implements Configable {
   private boolean idleEnable = true;
 
   private Shooter() {
+    //TODO: this motor should never be brake.
     m_shootMotor.getConfigurator().apply(new TalonFXConfiguration()
       .withMotorOutput(new MotorOutputConfigs()
         .withNeutralMode(NeutralModeValue.Brake)
