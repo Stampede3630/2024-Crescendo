@@ -2,21 +2,15 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.1900438070297237,
-      "y": 6.735226631164551
+      "x": 0.7892683744430542,
+      "y": 6.7018280029296875
     },
-    "rotation": 25.783100780887047
+    "rotation": 57.99463747258856
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
-        },
         {
           "type": "path",
           "data": {
@@ -27,12 +21,6 @@
           "type": "named",
           "data": {
             "name": "intake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
           }
         },
         {
@@ -54,12 +42,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "fourPiece.4"
@@ -75,12 +57,6 @@
           "type": "path",
           "data": {
             "pathName": "fourPiece.5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
           }
         }
       ]

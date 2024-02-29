@@ -40,6 +40,18 @@
           "data": {
             "name": "shootTwo"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4p3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootPod"
+          }
         }
       ]
     }
