@@ -5,10 +5,17 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.generated.TunerConstants;
 import monologue.Logged;
 import monologue.Monologue;
 
@@ -51,6 +58,9 @@ public class Robot extends TimedRobot implements Logged{
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     // Monologue.setFileOnly(DriverStation.isFMSAttached());
+    // SmartDashboard.putNumber("mySmartPose", Units.metersToInches(TunerConstants.DriveTrain.getState().Pose.getX()) );
+        SmartDashboard.putNumber("roll", TunerConstants.DriveTrain.getPigeon2().getRoll().refresh().getValueAsDouble());
+
     Monologue.updateAll();
     CommandScheduler.getInstance().run();
   }
@@ -100,7 +110,9 @@ public class Robot extends TimedRobot implements Logged{
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    CommandScheduler.getInstance().cancelAll();
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override

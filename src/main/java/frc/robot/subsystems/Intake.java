@@ -30,7 +30,11 @@ public class Intake extends SubsystemBase implements Configable {
      */
 
     private Intake() {
-        m_intakeMotor.getConfigurator().apply(new TalonFXConfiguration().withMotorOutput(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast).withInverted(InvertedValue.CounterClockwise_Positive)));
+        m_intakeMotor.getConfigurator().apply(new TalonFXConfiguration()
+            .withMotorOutput(new MotorOutputConfigs()
+            .withNeutralMode(NeutralModeValue.Coast)
+            .withInverted(InvertedValue.CounterClockwise_Positive)));
+        m_intakeMotor.setNeutralMode(NeutralModeValue.Coast);
         super.setDefaultCommand(stop());
 
     }

@@ -15,7 +15,7 @@ public class AutoCommandFinder {
                 .filter(m -> Command.class.equals(m.getReturnType()) && m.getParameterCount() == 0)
                 .map(m -> {
                     try {
-//                        System.out.println(m.getName()+" "+ m.invoke(null));
+                       System.out.println("Added: "+m.getName()+" "+ m.invoke(null));
                         return new Pair<>(m.getName(), (Command) (m.invoke(null)));
                     } catch (IllegalAccessException | InvocationTargetException e) {
                         throw new RuntimeException(e);

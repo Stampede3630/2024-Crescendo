@@ -1,0 +1,92 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.868912646916203,
+        "y": 5.205440229062277
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.9129696938853953,
+        "y": 4.852983853308739
+      },
+      "isLocked": false,
+      "linkedName": "real4p2"
+    },
+    {
+      "anchor": {
+        "x": 2.5868974814872714,
+        "y": 4.449761743888425
+      },
+      "prevControl": {
+        "x": 2.4987833875488867,
+        "y": 4.699418343380516
+      },
+      "nextControl": {
+        "x": 2.675011575425656,
+        "y": 4.200105144396335
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.6309545284564635,
+        "y": 3.979819909550374
+      },
+      "prevControl": {
+        "x": 2.6529830519410598,
+        "y": 4.089962526973355
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.0,
+      "rotationDegrees": -7.910000000000025,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "intake",
+      "waypointRelativePos": 0.0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 1.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -37.96205923681532,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "4PiecePPVersion",
+  "previewStartingState": {
+    "rotation": -7.125016348901805,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

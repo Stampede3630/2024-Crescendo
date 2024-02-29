@@ -6,6 +6,7 @@ package frc.robot;
 
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -15,15 +16,20 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.TunerConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.AutoCommands;
 import frc.robot.subsystems.LEDs.LEDMode;
 import frc.robot.util.AutoCommandFinder;
 import frc.robot.util.ConfigManager;
 import monologue.Logged;
+import monologue.Monologue;
+import monologue.Annotations.Log;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -41,6 +47,7 @@ public class RobotContainer implements Logged{
       .withDeadband(maxSpeed * 0.1)
       .withRotationalDeadband(maxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric driving in open loop
+      
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
   private final SwerveRequest.FieldCentricFacingAngle faceAngle = new SwerveRequest.FieldCentricFacingAngle();
@@ -56,6 +63,7 @@ public class RobotContainer implements Logged{
   private final SideBySide m_sideBySide = SideBySide.getInstance();
   private final I2CDisplay m_display = I2CDisplay.getInstance();
   private final Amp m_amp = Amp.getInstance();
+  private final SendableChooser<Command> autoChooser;
 
 
 
@@ -68,11 +76,15 @@ public class RobotContainer implements Logged{
     
     cm = new ConfigManager("HelloTable");
     cm.configure(this);
-    // Monologue.setupMonologue(this, "/Robot", false, false);
+    Monologue.setupMonologue(this, "/Robot", false, false);
     try (PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev)) {
       pdh.setSwitchableChannel(true);
     }
     AutoCommandFinder.addAutos();
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+
+
 
   }
 
@@ -137,10 +149,16 @@ public class RobotContainer implements Logged{
     //TODO: Use Commands.Parallel
     m_driverController.leftTrigger().whileTrue(
       m_shooter.run().alongWith(
+      m_pivot.angleCommand(()->26.0),
       Commands.waitUntil(m_shooter::upToSpeed).withTimeout(3)
         .andThen(m_indexer.run().alongWith(
         m_sideBySide.run()))
     ));
+
+    // m_driverController.leftTrigger().whileTrue(
+    //   m_pivot.angleCommand(()->7.9)
+    // );
+    // m_driverController.leftTrigger().whileTrue(AutoCommands.shoot());
 
     //Amp Shot
     //TODO: Use Commands.Parallel
@@ -167,6 +185,6 @@ public class RobotContainer implements Logged{
     //             andThen(m_indexer.run()
     //                             .alongWith(m_sideBySide.run()))
     //             ).andThen(Commands.waitSeconds(5));
-    return Commands.none();
+    return autoChooser.getSelected();
   }
 }

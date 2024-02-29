@@ -1,0 +1,109 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.5797215230794097,
+        "y": 6.884614496501721
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.0691277280792004,
+        "y": 7.112828357841698
+      },
+      "isLocked": false,
+      "linkedName": "4p1"
+    },
+    {
+      "anchor": {
+        "x": 2.2625441614519595,
+        "y": 6.194287297665506
+      },
+      "prevControl": {
+        "x": 2.285970199083147,
+        "y": 7.000457084303214
+      },
+      "nextControl": {
+        "x": 2.259556960161246,
+        "y": 6.091487521404057
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.868912646916203,
+        "y": 5.205440229062277
+      },
+      "prevControl": {
+        "x": 2.8365540809793615,
+        "y": 5.087954770477763
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "real4p2"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.3,
+      "rotationDegrees": -48.675771039076565,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "intake2",
+      "waypointRelativePos": 0.8,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intake"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Shoot1",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "shoot"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 1.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -6.981057406829874,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "4PiecePPVersion",
+  "previewStartingState": {
+    "rotation": 22.55732246547033,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

@@ -16,14 +16,48 @@ public class AutoCommands {
 
     private AutoCommands() {
     }
+    // 26 degrees, subwoofer
+    // 7.9 degrees, 1st note
+    // 7.9 degrees, 2nd note
+    public static Command shootSub() {
+        return Commands.parallel(
+            m_shooter.run(),
+            m_pivot.angleCommand(()->26.0),
+            Commands.waitUntil(() -> m_shooter.upToSpeed() && m_pivot.atPosition())
+                    .withTimeout(1)
+                    .andThen(m_indexer.run()
+                            .alongWith(m_sideBySide.run())),
+            Commands.print("SHooting0")
+            ).withTimeout(2).andThen(Commands.parallel(m_shooter.idle(), m_indexer.stop(), m_sideBySide.stop())).withTimeout(2);
+    }
+    
+    public static Command shootPod() {
+        return Commands.parallel(
+            m_shooter.run(),
+            m_pivot.angleCommand(()->7.4),
+            Commands.waitUntil(() -> m_shooter.upToSpeed() && m_pivot.atPosition())
+                    .withTimeout(1)
+                    .andThen(m_indexer.run()
+                            .alongWith(m_sideBySide.run())),
+            Commands.print("SHooting1")
+            ).withTimeout(1).andThen(Commands.parallel(m_shooter.idle(), m_indexer.stop(), m_sideBySide.stop())).withTimeout(1);
+    }
 
-    public static Command shoot() {
-        return m_shooter.run()
-                .alongWith(
-                        Commands.waitUntil(m_shooter::upToSpeed)
-                                .withTimeout(3)
-                                .andThen(m_indexer.run()
-                                        .alongWith(m_sideBySide.run()))
-                );
+    public static Command shootTwo() {
+        return Commands.parallel(
+            m_shooter.run(),
+            m_pivot.angleCommand(()->7.4),
+            Commands.waitUntil(() -> m_shooter.upToSpeed() && m_pivot.atPosition())
+                    .withTimeout(1)
+                    .andThen(m_indexer.run()
+                            .alongWith(m_sideBySide.run())),
+            Commands.print("SHooting2")
+            ).withTimeout(1).andThen(Commands.parallel(m_shooter.idle(), m_indexer.stop(), m_sideBySide.stop())).withTimeout(1);
+    }
+    
+
+    public static Command intake() {
+        return m_intake.run()
+        .alongWith(m_indexer.run()).withTimeout(2).andThen(m_indexer.stop()).withTimeout(2);
     }
 }

@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.769944812616898,
+      "y": 6.716697069757776
+    },
+    "rotation": 57.45431155074511
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSub"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4p1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootPod"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4p2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootTwo"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
