@@ -55,6 +55,43 @@ public class AutoCommands {
             ).withTimeout(1.5).andThen(Commands.parallel(m_shooter.idle(), m_indexer.stop(), m_sideBySide.stop())).withTimeout(1.5);
     }
 
+        public static Command shootThree() {
+        return Commands.parallel(
+            m_shooter.run(),
+            m_pivot.angleCommand(()->10.2),
+            Commands.waitUntil(() -> m_shooter.upToSpeed() && m_pivot.atPosition())
+                    .withTimeout(1)
+                    .andThen(m_indexer.run()
+                            .alongWith(m_sideBySide.run())),
+            Commands.print("SHooting2")
+            ).withTimeout(1.5).andThen(Commands.parallel(m_shooter.idle(), m_indexer.stop(), m_sideBySide.stop())).withTimeout(1.5);
+    }
+
+        public static Command shootAmp() {
+        return Commands.parallel(
+            m_shooter.run(),
+            m_pivot.angleCommand(()->10.8),
+            Commands.waitUntil(() -> m_shooter.upToSpeed() && m_pivot.atPosition())
+                    .withTimeout(1)
+                    .andThen(m_indexer.run()
+                            .alongWith(m_sideBySide.run())),
+            Commands.print("SHooting2")
+            ).withTimeout(1.5).andThen(Commands.parallel(m_shooter.idle(), m_indexer.stop(), m_sideBySide.stop())).withTimeout(1.5);
+    }    
+
+        public static Command shootcr4() {
+        return Commands.parallel(
+            m_shooter.run(),
+            m_pivot.angleCommand(()->4.65),
+            Commands.waitUntil(() -> m_shooter.upToSpeed() && m_pivot.atPosition())
+                    .withTimeout(1)
+                    .andThen(m_indexer.run()
+                            .alongWith(m_sideBySide.run())),
+            Commands.print("SHooting2")
+            ).withTimeout(1.5).andThen(Commands.parallel(m_shooter.idle(), m_indexer.stop(), m_sideBySide.stop())).withTimeout(1.5);
+    }
+
+
     public static Command shoot() {
         return Commands.none(); // dummy command
     }

@@ -149,7 +149,7 @@ public class RobotContainer implements Logged{
     //TODO: Use Commands.Parallel
     m_driverController.leftTrigger().whileTrue(
       m_shooter.run().alongWith(
-      m_pivot.angleCommand(()->26.0),
+      // m_pivot.angleCommand(()->26.0),
       Commands.waitUntil(m_shooter::upToSpeed).withTimeout(3)
         .andThen(m_indexer.run().alongWith(
         m_sideBySide.run()))

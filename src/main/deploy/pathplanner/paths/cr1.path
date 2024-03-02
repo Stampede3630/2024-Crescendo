@@ -3,53 +3,43 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.769944812616898,
+        "x": 0.7326298288960215,
         "y": 6.698039577897338
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.964003351045843,
-        "y": 6.968665620928461
+        "x": 1.2083958713371972,
+        "y": 7.976077770337358
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.5797215230794097,
-        "y": 6.884614496501721
+        "x": 8.512803934698777,
+        "y": 7.42568176045443
       },
       "prevControl": {
-        "x": 1.5797215230794097,
-        "y": 6.884614496501721
+        "x": 3.400651164938693,
+        "y": 7.910776548825825
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "4p1"
+      "linkedName": "cr1"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.35,
       "rotationDegrees": 0,
-      "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 0.9,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 1,
-      "rotationDegrees": 25.0,
       "rotateFast": false
     }
   ],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "intake1",
-      "waypointRelativePos": 0.55,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.65,
       "command": {
         "type": "parallel",
         "data": {
@@ -66,20 +56,20 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 1.5,
+    "maxVelocity": 18.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 25.08359400619092,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "4PiecePPVersion",
+  "folder": "centerRush",
   "previewStartingState": {
-    "rotation": 59.53445508054015,
+    "rotation": 61.630953706721435,
     "velocity": 0
   },
   "useDefaultConstraints": false

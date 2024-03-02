@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.769944812616898,
-      "y": 6.716697069757776
+      "x": 0.7326298288960215,
+      "y": 6.698039577897338
     },
-    "rotation": 57.45431155074511
+    "rotation": 58.32453126189081
   },
   "command": {
     "type": "sequential",
@@ -20,7 +20,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "4p1"
+            "pathName": "cr1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "cr2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootAmp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "cr3"
           }
         },
         {
@@ -32,25 +50,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "4p2"
+            "pathName": "cr4"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shootTwo"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "4p3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shootThree"
+            "name": "shootPod"
           }
         }
       ]
