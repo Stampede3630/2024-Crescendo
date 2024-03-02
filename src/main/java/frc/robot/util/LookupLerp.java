@@ -39,9 +39,8 @@ public abstract class LookupLerp<K extends Comparable<K>, V extends Comparable<V
             top = navigableMap.higherEntry(bottom.getKey()); // get the 2nd one
         }
 
-        V value = lerp(bottom.getKey(), bottom.getValue(), top.getKey(), top.getValue(), key);
-        navigableMap.put(key, value);
-        return value;
+        //        navigableMap.put(key, value);
+        return lerp(bottom.getKey(), bottom.getValue(), top.getKey(), top.getValue(), key);
     }
 
 
