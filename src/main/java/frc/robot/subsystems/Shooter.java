@@ -17,11 +17,14 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.util.Config;
 import frc.robot.util.Configable;
+import monologue.Annotations;
+import monologue.Logged;
 
 import java.util.function.DoubleSupplier;
 
@@ -49,7 +52,6 @@ public class Shooter extends SubsystemBase implements Configable {
                   this));
   @Config(name="Shooter idle on?")
   private boolean idleEnable = true;
-  private final LaserCan m_lc = new LaserCan(23); // TODO: GET THIS ID
 
   private Shooter() {
     m_shootMotor.getConfigurator().apply(new TalonFXConfiguration() // TODO: Tune PID and add to slot 0
@@ -59,13 +61,10 @@ public class Shooter extends SubsystemBase implements Configable {
     );
     super.setDefaultCommand(idle());
     // config lasercan
-    try {
-      m_lc.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
-      m_lc.setRangingMode(LaserCan.RangingMode.SHORT);
+    //      m_lc.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
+//      m_lc.setRangingMode(LaserCan.RangingMode.SHORT);
 //          m_lc.setRegionOfInterest(new LaserCan.RegionOfInterest());
-    } catch (ConfigurationFailedException e) {
-      throw new RuntimeException(e);
-    }
+
   }
 
   public static Shooter getInstance() {
@@ -73,6 +72,7 @@ public class Shooter extends SubsystemBase implements Configable {
   }
   @Override
   public void periodic() {
+
     // This method will be called once per scheduler run
   }
 
@@ -92,7 +92,6 @@ public class Shooter extends SubsystemBase implements Configable {
 
   public Command run() {
     return dutyCycleCommand(() -> dutyCycle);
-    
   }
 
   public Command idle(){
