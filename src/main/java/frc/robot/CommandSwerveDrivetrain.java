@@ -47,6 +47,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final SwerveRequest.SysIdSwerveRotation rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
     private final SwerveRequest.SysIdSwerveSteerGains steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
+    private Alliance currentAlliance = Alliance.Red;
     
 
     /* Use one of these sysidroutines for your particular test */
@@ -164,10 +165,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                     // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
                     Optional<Alliance> alliance = DriverStation.getAlliance();
-                    if (alliance.isPresent()) {
-                        return alliance.get() == DriverStation.Alliance.Red;
-                    }
-                    return false;
+                    return alliance.filter(value -> value == Alliance.Red).isPresent();
                 }, // Change this if the path needs to be flipped on red vs blue
                 this); // Subsystem for requirements
     }
@@ -193,6 +191,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
          */
         if (!hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent((allianceColor) -> {
+                currentAlliance = allianceColor;
                 this.setOperatorPerspectiveForward(
                         allianceColor == Alliance.Red ? RedAlliancePerspectiveRotation
                                 : BlueAlliancePerspectiveRotation);
@@ -201,4 +200,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         }
     }
 
+    public Alliance getCurrentAlliance() {
+        return currentAlliance;
+    }
 }
