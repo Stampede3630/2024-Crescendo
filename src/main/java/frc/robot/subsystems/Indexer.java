@@ -25,7 +25,6 @@ public class Indexer extends SubsystemBase implements Configable {
     private final TalonFX m_indexMotor = new TalonFX(13, "CANIVORE");
   private static final Indexer instance = new Indexer();
   private final DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0, true, false, false, false);
-  private final LaserCan m_lc = new LaserCan(3);
   @Config(name = "Indexer velocity")
   private double dutyCycle = .25; //CHANGE INDEX SPEED
 
@@ -46,17 +45,10 @@ public class Indexer extends SubsystemBase implements Configable {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("lc", laserCan());
     // This method will be called once per scheduler run
   }
 
-  public boolean laserCanTripped() {
-    return m_lc.getMeasurement().distance_mm < 180;
-  }
 
-  public double laserCan() {
-    return m_lc.getMeasurement().distance_mm;
-  }
 //  @Config.NumberSlider(defaultValue = .65)
   public void setDutyCycle(double dutyCycle) {
     this.dutyCycle = dutyCycle;

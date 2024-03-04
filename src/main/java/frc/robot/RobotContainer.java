@@ -33,7 +33,6 @@ import monologue.Monologue;
 public class RobotContainer implements Logged{
   private final double maxSpeed = TunerConstants.kSpeedAt12VoltsMps;
   private final double maxAngularRate = 1.5 * Math.PI;
-  private ConfigManager cm;
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
@@ -60,9 +59,8 @@ public class RobotContainer implements Logged{
   private final SideBySide m_sideBySide = SideBySide.getInstance();
   private final I2CDisplay m_display = I2CDisplay.getInstance();
   private final Amp m_amp = Amp.getInstance();
+  private final LaserCanSwitch m_lc = LaserCanSwitch.getInstance();
   private final SendableChooser<Command> autoChooser;
-
-
 
 
   public RobotContainer() {
@@ -71,7 +69,7 @@ public class RobotContainer implements Logged{
     m_leds.setRGB(0,0,255);
     m_leds.setMode(LEDMode.SOLID);
 
-    cm = new ConfigManager("HelloTable");
+    ConfigManager cm = new ConfigManager("HelloTable");
     cm.configure(this);
     Monologue.setupMonologue(this, "/Robot", false, false);
     try (PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev)) {
@@ -100,7 +98,7 @@ public class RobotContainer implements Logged{
     // reset the field-centric heading on left bumper press
     //TODO: as we get close to the competition, make this a dashboard button rather than a joystick button
     m_driverController.leftBumper()
-      .onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
+            .onTrue(drivetrain.runOnce(drivetrain::seedFieldRelative));
     
     //face speaker while shooting sub shot
     m_driverController.rightStick().whileTrue(drivetrain.applyRequest(() -> 
