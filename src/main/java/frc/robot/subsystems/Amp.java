@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
@@ -27,9 +28,13 @@ import java.util.function.DoubleSupplier;
 public class Amp extends SubsystemBase implements Configable{
   private static final Amp instance = new Amp();
   /** Creates a new Amp. */
-  private final CANSparkFlex m_ampMotor = new CANSparkFlex(1,MotorType.kBrushless);
+  private final TalonFX m_ampMotor = new TalonFX(18, "CANIVORE");
+  private final DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0,true,false,false,false);
+
   private double dutyCycle = .4;
   public Amp() {
+
+    super.setDefaultCommand(stop());
 
   }
 
@@ -45,11 +50,15 @@ public class Amp extends SubsystemBase implements Configable{
     this.dutyCycle = dutyCycle;
   }
 
+  public Command dutyCycleCommand(DoubleSupplier _dutyCycle) {
+    return startEnd(() -> m_ampMotor.setControl(m_dutyCycleOut.withOutput(_dutyCycle.getAsDouble())), () -> {});
+  }
+
   public Command run(){
-    return Commands.runOnce(()->m_ampMotor.set(dutyCycle));
+    return dutyCycleCommand(()->.5);
   }
 
   public Command stop(){
-    return Commands.runOnce(()->m_ampMotor.set(0));
+    return dutyCycleCommand(()->0.0);
   }
 }

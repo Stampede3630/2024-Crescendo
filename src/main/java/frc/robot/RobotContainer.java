@@ -164,6 +164,7 @@ public class RobotContainer implements Logged{
     //TODO: Use Commands.Parallel
     m_driverController.a().whileTrue(
       m_shooter.reverse().alongWith(
+      m_pneumatics.up(),
       m_sideBySide.run(), 
       m_indexer.run(), 
       m_intake.run(), 

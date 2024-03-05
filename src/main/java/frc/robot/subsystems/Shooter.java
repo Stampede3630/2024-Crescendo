@@ -4,8 +4,8 @@
 
 package frc.robot.subsystems;
 
-import au.grapplerobotics.ConfigurationFailedException;
-import au.grapplerobotics.LaserCan;
+// import au.grapplerobotics.ConfigurationFailedException;
+// import au.grapplerobotics.LaserCan;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -36,20 +36,20 @@ public class Shooter extends SubsystemBase implements Configable {
   private final DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0,true,false,false,false);
   private final VelocityTorqueCurrentFOC m_velocityOut = new VelocityTorqueCurrentFOC(0, 0, 0, 0, false, false, false); // TODO: tune this
   private VoltageOut m_sysidControl;
-  private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
-          new SysIdRoutine.Config(
-                  null,         // Default ramp rate is acceptable
-                  Volts.of(4), // Reduce dynamic voltage to 4 to prevent motor brownout
-                  null,          // Default timeout is acceptable
-                  // Log state with Phoenix SignalLogger class
-                  (state)-> SignalLogger.writeString("state", state.toString())),
-          new SysIdRoutine.Mechanism(
-                  (Measure<Voltage> volts)-> m_shootMotor.setControl(m_sysidControl.withOutput(volts.in(Volts))),
-                  null,
-                  this));
+  // private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
+  //         new SysIdRoutine.Config(
+  //                 null,         // Default ramp rate is acceptable
+  //                 Volts.of(4), // Reduce dynamic voltage to 4 to prevent motor brownout
+  //                 null,          // Default timeout is acceptable
+  //                 // Log state with Phoenix SignalLogger class
+  //                 (state)-> SignalLogger.writeString("state", state.toString())),
+          // new SysIdRoutine.Mechanism(
+          //         (Measure<Voltage> volts)-> m_shootMotor.setControl(m_sysidControl.withOutput(volts.in(Volts))),
+          //         null,
+          //         this));
   @Config(name="Shooter idle on?")
   private boolean idleEnable = true;
-  private final LaserCan m_lc = new LaserCan(23); // TODO: GET THIS ID
+  // private final LaserCan m_lc = new LaserCan(23); // TODO: GET THIS ID
 
   private Shooter() {
     m_shootMotor.getConfigurator().apply(new TalonFXConfiguration() // TODO: Tune PID and add to slot 0
@@ -59,13 +59,13 @@ public class Shooter extends SubsystemBase implements Configable {
     );
     super.setDefaultCommand(idle());
     // config lasercan
-    try {
-      m_lc.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
-      m_lc.setRangingMode(LaserCan.RangingMode.SHORT);
-//          m_lc.setRegionOfInterest(new LaserCan.RegionOfInterest());
-    } catch (ConfigurationFailedException e) {
-      throw new RuntimeException(e);
-    }
+//     try {
+//       m_lc.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
+//       m_lc.setRangingMode(LaserCan.RangingMode.SHORT);
+// //          m_lc.setRegionOfInterest(new LaserCan.RegionOfInterest());
+//     } catch (ConfigurationFailedException e) {
+//       throw new RuntimeException(e);
+//     }
   }
 
   public static Shooter getInstance() {

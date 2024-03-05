@@ -19,7 +19,7 @@ public class Pneumatics extends SubsystemBase {
   private Pneumatics() {
     m_lift.set(DoubleSolenoid.Value.kOff);
     m_ph.enableCompressorDigital();
-    super.setDefaultCommand(off());
+    // super.setDefaultCommand(down());
   }
 
   public static Pneumatics getInstance() {
