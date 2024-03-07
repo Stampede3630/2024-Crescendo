@@ -60,10 +60,11 @@ public class AutoCommands {
                 m_shooter.run(),
                 m_pivot.angleCommand(() -> angle),
                 Commands.waitUntil(() -> m_shooter.upToSpeed() && m_pivot.atPosition()).withTimeout(1)
-                    .andThen(Commands.parallel(
-                        m_indexer.run(),
-                        m_sideBySide.run())
-                    ),
+                    .andThen(
+                        Commands.parallel(
+                            m_indexer.run(),
+                            m_sideBySide.run()
+                    )),
                 Commands.print("Shooting")
             ).until(LaserCanSwitch.getInstance().fullyOpen()).withTimeout(timeout)
             .andThen(
@@ -71,8 +72,7 @@ public class AutoCommands {
                     m_shooter.autoIdle(), 
                     m_indexer.stop(), 
                     m_sideBySide.stop()
-                )
-            ).withTimeout(timeout);
+            )).withTimeout(timeout);
     }
 
     private static Command pivotCustom(double angle){
