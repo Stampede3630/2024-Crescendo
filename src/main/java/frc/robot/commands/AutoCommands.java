@@ -66,7 +66,7 @@ public class AutoCommands {
                             m_sideBySide.run()
                     )),
                 Commands.print("Shooting")
-            ).until(LaserCanSwitch.getInstance().fullyOpen()).withTimeout(timeout)
+            ).until(LaserCanSwitch.getInstance().fullyOpen()).withTimeout(timeout) 
             .andThen(
                 Commands.parallel(
                     m_shooter.autoIdle(), 
