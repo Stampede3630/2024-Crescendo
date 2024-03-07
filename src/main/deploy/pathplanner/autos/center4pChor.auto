@@ -1,0 +1,31 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.3906108140945437,
+      "y": 5.606069087982178
+    },
+    "rotation": 1.9635709621860078e-20
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "shootPod"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "center4p.1"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": true
+}

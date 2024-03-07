@@ -60,7 +60,7 @@ public class Robot extends TimedRobot implements Logged{
     // Monologue.setFileOnly(DriverStation.isFMSAttached());
     // SmartDashboard.putNumber("mySmartPose", Units.metersToInches(TunerConstants.DriveTrain.getState().Pose.getX()) );
         SmartDashboard.putNumber("roll", TunerConstants.DriveTrain.getPigeon2().getRoll().refresh().getValueAsDouble());
-
+    SmartDashboard.putNumber("lc", LaserCanSwitch.getInstance().laserCan());
     Monologue.updateAll();
     CommandScheduler.getInstance().run();
   }

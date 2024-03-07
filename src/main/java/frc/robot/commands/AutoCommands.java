@@ -2,6 +2,8 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.LaserCanSwitch;
 import frc.robot.subsystems.*;
 
 @SuppressWarnings("unused")
@@ -22,31 +24,38 @@ public class AutoCommands {
     // 7.9 degrees, 1st note
     // 7.9 degrees, 2nd note
     public static Command shootSub() {
-        return shootCustom(26);
+        return shootCustom(26, 0.25);
     }
 
     public static Command shootPod() {
-        return shootCustom(7.4);
+        return shootCustom(7.4, .5);
     }
 
     public static Command shootTwo() {
-        return shootCustom(8.2);
+        return shootCustom(8.2, .5);
     }
-
     public static Command shootThree() {
-        return shootCustom(10.2);
+        return shootCustom(26.0, .75); //10.2
     }
 
     public static Command shootAmp() {
-        return shootCustom(10.8);
+        return shootCustom(10.8, .5);
     }
 
     public static Command shootcr4() {
-        return shootCustom(4.65);
+        return shootCustom(4.65, .5);
     }
 
+    public static Command shootInitial() {
+        return shootCustom(26.0, 1); //needs 20.85 initial angle for legal start
+    }
 
-    private static Command shootCustom(double angle) {
+    public static Command pivotSub() {
+        return pivotCustom(26.0);
+    }
+
+    private static Command shootCustom(double angle, double timeout) {
+        
         return Commands.parallel(
                 m_shooter.run(),
                 m_pivot.angleCommand(() -> angle),
@@ -55,12 +64,20 @@ public class AutoCommands {
                         .andThen(m_indexer.run()
                                 .alongWith(m_sideBySide.run())),
                 Commands.print("SHooting2")
-        ).withTimeout(1.5).andThen(Commands.parallel(m_shooter.idle(), m_indexer.stop(), m_sideBySide.stop())).withTimeout(1.5);
+        )
+        // .until(LaserCanSwitch.getInstance().open())
+        .withTimeout(timeout)
+        .andThen(Commands.parallel(m_shooter.idle(), m_indexer.stop(), m_sideBySide.stop())).withTimeout(timeout);
+    }
+
+    private static Command pivotCustom(double angle){
+
+        return (m_pivot.angleCommand(()->angle));
     }
 
 
     public static Command intake() {
         return m_intake.run()
-                .alongWith(m_indexer.run()).withTimeout(2).andThen(m_indexer.stop()).withTimeout(2);
+                .alongWith(m_indexer.run()).withTimeout(2).andThen(Commands.parallel(m_indexer.stop(),m_intake.stop())).withTimeout(2);
     }
 }

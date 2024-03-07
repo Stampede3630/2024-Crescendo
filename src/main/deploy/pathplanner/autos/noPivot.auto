@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7326298288960215,
-      "y": 6.698039577897338
+      "x": 1.3533001663498863,
+      "y": 5.565873600441298
     },
-    "rotation": 58.32453126189081
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -20,43 +20,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "cr1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "cr2"
+            "pathName": "npc1"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shootAmp"
+            "name": "shootSub"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "cr3"
+            "pathName": "npc2"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shootPod"
+            "name": "shootSub"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "cr4"
+            "pathName": "npc3"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shootPod"
+            "name": "shootSub"
           }
         }
       ]

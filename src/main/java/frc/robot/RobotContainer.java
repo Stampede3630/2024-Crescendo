@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.AutoCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.LEDs.LEDMode;
@@ -113,6 +114,8 @@ public class RobotContainer implements Logged{
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     }
+
+    m_driverController.start().whileTrue(AutoCommands.shootSub());
 
 //PIVOT Commands
     //TODO: as we get close to the competition, make this a dashboard button rather than a joystick button

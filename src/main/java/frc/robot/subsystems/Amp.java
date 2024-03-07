@@ -32,7 +32,8 @@ public class Amp extends SubsystemBase implements Configable{
   private final TalonFX m_ampMotor = new TalonFX(18, "CANIVORE");
   private final DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0,true,false,false,false);
 
-  private double dutyCycle = .4;
+  @Config
+  private double dutyCycle = 1;
   public Amp() {
 
     super.setDefaultCommand(stop());

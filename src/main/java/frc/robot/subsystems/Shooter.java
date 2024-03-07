@@ -95,11 +95,11 @@ public class Shooter extends SubsystemBase implements Configable {
   }
 
   public Command idle(){
-    return dutyCycleCommand(()->idleEnable ? 0.2 : 0);
+    return dutyCycleCommand(()->.8);
   }
 
   public Command reverse() {
-    return dutyCycleCommand(() -> -0.65);
+    return dutyCycleCommand(() -> -0.85);
   }
 
   public Command stop() {
