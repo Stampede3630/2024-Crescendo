@@ -16,16 +16,16 @@ public class LaserCanSwitch {
         return instance;
     }
 
-    public boolean laserCanNotTripped() {
-        return m_lc.getMeasurement().distance_mm >= 60;
+    public Trigger fullyOpen() {
+        return new Trigger(() -> m_lc.getMeasurement().distance_mm >= 180).debounce(.2, DebounceType.kRising);
     }
 
-    public Trigger open() {
-        return new Trigger(() -> m_lc.getMeasurement().distance_mm >= 80).debounce(.2, DebounceType.kRising);
-    }
-
-    public Trigger closed() {
+    public Trigger fullyClosed() {
         return new Trigger(() -> m_lc.getMeasurement().distance_mm < 80).debounce(.2, DebounceType.kRising);
+    }
+
+    public Trigger transientState() {
+        return fullyOpen().or(fullyClosed()).negate();
     }
 
     public double laserCan() {

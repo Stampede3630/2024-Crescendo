@@ -95,7 +95,7 @@ public class Shooter extends SubsystemBase implements Configable {
   }
 
   public Command idle(){
-    return dutyCycleCommand(()->.8);
+    return dutyCycleCommand(() -> .2);
   }
 
   public Command reverse() {
@@ -108,5 +108,9 @@ public class Shooter extends SubsystemBase implements Configable {
 
   public boolean upToSpeed() {
     return m_shootMotor.getVelocity().refresh().getValue()>50;
+  }
+
+  public Command autoIdle() {
+    return dutyCycleCommand(() -> .8);
   }
 }

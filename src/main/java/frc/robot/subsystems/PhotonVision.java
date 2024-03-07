@@ -5,6 +5,11 @@
 package frc.robot.subsystems;
 
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import frc.robot.generated.TunerConstants;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -45,7 +50,6 @@ public class PhotonVision extends SubsystemBase {
 // StructArrayPublisher<Pose2d> arrayPublisher = NetworkTableInstance.getDefault()
 //     .getStructArrayTopic("MyPoseArray", Pose2d.struct).publish();
 
-    photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
           // SmartDashboard.putData("Field", m_field);
 
   }
@@ -53,18 +57,15 @@ public class PhotonVision extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    // photonPoseEstimator.update().ifPresent(ep -> {
-    //   Pose2d pose = ep.estimatedPose.toPose2d();
-    //   akitPose[0] = pose.getX();
-    //     akitPose[1] = pose.getY();
-    //   akitPose[2] = pose.getRotation().getRadians();
-    //   Logger.recordOutput("MyPose"+camera.getName(), ep.estimatedPose);
-    // }); 
-    // // PhotonPipelineResult r = camera.getLatestResult();
-    // // SmartDashboard.putBoolean("pose?", ep != null);
-    // // if (r.getBestTarget() != null)
-    // // SmartDashboard.putNumber("woohoo", r.getBestTarget().getFiducialId());
-    //     SmartDashboard.putNumberArray("akitPose, "+camera.getName(), akitPose);
+      photonPoseEstimator.update().ifPresent(ep -> {
+          Pose2d pose = ep.estimatedPose.toPose2d();
+          akitPose[0] = pose.getX();
+          akitPose[1] = pose.getY();
+          akitPose[2] = pose.getRotation().getRadians();
+          SmartDashboard.putNumberArray("akitPose, " + camera.getName(), akitPose);
+//      TunerConstants.DriveTrain.setVisionMeasurementStdDevs(new Matrix<>(Nat.N3(),Nat.N1(),new double[]{1,2,3}));
+          TunerConstants.DriveTrain.addVisionMeasurement(pose, ep.timestampSeconds); // TODO: do stuff with the stddevs
+      });
 
 }
 }
