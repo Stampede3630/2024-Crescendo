@@ -23,6 +23,7 @@ public class AutoCommands {
     // 26 degrees, subwoofer
     // 7.9 degrees, 1st note
     // 7.9 degrees, 2nd note
+
     public static Command shootSub() {
         return shootCustom(26, 0.25);
     }
@@ -57,6 +58,7 @@ public class AutoCommands {
     private static Command shootCustom(double angle, double timeout) {
         
         return Commands.parallel(
+                m_pneumatics.down(),
                 m_shooter.run(),
                 m_pivot.angleCommand(() -> angle),
                 Commands.waitUntil(() -> m_shooter.upToSpeed() && m_pivot.atPosition()).withTimeout(1)
@@ -74,6 +76,7 @@ public class AutoCommands {
                     m_sideBySide.stop()
             )).withTimeout(timeout);
     }
+
 
     private static Command pivotCustom(double angle){
         return (m_pivot.angleCommand(()->angle));

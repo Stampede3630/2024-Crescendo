@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import frc.robot.generated.TunerConstants;
@@ -26,6 +27,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -40,6 +42,7 @@ public class PhotonVision extends SubsystemBase {
   private PhotonPoseEstimator photonPoseEstimator;
   // private final Field2d m_field = new Field2d();
   public double[] akitPose = {0,0,0};
+  private boolean visionEnabled = true;
 
   public PhotonVision(String camName, Transform3d robotToCam) {
      camera = new PhotonCamera(camName);
@@ -63,9 +66,22 @@ public class PhotonVision extends SubsystemBase {
           akitPose[1] = pose.getY();
           akitPose[2] = pose.getRotation().getRadians();
           SmartDashboard.putNumberArray("akitPose, " + camera.getName(), akitPose);
-//      TunerConstants.DriveTrain.setVisionMeasurementStdDevs(new Matrix<>(Nat.N3(),Nat.N1(),new double[]{1,2,3}));
-          TunerConstants.DriveTrain.addVisionMeasurement(pose, ep.timestampSeconds); // TODO: do stuff with the stddevs
+          if (visionEnabled) {
+            // TunerConstants.DriveTrain.setVisionMeasurementStdDevs(new Matrix<>(Nat.N3(),Nat.N1(),new double[]{1,2,100000000}));
+            SmartDashboard.putNumber("stuff", ep.targetsUsed.size());
+            TunerConstants.DriveTrain.addVisionMeasurement(pose, ep.timestampSeconds, VecBuilder.fill(1.5,1.5,1000000000)); // TODO: do stuff with the stddevs
+
+            if (DriverStation.isDisabled()) {
+              TunerConstants.DriveTrain.getPigeon2().setYaw(pose.getRotation().getDegrees());
+              TunerConstants.DriveTrain.seedFieldRelative(pose);
+            }
+
+          }
       });
 
+}
+
+public void setEnanbled(boolean enabled) {
+  this.visionEnabled = enabled;
 }
 }

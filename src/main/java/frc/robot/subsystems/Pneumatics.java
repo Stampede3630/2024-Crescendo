@@ -4,11 +4,15 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Value;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class Pneumatics extends SubsystemBase {
   private static final Pneumatics instance = new Pneumatics();
@@ -35,6 +39,13 @@ public class Pneumatics extends SubsystemBase {
     return startEnd(() -> m_lift.set(DoubleSolenoid.Value.kOff), () -> {});
 
   }
+  public Trigger isUp() {
+    return  new Trigger(() -> m_lift.get().equals(DoubleSolenoid.Value.kForward));
+  }
+
+  // public Trigger isUp() {
+  //   return m_lift.get().equals(Value)
+  // }
 
   @Override
   public void periodic() {

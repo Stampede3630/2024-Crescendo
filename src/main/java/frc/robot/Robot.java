@@ -10,6 +10,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
+import com.ctre.phoenix6.SignalLogger;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -41,6 +44,7 @@ public class Robot extends TimedRobot implements Logged{
     m_robotContainer = new RobotContainer();
     DriverStation.silenceJoystickConnectionWarning(true);
    DataLogManager.start();
+   SignalLogger.start();
 //    DriverStation.startDataLog(DataLogManager.getLog());
   }
 
@@ -61,6 +65,8 @@ public class Robot extends TimedRobot implements Logged{
     // SmartDashboard.putNumber("mySmartPose", Units.metersToInches(TunerConstants.DriveTrain.getState().Pose.getX()) );
         SmartDashboard.putNumber("roll", TunerConstants.DriveTrain.getPigeon2().getRoll().refresh().getValueAsDouble());
     SmartDashboard.putNumber("lc", LaserCanSwitch.getInstance().laserCan());
+    Pose2d myPose = TunerConstants.DriveTrain.getState().Pose;
+    SmartDashboard.putNumberArray("ctrePose", new double[]{myPose.getX(), myPose.getY(), myPose.getRotation().getRadians()});
     Monologue.updateAll();
     CommandScheduler.getInstance().run();
   }

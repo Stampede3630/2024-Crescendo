@@ -4,12 +4,19 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Radians;
+
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -21,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AutoCommands;
 import frc.robot.generated.TunerConstants;
@@ -62,7 +70,8 @@ public class RobotContainer implements Logged{
   private final Amp m_amp = Amp.getInstance();
   private final LaserCanSwitch m_lc = LaserCanSwitch.getInstance();
   private final SendableChooser<Command> autoChooser;
-
+  private final PhotonVision m_limelight = new PhotonVision("limelight", new Transform3d(Inches.of(10).in(Meters), Inches.of(8).in(Meters), Inches.of(12.5).in(Meters), new Rotation3d(0,Degrees.of(-28.8).in(Radians),0)));
+  private final PhotonVision m_gs = new PhotonVision("GS", new Transform3d());
 
   public RobotContainer() {
     configureBindings();
@@ -79,6 +88,7 @@ public class RobotContainer implements Logged{
     AutoCommandFinder.addAutos();
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
+    m_gs.setEnanbled(false);
 
 
 
@@ -109,6 +119,8 @@ public class RobotContainer implements Logged{
               .withTargetDirection(drivetrain.getCurrentAlliance().equals(Alliance.Red) ? Rotation2d.fromDegrees(60) : Rotation2d.fromDegrees(300))
         ));   // cancelling on release.
 
+    m_driverController.leftStick().whileTrue(m_pneumatics.down());
+    
     drivetrain.registerTelemetry(logger::telemeterize);
     
     if (Utils.isSimulation()) {
@@ -124,6 +136,7 @@ public class RobotContainer implements Logged{
     m_driverController.povDown().whileTrue(m_pivot.right()).whileFalse(m_pivot.dutyCycleCommand(() -> 0));
     //m_driverController.povLeft().whileTrue(m_pivot.resetToZero());
     //m_driverController.rightBumper().onTrue(m_pivot.save().andThen(Commands.print("SAVED")));
+ 
 
 //INTAKE Commands
     //standard intake
@@ -142,6 +155,8 @@ public class RobotContainer implements Logged{
       m_shooter.reverse()
     ));
 
+    // Amp is a, sub is y, x is podium
+
 //SHOOTER Commands
     //Speaker Shot  
     //TODO: Use Commands.Parallel
@@ -152,6 +167,11 @@ public class RobotContainer implements Logged{
         .andThen(m_indexer.run().alongWith(
         m_sideBySide.run()))
     ));
+
+       // m_driverController.povDown().whileTrue(m_shooter.quasistatic(Direction.kReverse));
+    // m_driverController.povUp().whileTrue(m_shooter.quasistatic(Direction.kForward));
+    // m_driverController.povLeft().whileTrue(m_shooter.dynamic(Direction.kReverse));
+    // m_driverController.povRight().whileTrue(m_shooter.dynamic(Direction.kForward));
 
     // m_driverController.leftTrigger().whileTrue(
     //   m_pivot.angleCommand(()->7.9)
@@ -166,14 +186,19 @@ public class RobotContainer implements Logged{
       m_sideBySide.run(), 
       m_indexer.run(), 
       m_intake.run(), 
-      m_amp.run()));
+      m_amp.run(),
+      m_pivot.angleCommand(() -> 30.3)));
 
-    //Amp air
-    //TODO: this is probably temp code and will be added to one of the methods above
-    m_driverController.y()
-      .whileTrue(m_pneumatics.up());
-    m_driverController.x()
-      .whileTrue(m_pneumatics.down());
+      // Pod shot x
+      m_driverController.y().whileTrue(
+        Commands.parallel(m_pneumatics.down(), m_pivot.angleCommand(() -> 7.4))
+      );
+      // sub shot y
+      m_driverController.y().whileTrue(
+        Commands.parallel(m_pneumatics.down(), m_pivot.angleCommand(() -> 26))
+      );
+      
+
 
   }
   public Command getAutonomousCommand() {
