@@ -4,28 +4,27 @@
 
 package frc.robot.subsystems;
 
-import java.util.function.DoubleSupplier;
-import java.util.function.Function;
-
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Config;
 import frc.robot.util.Configable;
-import monologue.Logged;
+import frc.robot.util.DoubleLookupLerp;
 import monologue.Annotations.Log;
+
+import java.util.function.DoubleSupplier;
+import java.util.function.Function;
 
 public final class Pivot extends SubsystemBase implements Configable {
   /** Creates a new pivot. */
@@ -38,7 +37,8 @@ public final class Pivot extends SubsystemBase implements Configable {
   private final PositionTorqueCurrentFOC m_positionControl = new PositionTorqueCurrentFOC(-5, 0, 0, 0, false, false, false);
   private final DutyCycleOut m_dutyCycle = new DutyCycleOut(0, true, false, false, false);
   /* YPR adjustments = 90.00006866455078, -27.517465591430664, 180.00013732910156 */
-  private final Function<Double, Double> rollDegreesToPosition = (angle) -> 0.0180932 * angle * angle + 1.11426 * angle - 47.0389; // TODO, recalibrate pigeon s.t. our 0 angle is at one of the hard stops or parallel with robot frame
+
+  private final Function<Double, Double> rollDegreesToPosition = (angle) -> 0.0180932 * angle * angle + 1.11426 * angle - 47.0389; // TODO, recalibrate pigeon s.t. our 0 angle parallel with robot frame
 
   private final StringLogEntry myStringLog = new StringLogEntry(DataLogManager.getLog(), "/pivot/angle");
   private double desiredPos = -10;

@@ -10,7 +10,6 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -22,25 +21,32 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AutoCommands;
+import frc.robot.commands.FaceAngleRequestBetter;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.LEDs;
 import frc.robot.util.AutoCommandFinder;
 import frc.robot.util.ConfigManager;
+import frc.robot.util.DoubleLookupLerp;
+import frc.robot.util.Region2D;
 import monologue.Logged;
 import monologue.Monologue;
+
+import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.*;
 
 @SuppressWarnings("unused")
 public class RobotContainer implements Logged {
+    private final Translation3d SPEAKER_POSITION = new Translation3d(.2, 5.55, 2.11); // POSITION OF THE SPEAKER (BLUE SIDE)
+    private final Region2D AMP_REGION = new Region2D(0.5, 8.25, 3.69, 6.98);
     private final double maxSpeed = TunerConstants.kSpeedAt12VoltsMps;
     private final double maxAngularRate = 1.5 * Math.PI;
     private final CommandXboxController m_driverController =
             new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
     //DRIVETRAIN subsystem
-    private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain;
+    private final CommandSwerveDrivetrain m_drivetrain = TunerConstants.DriveTrain;
     private final SwerveRequest.FieldCentric drive =
             new SwerveRequest.FieldCentric()
                     .withDeadband(maxSpeed * 0.1)
@@ -49,7 +55,7 @@ public class RobotContainer implements Logged {
 
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-    private final SwerveRequest.FieldCentricFacingAngle faceAngle = new SwerveRequest.FieldCentricFacingAngle();
+    private final FaceAngleRequestBetter faceAngle = new FaceAngleRequestBetter();
     private final Telemetry logger = new Telemetry(maxSpeed);
 
     //ALL teh "UHver" subsystems
@@ -90,7 +96,7 @@ public class RobotContainer implements Logged {
                 .onFalse(m_leds.setSolidColor(() -> new Color(0, 255, 0)).alongWith(Commands.print("DISABLED")).ignoringDisable(true));
 
 //DRIVETRAIN COMMANDS
-        drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> drive        // Drivetrain will execute this command periodically
+        m_drivetrain.setDefaultCommand(m_drivetrain.applyRequest(() -> drive        // Drivetrain will execute this command periodically
                 .withVelocityX(-m_driverController.getLeftY() * maxSpeed)             // Drive forward with negative Y (forward)
                 .withVelocityY(-m_driverController.getLeftX() * maxSpeed)             // Drive left with negative X (left)
                 .withRotationalRate(-m_driverController.getRightX() * maxAngularRate) // Drive counterclockwise with negative X (left)
@@ -99,22 +105,26 @@ public class RobotContainer implements Logged {
         // reset the field-centric heading on left bumper press
         //TODO: as we get close to the competition, make this a dashboard button rather than a joystick button
         m_driverController.leftBumper()
-                .onTrue(drivetrain.runOnce(drivetrain::seedFieldRelative));
+                .onTrue(m_drivetrain.runOnce(m_drivetrain::seedFieldRelative));
 
         //face speaker while shooting sub shot
-        m_driverController.rightStick().whileTrue(drivetrain.applyRequest(() ->
-                faceAngle
-                        .withVelocityX(-m_driverController.getLeftY() * maxSpeed) // Drive forward with negative Y (forward)
-                        .withVelocityY(-m_driverController.getLeftX() * maxSpeed) // Drive left with negative X (left)
-                        .withTargetDirection(drivetrain.getCurrentAlliance().equals(Alliance.Red) ? Rotation2d.fromDegrees(60) : Rotation2d.fromDegrees(300))
-        ));   // cancelling on release.
+        m_driverController.rightStick()
+                .whileTrue(
+                        Commands.parallel(driveFaceAngle(
+                                        // get x/y distance from robot to speaker and obtain rotation to transform robot to speaker
+                                        () -> m_drivetrain.getState().Pose.getTranslation().minus(SPEAKER_POSITION.toTranslation2d()).getAngle()
+                                ),
+                                m_pivot.angleCommand(() -> {
+                                    // TODO DO LOOKUP TABLE OR MATH OR SOMETHING
+                                    return 20; // dummy number
+                                }))
+                );
 
-        m_driverController.leftStick().whileTrue(m_pneumatics.down());
 
-        drivetrain.registerTelemetry(logger::telemeterize);
+        m_drivetrain.registerTelemetry(logger::telemeterize);
 
         if (Utils.isSimulation()) {
-            drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
+            m_drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
         }
 
         m_driverController.start().whileTrue(AutoCommands.shootSub());
@@ -163,6 +173,10 @@ public class RobotContainer implements Logged {
                 .onTrue(
                         m_leds.blink(Color.kLime, 3, .050, .200)
                 );
+        new Trigger(() -> m_pivot.atPosition() && faceAngle.atTarget())
+                .onTrue(
+                        m_leds.blinkConstant(Color.kBlue, .050, .4)
+                );
 //SHOOTER Commands
         // TODO: DO we really want to use LC for this in tele?
         m_driverController.leftTrigger().whileTrue(
@@ -172,16 +186,6 @@ public class RobotContainer implements Logged {
                                         m_sideBySide.run()))
                                 .until(m_lc.fullyOpen())
                 ));
-
-        // m_driverController.povDown().whileTrue(m_shooter.quasistatic(Direction.kReverse));
-        // m_driverController.povUp().whileTrue(m_shooter.quasistatic(Direction.kForward));
-        // m_driverController.povLeft().whileTrue(m_shooter.dynamic(Direction.kReverse));
-        // m_driverController.povRight().whileTrue(m_shooter.dynamic(Direction.kForward));
-
-        // m_driverController.leftTrigger().whileTrue(
-        //   m_pivot.angleCommand(()->7.9)
-        // );
-        // m_driverController.leftTrigger().whileTrue(AutoCommands.shoot());
 
         //Amp Shot
         m_driverController.a().whileTrue(
@@ -195,6 +199,10 @@ public class RobotContainer implements Logged {
                         m_pivot.angleCommand(() -> 30.3)
                 )
         );
+        m_driverController.leftStick().whileTrue(m_pneumatics.down());
+        // put pneumatics down when we leave the amp region
+        new Trigger(() -> AMP_REGION.inRegion(m_drivetrain.getState().Pose.getTranslation()))
+                .onFalse(m_pneumatics.down());
 
         // Pod shot x
         m_driverController.y().whileTrue(
@@ -212,6 +220,15 @@ public class RobotContainer implements Logged {
         );
 
 
+    }
+
+    private Command driveFaceAngle(Supplier<Rotation2d> _rotation) {
+        return m_drivetrain.applyRequest(() ->
+                faceAngle
+                        .withVelocityX(-m_driverController.getLeftY() * maxSpeed) // Drive forward with negative Y (forward)
+                        .withVelocityY(-m_driverController.getLeftX() * maxSpeed) // Drive left with negative X (left)
+                        .withTargetDirection(_rotation.get())
+        );
     }
 
     public Command getAutonomousCommand() {
