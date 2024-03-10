@@ -19,12 +19,10 @@ public class ConfigManager {
     public void configure(Object root) {
 
         Class<?> rootClass = root.getClass();
-//        System.out.println(rootClass);
 
         Set<Field> configableFields = Arrays.stream(rootClass.getDeclaredFields())
                 .filter(f -> Arrays.asList(f.getType().getInterfaces()).contains(Configable.class)).collect(Collectors.toUnmodifiableSet());
 
-//        System.out.println(configableFields);
         Set<Configable> configables = new HashSet<>();
         for (Field configable : configableFields) {
             try {
@@ -33,11 +31,12 @@ public class ConfigManager {
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
-//            System.out.println(configable);
         }
         for (Configable c : configables) {
             Set<FieldData> myFields = Arrays.stream(c.getClass().getDeclaredFields()).filter(f -> f.getAnnotation(Config.class) != null)
-                    .map(f -> new FieldData(f, c, f.getAnnotation(Config.class).name()))
+                    .map(f -> new FieldData(f, c,
+                            "".equals(f.getAnnotation(Config.class).name()) ? c.getClass().getSimpleName() + ":" + f.getName() : f.getAnnotation(Config.class).name()
+                    ))
                     .collect(Collectors.toUnmodifiableSet());
             fields.addAll(myFields);
         }

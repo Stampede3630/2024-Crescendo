@@ -1,17 +1,29 @@
 package frc.robot;
 
+import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.LaserCan.Measurement;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.util.Config;
+import frc.robot.util.Configable;
 
-public class LaserCanSwitch {
+public class LaserCanSwitch implements Configable {
     private static final LaserCanSwitch instance = new LaserCanSwitch();
-    private final LaserCan m_lc = new LaserCan(3);
-
+    private LaserCan m_lc;
+    @Config(name = "LC Enabled?")
+    private boolean lcEnabled;
     private Measurement m = new Measurement(0, 0, 0, false, 0, null);
     private LaserCanSwitch() {
-        
+        try {
+            m_lc = new LaserCan(3);
+            m_lc.setRangingMode(LaserCan.RangingMode.SHORT);
+            m_lc.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
+        } catch (ConfigurationFailedException e) {
+            System.err.println("FAILED TO CONFIGURE LASER CAN");
+            m_lc = null;
+        }
     }
 
     public static LaserCanSwitch getInstance() {
@@ -20,7 +32,7 @@ public class LaserCanSwitch {
 
     public Trigger fullyOpen() {
         return new Trigger(() -> {
-            if (m_lc == null)
+            if (!lcEnabled || m_lc == null)
                 return false;
             
             Measurement a = m_lc.getMeasurement();
@@ -31,7 +43,7 @@ public class LaserCanSwitch {
 
     public Trigger fullyClosed() {
         return new Trigger(() -> {
-            if (m_lc == null)
+            if (!lcEnabled || m_lc == null)
                 return false;
             
             Measurement a = m_lc.getMeasurement();

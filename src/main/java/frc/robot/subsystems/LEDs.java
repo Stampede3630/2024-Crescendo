@@ -7,182 +7,388 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import java.util.function.Supplier;
 
 public class LEDs extends SubsystemBase {
 
-  public AddressableLED m_led;
-  public AddressableLEDBuffer m_LEDBuffer; //156
-  public int m_rainbowFirstPixelHue = 0;
-  public int r = 0;
-  public int g = 0;
-  public int b = 0;
-  private final int HUE_CHANGE_PER_SEC = 60;
-  private final double CHASE_MOVE_PER_MS = 0.0333;
+    private static final LEDs instance = new LEDs();
+    private final AddressableLED m_led;
+    private final AddressableLEDBuffer m_LEDBuffer; //156
+    private Color solidColor = new Color(0, 0, 0);
 
-  private double previousTime = System.currentTimeMillis();
-  private final Color[][] chaseColors = {{new Color(0,0,255),new Color(255,255,0)},
-  {new Color(0,0,0),new Color(255,55,0)}};
-  private int chaseColorsSlot = 0;
-  private double chaseSeparator = 0; 
-  private LEDMode mode = LEDMode.RAINBOW;
-  private static final LEDs instance = new LEDs();
-  
-  /** Creates a new LEDs. */
-//   private LEDs() {
-//     this(0, 156);
-//   }
-
-  private LEDs(int port, int length) {
-    m_led = new AddressableLED(port);
-    m_led.setLength(length);
-    m_LEDBuffer = new AddressableLEDBuffer(length);
-  }
-
-  private LEDs() {
-    this(0, 10);
-  }
-
-  public static LEDs getInstance() {
-    return instance;
-  }
-
-  @Override
-  public void periodic() {
-     switch (mode) {
-       case STROBE: break;
-       case CHASING: chaseColorsTwo(); break;
-       case SOLID: setEntireStrip(); break;
-       case RAINBOW: beWhoYouAre(); break;
-       default: off();
-     }
-    // This method will be called once per scheduler run
-  }
-
-  public void setChaseColorsSlot(int chaseColorsSlot) {
-      this.chaseColorsSlot = chaseColorsSlot;
-  }
-  public void setMode(LEDMode mode) {
-    this.mode = mode;
-  }
-
-  public LEDMode getMode() {
-      return mode;
-  }
-
-  public void setRGB(int r, int g, int b) {
-    this.r = r;
-    this.g = g;
-    this.b = b;
-  }
-
-  public void off() {
-    setRGB(0,0,0);
-  }
-
-  private void setEntireStrip() {
-    for (var i = 0; i < m_LEDBuffer.getLength(); i++) {
-      // Sets the specified LED to the RGB values for red
-      m_LEDBuffer.setRGB(i, r, g, b);
-   }
-   m_led.setData(m_LEDBuffer);
-   m_led.start();
-  }
-  
-
-  public void bePurple () {
-    setRGB(162, 0, 255);
-    setMode(LEDMode.SOLID);
-  }
-
-  public void beYellow () {
-    setRGB(255, 120, 0);
-    setMode(LEDMode.SOLID);
-  }
-  public void chaseColors() {
-
-    for (int i = 0; i < chaseSeparator; i++) {
-      // Calculate the hue - hue is easier for rainbows because the color
-      // shape is a circle so only one value needs to precess
-      // Set the value to claw machine + bing chilling 
-
-      m_LEDBuffer.setLED(i, chaseColors[chaseColorsSlot][0]);
+    private LEDs(int port, int length) {
+        m_led = new AddressableLED(port);
+        m_led.setLength(length);
+        m_LEDBuffer = new AddressableLEDBuffer(length);
     }
-    for (int i = 0; i < m_LEDBuffer.getLength()-chaseSeparator; i++) {
-      // Calculate the hue - hue is easier for rainbows because the color
-      // shape is a circle so only one value needs to precess
-      // Set the value to claw machine + bing chilling 
 
-      m_LEDBuffer.setLED(i, chaseColors[chaseColorsSlot][1]);
-       
+    private LEDs() {
+        this(0, 10);
     }
-    chaseSeparator++;
-    chaseSeparator %= m_LEDBuffer.getLength();
-    m_led.setData(m_LEDBuffer);
-    m_led.start();
-  }
 
-  public void chaseColorsTwo() {
-    double currentTime = System.currentTimeMillis();
-    double timeElapsed = currentTime-previousTime;
-    int length = m_LEDBuffer.getLength();
-    int delim1 = (int) chaseSeparator;
-    int delim2 = (int) (length/2.0+chaseSeparator);
-     for (int i = delim1; i < delim2+(delim1>delim2 ? length : 0); i++) { // wrap if 1 is further than 2
-      // Calculate the hue - hue is easier for rainbows because the color
-      // shape is a circle so only one value needs to precess
-      // Set the value to claw machine + bing chilling 
-
-      m_LEDBuffer.setLED(i%length, chaseColors[chaseColorsSlot][0]);
+    public static LEDs getInstance() {
+        return instance;
     }
-    for (int i = delim2; i < delim1+(delim1>delim2 ? 0 : length); i++) { // wrap if 2 is further than 1
-      // Calculate the hue - hue is easier for rainbows because the color
-      // shape is a circle so only one value needs to precess
-      // Set the value to claw machine + bing chilling 
 
-      m_LEDBuffer.setLED(i%length, chaseColors[chaseColorsSlot][1]);
-       
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
     }
-    chaseSeparator += CHASE_MOVE_PER_MS*timeElapsed;
-    chaseSeparator %= m_LEDBuffer.getLength();
-    m_led.setData(m_LEDBuffer);
-    m_led.start();
-    previousTime = currentTime;
-  }
-  public void beWhoYouAre () {
-    double currentTime = System.currentTimeMillis();
-    double timeElapsed = currentTime-previousTime;
-    // For every pixel
-    for (int i = 0; i < m_LEDBuffer.getLength(); i++) {
-      // Calculate the hue - hue is easier for rainbows because the color
-      // shape is a circle so only one value needs to precess
-      int hue = (m_rainbowFirstPixelHue + (i * 180 / m_LEDBuffer.getLength())) % 180;
-      // Set the value
-      m_LEDBuffer.setHSV(i, hue, 255, 30);
+
+    public Command off() {
+        return setSolidColor(() -> new Color(0, 0, 0));
     }
-    // Increase by to make the rainbow "move"
-    m_rainbowFirstPixelHue += HUE_CHANGE_PER_SEC*(timeElapsed/1000.0);
-    // Check bounds
-    m_rainbowFirstPixelHue %= 180;
-    m_led.setData(m_LEDBuffer);
-    m_led.start();
-    previousTime = currentTime;
-  }
 
-  public void setR(int r) {
-    this.r = r;
-  }
+    private void setEntireStrip() {
+        for (var i = 0; i < m_LEDBuffer.getLength(); i++) {
+            // Sets the specified LED to the RGB values for red
+            m_LEDBuffer.setLED(0, solidColor);
+        }
+        m_led.setData(m_LEDBuffer);
+        m_led.start();
+    }
 
-  public void setG(int g) {
-    this.g = g;
-  }
+    public Command setSolidColor(Supplier<Color> _color) {
+        return runOnce(() -> {
+                    solidColor = _color.get();
+                    setEntireStrip();
+                }
+        );
+    }
 
-  public void setB(int b) {
-    this.b = b;
-  }
+    public Command purple() {
+        return setSolidColor(() -> new Color(162, 0, 255));
+    }
 
-  public enum LEDMode {
-    STROBE, CHASING, RAINBOW, SOLID, OFF
-  }
+    @Deprecated
+    public Command blink(Supplier<Color> color, int count, double pulseDuration, double waitDuration) {
+        Command[] pulses = new Command[count];
+        for (int i = 0; i < count; i++) {
+            pulses[i] = setSolidColor(color).andThen(Commands.waitSeconds(pulseDuration)).andThen(off()).andThen(Commands.waitSeconds(waitDuration));
+        }
+        return new SequentialCommandGroup(pulses);
+    }
 
+    public Command blink(Color color, int count, double pulseDuration, double waitDuration) {
+        return new BlinkFiniteCommand(count, waitDuration, pulseDuration, color);
+    }
+
+    public Command blinkConstant(Color color, double pulseDuration, double waitDuration) {
+        return new BlinkConstantCommand(pulseDuration, waitDuration, color);
+    }
+
+    public Command breathe(int hue, double secPerBreath) {
+        return new BreatheCommand(hue, secPerBreath);
+    }
+
+    public Command chase(Color[] colors, long period) {
+        return new ChaseColorsCommand(colors, period);
+    }
+
+    public Command rainbow() {
+        return new RainbowCommand(60);
+    }
+
+    public class BlinkFiniteCommand extends Command {
+        private static final Color BLACK = new Color();
+        private final double waitDuration; // seconds
+        private final double pulseDuration; // seconds
+        private final Color color;
+        private final int endCount;
+        private long lastChange;
+        private boolean on = false;
+        private int cycleCount = 0;
+
+        public BlinkFiniteCommand(int n, double waitDuration, double pulseDuration, Color color) {
+            endCount = n;
+            this.waitDuration = waitDuration;
+            this.pulseDuration = pulseDuration;
+            this.color = color;
+            addRequirements(LEDs.this);
+        }
+
+        @Override
+        public void initialize() {
+            super.initialize();
+            lastChange = System.currentTimeMillis();
+        }
+
+        @Override
+        public void execute() {
+            long currentTime = System.currentTimeMillis();
+            double delta = (currentTime - lastChange) / 1000.0;
+
+            cycleCount += (int) (delta / (waitDuration + pulseDuration));
+            delta %= waitDuration + pulseDuration; // normalize to a single cycle
+            if (!on && delta > waitDuration) {
+                on = true;
+                lastChange = currentTime;
+            } else if (on && delta > pulseDuration && delta < waitDuration) {
+                on = false;
+                lastChange = currentTime;
+                cycleCount++;
+            }
+
+            if (on) {
+                for (int i = 0; i < m_LEDBuffer.getLength(); i++) {
+                    m_LEDBuffer.setLED(i, color);
+                }
+            } else {
+                for (int i = 0; i < m_LEDBuffer.getLength(); i++) {
+                    m_LEDBuffer.setLED(i, BLACK);
+                }
+            }
+
+            m_led.setData(m_LEDBuffer);
+            m_led.start();
+        }
+
+        @Override
+        public void end(boolean interrupted) {
+            super.end(interrupted);
+            off().initialize();
+        }
+
+        @Override
+        public boolean isFinished() {
+            return cycleCount > endCount;
+        }
+    }
+
+    public class BlinkConstantCommand extends Command {
+        private static final Color BLACK = new Color();
+        private final double waitDuration; // seconds
+        private final double pulseDuration; // seconds
+        private final Color color;
+        private long lastChange;
+        private boolean on = false;
+
+        public BlinkConstantCommand(double waitDuration, double pulseDuration, Color color) {
+            this.waitDuration = waitDuration;
+            this.pulseDuration = pulseDuration;
+            this.color = color;
+            addRequirements(LEDs.this);
+        }
+
+        @Override
+        public void initialize() {
+            super.initialize();
+            lastChange = System.currentTimeMillis();
+        }
+
+        @Override
+        public void execute() {
+            long currentTime = System.currentTimeMillis();
+            double delta = (currentTime - lastChange) / 1000.0;
+
+            delta %= waitDuration + pulseDuration; // normalize to a single cycle
+            if (!on && delta > waitDuration) {
+                on = true;
+                lastChange = currentTime;
+            } else if (on && delta > pulseDuration && delta < waitDuration) {
+                on = false;
+                lastChange = currentTime;
+            }
+
+            if (on) {
+                for (int i = 0; i < m_LEDBuffer.getLength(); i++) {
+                    m_LEDBuffer.setLED(i, color);
+                }
+            } else {
+                for (int i = 0; i < m_LEDBuffer.getLength(); i++) {
+                    m_LEDBuffer.setLED(i, BLACK);
+                }
+            }
+
+            m_led.setData(m_LEDBuffer);
+            m_led.start();
+        }
+
+        @Override
+        public void end(boolean interrupted) {
+            super.end(interrupted);
+            off().initialize();
+        }
+
+        @Override
+        public boolean isFinished() {
+            return false;
+        }
+    }
+
+    public class BreatheCommand extends Command {
+        private final int hue;
+        private final double secPerBreath;
+        private long prevTime;
+        private int value = 255;
+        private boolean inhaling = false;
+
+        public BreatheCommand(int hue, double secPerBreath) {
+            this.hue = hue;
+            this.secPerBreath = secPerBreath;
+            addRequirements(LEDs.this);
+        }
+
+        @Override
+        public void initialize() {
+            super.initialize();
+            prevTime = System.currentTimeMillis();
+        }
+
+        @Override
+        public void execute() {
+            long currentTime = System.currentTimeMillis();
+            double delta = (currentTime - prevTime) / 1000.0;
+            prevTime = currentTime;
+            delta %= secPerBreath;
+
+            for (int i = 0; i < m_LEDBuffer.getLength(); i++) {
+                m_LEDBuffer.setHSV(i, hue, 255, value);
+            }
+
+            int theChange = (int) (510 * delta / secPerBreath);
+            if (inhaling && value + theChange > 255) { // trying to inhale too much
+                value = 255 - (value + theChange - 255);
+                inhaling = false; // start the exhalation next cycle
+            } else if (!inhaling && value - theChange < 0) { // exhaling too much
+                value = theChange - value;
+                inhaling = true;
+            } else { // normal stuff
+                if (inhaling) { // normal inhale
+                    value += theChange;
+                } else { // normal exhale
+                    value -= theChange;
+                }
+            }
+            m_led.setData(m_LEDBuffer);
+            m_led.start();
+        }
+
+        @Override
+        public void end(boolean interrupted) {
+            super.end(interrupted);
+            off().initialize();
+        }
+
+        @Override
+        public boolean isFinished() {
+            return false;
+        }
+    }
+
+    public class ChaseColorsCommand extends Command {
+        private final Color[] chaseColors;
+        private final int[] chaseColorDelim;
+        private final long period;
+        private long prevTime;
+
+        public ChaseColorsCommand(Color[] colors, long period) {
+            chaseColors = colors;
+            this.period = period;
+            chaseColorDelim = new int[colors.length];
+            for (int i = 0; i < chaseColorDelim.length; i++) {
+                chaseColorDelim[i] = i * m_LEDBuffer.getLength() / 4;
+            }
+            addRequirements(LEDs.this);
+        }
+
+        @Override
+        public void execute() {
+            long currentTime = System.currentTimeMillis();
+            long delta = currentTime - prevTime;
+            prevTime = currentTime;
+
+            for (int i = 0; i < chaseColorDelim.length; i++) {
+                chaseColorDelim[i] += (int) (delta / period);
+                chaseColorDelim[i] %= m_LEDBuffer.getLength();
+            }
+
+            for (int i = 0; i < chaseColors.length; i++) {
+                setRegionWrap(chaseColorDelim[i], chaseColorDelim[(i + 1) % chaseColorDelim.length], chaseColors[i]);
+            }
+        }
+
+        @Override
+        public void end(boolean interrupted) {
+            super.end(interrupted);
+            off().initialize();
+        }
+
+        private void setRegionWrap(int a, int b, Color color) {
+            // make sure we are "in bounds"
+            a = a % m_LEDBuffer.getLength();
+            b = b % m_LEDBuffer.getLength();
+            if (a < 0) a += m_LEDBuffer.getLength();
+            if (b < 0) b += m_LEDBuffer.getLength();
+
+            if (b > a && a > 0 && b < m_LEDBuffer.getLength()) { // "normal" instance
+                for (int i = a; i < b; i++) {
+                    m_LEDBuffer.setLED(i, color);
+                }
+            } else { // "wrap around"
+                for (int i = b; i < m_LEDBuffer.getLength(); i++) {
+                    m_LEDBuffer.setLED(i, color);
+                }
+                for (int i = 0; i < a; i++) {
+                    m_LEDBuffer.setLED(i, color);
+                }
+            }
+            m_led.setData(m_LEDBuffer);
+            m_led.start();
+        }
+
+        @Override
+        public boolean isFinished() {
+            return false;
+        }
+    }
+
+    public class RainbowCommand extends Command {
+        private final int hueChangePerSec;
+        private long prevTime;
+        private int rainbowFirstPixelHue = 0;
+
+        public RainbowCommand(int hueChangePerSec) {
+            this.hueChangePerSec = hueChangePerSec;
+            addRequirements(LEDs.this);
+        }
+
+        @Override
+        public void execute() {
+            long currentTime = System.currentTimeMillis();
+            long delta = currentTime - prevTime;
+            prevTime = currentTime;
+
+            // For every pixel
+            for (int i = 0; i < m_LEDBuffer.getLength(); i++) {
+                int hue = (rainbowFirstPixelHue + (i * 180 / m_LEDBuffer.getLength())) % 180;
+                // Set the value
+                m_LEDBuffer.setHSV(i, hue, 255, 30);
+            }
+            // Increase by to make the rainbow "move"
+            rainbowFirstPixelHue += (int) (hueChangePerSec * (delta / 1000.0));
+            // Check bounds
+            rainbowFirstPixelHue %= 180;
+
+            m_led.setData(m_LEDBuffer);
+            m_led.start();
+        }
+
+        @Override
+        public void end(boolean interrupted) {
+            super.end(interrupted);
+            off().initialize();
+        }
+
+        @Override
+        public boolean isFinished() {
+            return false;
+        }
+
+    }
 }
