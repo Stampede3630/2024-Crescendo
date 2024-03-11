@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation3d;
+import frc.robot.util.AllianceDependent;
+import frc.robot.util.Region2D;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -15,5 +19,10 @@ package frc.robot;
 public final class Constants {
     public static class OperatorConstants {
         public static final int kDriverControllerPort = 0;
+    }
+
+    public static class FieldConstants {
+        public static final AllianceDependent<Translation3d> SPEAKER_POSITION = new AllianceDependent<>(new Translation3d(.2, 5.55, 2.11), new Translation3d(16.33, 5.55, 2.11)); // POSITION OF THE SPEAKER (BLUE SIDE)
+        public static final AllianceDependent<Region2D> AMP_REGION = new AllianceDependent<>(new Region2D(0.5, 8.25, 3.69, 6.98), new Region2D(16.5, 8.25, 12.93, 6.98));
     }
 }

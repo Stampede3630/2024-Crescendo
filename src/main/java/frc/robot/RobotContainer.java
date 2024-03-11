@@ -25,18 +25,18 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.*;
 import frc.robot.util.AutoCommandFinder;
 import frc.robot.util.ConfigManager;
-import frc.robot.util.Region2D;
 import monologue.Logged;
 import monologue.Monologue;
 
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.FieldConstants.AMP_REGION;
+import static frc.robot.Constants.FieldConstants.SPEAKER_POSITION;
 
 @SuppressWarnings("unused")
 public class RobotContainer implements Logged {
-    private final Translation3d SPEAKER_POSITION = new Translation3d(.2, 5.55, 2.11); // POSITION OF THE SPEAKER (BLUE SIDE)
-    private final Region2D AMP_REGION = new Region2D(0.5, 8.25, 3.69, 6.98);
+
     private final double maxSpeed = TunerConstants.kSpeedAt12VoltsMps;
     private final double maxAngularRate = 1.5 * Math.PI;
     private final CommandXboxController m_driverController =
@@ -112,7 +112,7 @@ public class RobotContainer implements Logged {
                 Commands.parallel(
                     driveFaceAngle(
                         // get x/y distance from robot to speaker and obtain rotation to transform robot to speaker
-                        () -> m_pneumatics.isUp().getAsBoolean() ? Rotation2d.fromDegrees(90) : m_drivetrain.getState().Pose.getTranslation().minus(SPEAKER_POSITION.toTranslation2d()).getAngle()
+                        () -> m_pneumatics.isUp().getAsBoolean() ? Rotation2d.fromDegrees(90) : m_drivetrain.getState().Pose.getTranslation().minus(SPEAKER_POSITION.get().toTranslation2d()).getAngle()
                     ),
                     m_pivot.angleCommand(() -> {
                         // TODO DO LOOKUP TABLE OR MATH OR SOMETHING
@@ -207,7 +207,7 @@ public class RobotContainer implements Logged {
         );
         m_driverController.leftStick().whileTrue(m_pneumatics.down());
         // put pneumatics down when we leave the amp region
-        new Trigger(() -> AMP_REGION.inRegion(m_drivetrain.getState().Pose.getTranslation()))
+        new Trigger(() -> AMP_REGION.get().inRegion(m_drivetrain.getState().Pose.getTranslation()))
             .onFalse(m_pneumatics.down());
 
         // Pod shot x

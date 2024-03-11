@@ -16,6 +16,8 @@ import frc.robot.generated.TunerConstants;
 import monologue.Logged;
 import monologue.Monologue;
 
+import static frc.robot.Constants.FieldConstants.SPEAKER_POSITION;
+
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -61,6 +63,10 @@ public class Robot extends TimedRobot implements Logged {
         SmartDashboard.putNumber("lc", LaserCanSwitch.getInstance().laserCan());
         Pose2d myPose = TunerConstants.DriveTrain.getState().Pose;
         SmartDashboard.putNumberArray("ctrePose", new double[]{myPose.getX(), myPose.getY(), myPose.getRotation().getRadians()});
+        SmartDashboard.putNumber("xdist from speaker", TunerConstants.DriveTrain.getState().Pose.getX() - SPEAKER_POSITION.get().getX());
+        SmartDashboard.putNumber("ydist from speaker", TunerConstants.DriveTrain.getState().Pose.getY() - SPEAKER_POSITION.get().getY());
+
+
         Monologue.updateAll();
         CommandScheduler.getInstance().run();
     }
