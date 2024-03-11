@@ -4,51 +4,55 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Value;
-
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class Pneumatics extends SubsystemBase {
-  private static final Pneumatics instance = new Pneumatics();
-  /** Creates a new Pneumatics. */
-  private final PneumaticHub m_ph = new PneumaticHub(2);
-  private final DoubleSolenoid m_lift = m_ph.makeDoubleSolenoid(2, 0);
+    private static final Pneumatics instance = new Pneumatics();
+    /**
+     * Creates a new Pneumatics.
+     */
+    private final PneumaticHub m_ph = new PneumaticHub(2);
+    private final DoubleSolenoid m_lift = m_ph.makeDoubleSolenoid(2, 0);
 
-  private Pneumatics() {
-    m_lift.set(DoubleSolenoid.Value.kOff);
-    m_ph.enableCompressorDigital();
-    // super.setDefaultCommand(down());
-  }
+    private Pneumatics() {
+        m_lift.set(DoubleSolenoid.Value.kOff);
+        m_ph.enableCompressorDigital();
+        // super.setDefaultCommand(down());
+    }
 
-  public static Pneumatics getInstance() {
-    return instance;
-  }
-  public Command up() {
-    return Commands.runOnce(() -> m_lift.set(DoubleSolenoid.Value.kForward), this);
-  }
-  public Command down() {
-    return Commands.runOnce(() -> m_lift.set(DoubleSolenoid.Value.kReverse), this);
-  }
-  public Command off() {
-    return startEnd(() -> m_lift.set(DoubleSolenoid.Value.kOff), () -> {});
+    public static Pneumatics getInstance() {
+        return instance;
+    }
 
-  }
-  public Trigger isUp() {
-    return  new Trigger(() -> m_lift.get().equals(DoubleSolenoid.Value.kForward));
-  }
+    public Command up() {
+        return Commands.runOnce(() -> m_lift.set(DoubleSolenoid.Value.kForward), this);
+    }
 
-  // public Trigger isUp() {
-  //   return m_lift.get().equals(Value)
-  // }
+    public Command down() {
+        return Commands.runOnce(() -> m_lift.set(DoubleSolenoid.Value.kReverse), this);
+    }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+    public Command off() {
+        return startEnd(() -> m_lift.set(DoubleSolenoid.Value.kOff), () -> {
+        });
+
+    }
+
+    public Trigger isUp() {
+        return new Trigger(() -> m_lift.get().equals(DoubleSolenoid.Value.kForward));
+    }
+
+    // public Trigger isUp() {
+    //   return m_lift.get().equals(Value)
+    // }
+
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+    }
 }

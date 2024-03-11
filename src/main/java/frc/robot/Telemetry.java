@@ -2,14 +2,9 @@ package frc.robot;
 
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain.SwerveDriveState;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.networktables.DoubleArrayPublisher;
-import edu.wpi.first.networktables.DoublePublisher;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StringPublisher;
+import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,7 +16,7 @@ public class Telemetry {
 
     /**
      * Construct a telemetry object, with the specified max speed of the robot
-     * 
+     *
      * @param maxSpeed Maximum speed in meters per second
      */
     public Telemetry(double maxSpeed) {
@@ -48,21 +43,21 @@ public class Telemetry {
     private double lastTime = Utils.getCurrentTimeSeconds();
 
     /* Mechanisms to represent the swerve module states */
-    private final Mechanism2d[] m_moduleMechanisms = new Mechanism2d[] {
+    private final Mechanism2d[] m_moduleMechanisms = new Mechanism2d[]{
         new Mechanism2d(1, 1),
         new Mechanism2d(1, 1),
         new Mechanism2d(1, 1),
         new Mechanism2d(1, 1),
     };
     /* A direction and length changing ligament for speed representation */
-    private final MechanismLigament2d[] m_moduleSpeeds = new MechanismLigament2d[] {
+    private final MechanismLigament2d[] m_moduleSpeeds = new MechanismLigament2d[]{
         m_moduleMechanisms[0].getRoot("RootSpeed", 0.5, 0.5).append(new MechanismLigament2d("Speed", 0.5, 0)),
         m_moduleMechanisms[1].getRoot("RootSpeed", 0.5, 0.5).append(new MechanismLigament2d("Speed", 0.5, 0)),
         m_moduleMechanisms[2].getRoot("RootSpeed", 0.5, 0.5).append(new MechanismLigament2d("Speed", 0.5, 0)),
         m_moduleMechanisms[3].getRoot("RootSpeed", 0.5, 0.5).append(new MechanismLigament2d("Speed", 0.5, 0)),
     };
     /* A direction changing and length constant ligament for module direction */
-    private final MechanismLigament2d[] m_moduleDirections = new MechanismLigament2d[] {
+    private final MechanismLigament2d[] m_moduleDirections = new MechanismLigament2d[]{
         m_moduleMechanisms[0].getRoot("RootDirection", 0.5, 0.5)
             .append(new MechanismLigament2d("Direction", 0.1, 0, 0, new Color8Bit(Color.kWhite))),
         m_moduleMechanisms[1].getRoot("RootDirection", 0.5, 0.5)
@@ -78,7 +73,7 @@ public class Telemetry {
         /* Telemeterize the pose */
         Pose2d pose = state.Pose;
         fieldTypePub.set("Field2d");
-        fieldPub.set(new double[] {
+        fieldPub.set(new double[]{
             pose.getX(),
             pose.getY(),
             pose.getRotation().getDegrees()

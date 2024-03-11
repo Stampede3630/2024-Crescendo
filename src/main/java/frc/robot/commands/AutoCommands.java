@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.LaserCanSwitch;
 import frc.robot.subsystems.*;
-import frc.robot.subsystems.LEDs;
 
 @SuppressWarnings("unused")
 public class AutoCommands {
@@ -35,6 +34,7 @@ public class AutoCommands {
     public static Command shootTwo() {
         return shootCustom(8.2, .5);
     }
+
     public static Command shootThree() {
         return shootCustom(26.0, .75); //10.2
     }
@@ -56,7 +56,7 @@ public class AutoCommands {
     }
 
     private static Command shootCustom(double angle, double timeout) {
-        
+
         return Commands.parallel(
                 m_pneumatics.down(),
                 m_shooter.run(),
@@ -66,25 +66,25 @@ public class AutoCommands {
                         Commands.parallel(
                             m_indexer.run(),
                             m_sideBySide.run()
-                    )),
+                        )),
                 Commands.print("Shooting")
-            ).until(LaserCanSwitch.getInstance().fullyOpen()).withTimeout(timeout) 
+            ).until(LaserCanSwitch.getInstance().fullyOpen()).withTimeout(timeout)
             .andThen(
                 Commands.parallel(
-                    m_shooter.autoIdle(), 
-                    m_indexer.stop(), 
+                    m_shooter.autoIdle(),
+                    m_indexer.stop(),
                     m_sideBySide.stop()
-            )).withTimeout(timeout);
+                )).withTimeout(timeout);
     }
 
 
-    private static Command pivotCustom(double angle){
-        return (m_pivot.angleCommand(()->angle));
+    private static Command pivotCustom(double angle) {
+        return (m_pivot.angleCommand(() -> angle));
     }
 
 
     public static Command intake() {
         return m_intake.run()
-                .alongWith(m_indexer.run()).withTimeout(2).andThen(Commands.parallel(m_indexer.stop(),m_intake.stop())).withTimeout(2);
+            .alongWith(m_indexer.run()).withTimeout(2).andThen(Commands.parallel(m_indexer.stop(), m_intake.stop())).withTimeout(2);
     }
 }

@@ -1,6 +1,10 @@
 package frc.robot.util;
 
-import edu.wpi.first.networktables.*;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableEvent;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.ValueEventData;
+
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -9,19 +13,20 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ConfigManager {
-    private String tableRoot;
+    private final String tableRoot;
 
     public ConfigManager(String tableRoot) {
         this.tableRoot = tableRoot;
     }
 
     Set<FieldData> fields = new HashSet<>();
+
     public void configure(Object root) {
 
         Class<?> rootClass = root.getClass();
 
         Set<Field> configableFields = Arrays.stream(rootClass.getDeclaredFields())
-                .filter(f -> Arrays.asList(f.getType().getInterfaces()).contains(Configable.class)).collect(Collectors.toUnmodifiableSet());
+            .filter(f -> Arrays.asList(f.getType().getInterfaces()).contains(Configable.class)).collect(Collectors.toUnmodifiableSet());
 
         Set<Configable> configables = new HashSet<>();
         for (Field configable : configableFields) {
@@ -34,10 +39,10 @@ public class ConfigManager {
         }
         for (Configable c : configables) {
             Set<FieldData> myFields = Arrays.stream(c.getClass().getDeclaredFields()).filter(f -> f.getAnnotation(Config.class) != null)
-                    .map(f -> new FieldData(f, c,
-                            "".equals(f.getAnnotation(Config.class).name()) ? c.getClass().getSimpleName() + ":" + f.getName() : f.getAnnotation(Config.class).name()
-                    ))
-                    .collect(Collectors.toUnmodifiableSet());
+                .map(f -> new FieldData(f, c,
+                    "".equals(f.getAnnotation(Config.class).name()) ? c.getClass().getSimpleName() + ":" + f.getName() : f.getAnnotation(Config.class).name()
+                ))
+                .collect(Collectors.toUnmodifiableSet());
             fields.addAll(myFields);
         }
 
@@ -45,8 +50,8 @@ public class ConfigManager {
             f.setEntry(NetworkTableInstance.getDefault().getTable(tableRoot).getEntry(f.name));
             f.entry.setDefaultValue(f.getValue());
             NetworkTableInstance.getDefault().addListener(f.entry,
-                    EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-                    e -> setValue(f,e.valueData));
+                EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+                e -> setValue(f, e.valueData));
         }
     }
 
@@ -56,16 +61,16 @@ public class ConfigManager {
         switch (e.value.getType()) {
 //            case kDouble -> f.setValue(e.value.getValue());
             // case kBoolean -> f.setValue(e);
-            case kInteger -> f.setValue(((Number)e.value.getValue()).intValue());
+            case kInteger -> f.setValue(((Number) e.value.getValue()).intValue());
             default -> f.setValue(e.value.getValue());
 //            case k
         }
     }
 
     private class FieldData {
-        private Field field;
-        private Object object;
-        private String name;
+        private final Field field;
+        private final Object object;
+        private final String name;
         private NetworkTableEntry entry;
 
         public FieldData(Field field, Object object, String name) {
@@ -98,8 +103,8 @@ public class ConfigManager {
 
         public Object getValue() {
             try {
-            return field.get(object);}
-            catch (IllegalAccessException e) {
+                return field.get(object);
+            } catch (IllegalAccessException e) {
                 return null;
             }
         }
@@ -115,11 +120,11 @@ public class ConfigManager {
         @Override
         public String toString() {
             return "FieldData{" +
-                    "field=" + field +
-                    ", object=" + object +
-                    ", name='" + name + '\'' +
-                    ", entry=" + entry +
-                    '}';
+                "field=" + field +
+                ", object=" + object +
+                ", name='" + name + '\'' +
+                ", entry=" + entry +
+                '}';
         }
     }
 }

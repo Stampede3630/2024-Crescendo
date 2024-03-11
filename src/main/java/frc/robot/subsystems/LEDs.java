@@ -55,9 +55,9 @@ public class LEDs extends SubsystemBase {
 
     public Command setSolidColor(Supplier<Color> _color) {
         return runOnce(() -> {
-                    solidColor = _color.get();
-                    setEntireStrip();
-                }
+                solidColor = _color.get();
+                setEntireStrip();
+            }
         );
     }
 

@@ -4,7 +4,6 @@ import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.LaserCan.Measurement;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.util.Config;
 import frc.robot.util.Configable;
@@ -15,6 +14,7 @@ public class LaserCanSwitch implements Configable {
     @Config(name = "LC Enabled?")
     private boolean lcEnabled;
     private Measurement m = new Measurement(0, 0, 0, false, 0, null);
+
     private LaserCanSwitch() {
         try {
             m_lc = new LaserCan(3);
@@ -34,9 +34,9 @@ public class LaserCanSwitch implements Configable {
         return new Trigger(() -> {
             if (!lcEnabled || m_lc == null)
                 return false;
-            
+
             Measurement a = m_lc.getMeasurement();
-            if (a!=null) m=a;
+            if (a != null) m = a;
             return m.distance_mm >= 180;
         }).debounce(.2, DebounceType.kRising);
     }
@@ -45,9 +45,9 @@ public class LaserCanSwitch implements Configable {
         return new Trigger(() -> {
             if (!lcEnabled || m_lc == null)
                 return false;
-            
+
             Measurement a = m_lc.getMeasurement();
-            if (a!=null) m=a;
+            if (a != null) m = a;
             return m.distance_mm < 80;
         }).debounce(.2, DebounceType.kRising);
     }
@@ -58,10 +58,10 @@ public class LaserCanSwitch implements Configable {
 
     public double laserCan() {
         if (m_lc == null)
-                return 0;
-            
-            Measurement a = m_lc.getMeasurement();
-            if (a!=null) m=a;
+            return 0;
+
+        Measurement a = m_lc.getMeasurement();
+        if (a != null) m = a;
         return m.distance_mm;
     }
 

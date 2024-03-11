@@ -7,8 +7,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.Config;
 import frc.robot.util.Configable;
@@ -21,13 +19,13 @@ public class SideBySide extends SubsystemBase implements Configable {
     @Config(name = "sideBySide velocity")
     private double dutyCycle = 1;
     // private double sideDutyCycle = .8;
-    private final DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0,true,false,false,false);
+    private final DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0, true, false, false, false);
 
     private SideBySide() {
         m_motor.getConfigurator().apply(new TalonFXConfiguration()
-                .withMotorOutput(new MotorOutputConfigs()
-                        .withNeutralMode(NeutralModeValue.Brake)
-                        .withInverted(InvertedValue.CounterClockwise_Positive))
+            .withMotorOutput(new MotorOutputConfigs()
+                .withNeutralMode(NeutralModeValue.Brake)
+                .withInverted(InvertedValue.CounterClockwise_Positive))
         );
 
         setDefaultCommand(stop());
@@ -36,13 +34,15 @@ public class SideBySide extends SubsystemBase implements Configable {
     public static SideBySide getInstance() {
         return instance;
     }
+
     public void setDutyCycle(double dutyCycle) {
         this.dutyCycle = dutyCycle;
     }
 
 
     public Command dutyCycleCommand(DoubleSupplier _dutyCycle) {
-        return startEnd(() -> m_motor.setControl(m_dutyCycleOut.withOutput(_dutyCycle.getAsDouble())), () -> {});
+        return startEnd(() -> m_motor.setControl(m_dutyCycleOut.withOutput(_dutyCycle.getAsDouble())), () -> {
+        });
     }
 
     public Command run() {

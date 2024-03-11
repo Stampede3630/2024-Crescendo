@@ -1,7 +1,5 @@
 package frc.robot.util;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import java.util.Comparator;
 import java.util.Map;
 import java.util.NavigableMap;

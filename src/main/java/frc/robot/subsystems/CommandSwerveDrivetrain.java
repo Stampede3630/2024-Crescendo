@@ -1,10 +1,5 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Volts;
-
-import java.util.Optional;
-import java.util.function.Supplier;
-
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
@@ -15,7 +10,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -26,6 +20,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.generated.TunerConstants;
+
+import java.util.Optional;
+import java.util.function.Supplier;
+
+import static edu.wpi.first.units.Units.Volts;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements
@@ -48,46 +47,46 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final SwerveRequest.SysIdSwerveSteerGains steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
     private Alliance currentAlliance = Alliance.Red;
-    
+
 
     /* Use one of these sysidroutines for your particular test */
-    private SysIdRoutine sysIdRoutineTranslate = new SysIdRoutine(
-            new SysIdRoutine.Config(
-                    null,
-                    Volts.of(4),
-                    null,
-                    (state) -> SignalLogger.writeString("state", state.toString())),
-            new SysIdRoutine.Mechanism(
-                    (volts) -> setControl(translationCharacterization.withVolts(volts)),
-                    null,
-                    this));
+    private final SysIdRoutine sysIdRoutineTranslate = new SysIdRoutine(
+        new SysIdRoutine.Config(
+            null,
+            Volts.of(4),
+            null,
+            (state) -> SignalLogger.writeString("state", state.toString())),
+        new SysIdRoutine.Mechanism(
+            (volts) -> setControl(translationCharacterization.withVolts(volts)),
+            null,
+            this));
 
     private final SysIdRoutine sysIdRoutineRotation = new SysIdRoutine(
-            new SysIdRoutine.Config(
-                    null,
-                    Volts.of(4),
-                    null,
-                    (state) -> SignalLogger.writeString("state", state.toString())),
-            new SysIdRoutine.Mechanism(
-                    (volts) -> setControl(rotationCharacterization.withVolts(volts)),
-                    null,
-                    this));
+        new SysIdRoutine.Config(
+            null,
+            Volts.of(4),
+            null,
+            (state) -> SignalLogger.writeString("state", state.toString())),
+        new SysIdRoutine.Mechanism(
+            (volts) -> setControl(rotationCharacterization.withVolts(volts)),
+            null,
+            this));
     private final SysIdRoutine sysIdRoutineSteer = new SysIdRoutine(
-            new SysIdRoutine.Config(
-                    null,
-                    Volts.of(7),
-                    null,
-                    (state) -> SignalLogger.writeString("state", state.toString())),
-            new SysIdRoutine.Mechanism(
-                    (volts) -> setControl(steerCharacterization.withVolts(volts)),
-                    null,
-                    this));
+        new SysIdRoutine.Config(
+            null,
+            Volts.of(7),
+            null,
+            (state) -> SignalLogger.writeString("state", state.toString())),
+        new SysIdRoutine.Mechanism(
+            (volts) -> setControl(steerCharacterization.withVolts(volts)),
+            null,
+            this));
 
     /* Change this to the sysid routine you want to test */
     private final SysIdRoutine routineToApply = sysIdRoutineTranslate;
 
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency,
-            SwerveModuleConstants... modules) {
+                                   SwerveModuleConstants... modules) {
         super(driveTrainConstants, OdometryUpdateFrequency, modules);
         getPigeon2().reset();
         // seedFieldRelative();
@@ -148,26 +147,26 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         }
 
         AutoBuilder.configureHolonomic(
-                () -> this.getState().Pose, // Supplier of current robot pose
-                this::seedFieldRelative, // Consumer for seeding pose against auto
-                this::getCurrentRobotChassisSpeeds,
-                (speeds) -> this.setControl(autoRequest.withSpeeds(speeds)), // Consumer of ChassisSpeeds to drive the
-                                                                             // robot
-                new HolonomicPathFollowerConfig(new PIDConstants(10, 0, 0),
-                        new PIDConstants(10, 0, 0),
-                        TunerConstants.kSpeedAt12VoltsMps,
-                        driveBaseRadius,
-                        new ReplanningConfig()),
-                () -> {
-                    // Boolean supplier that controls when the path will be mirrored for the red
-                    // alliance
-                    // This will flip the path being followed to the red side of the field.
-                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+            () -> this.getState().Pose, // Supplier of current robot pose
+            this::seedFieldRelative, // Consumer for seeding pose against auto
+            this::getCurrentRobotChassisSpeeds,
+            (speeds) -> this.setControl(autoRequest.withSpeeds(speeds)), // Consumer of ChassisSpeeds to drive the
+            // robot
+            new HolonomicPathFollowerConfig(new PIDConstants(10, 0, 0),
+                new PIDConstants(10, 0, 0),
+                TunerConstants.kSpeedAt12VoltsMps,
+                driveBaseRadius,
+                new ReplanningConfig()),
+            () -> {
+                // Boolean supplier that controls when the path will be mirrored for the red
+                // alliance
+                // This will flip the path being followed to the red side of the field.
+                // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-                    Optional<Alliance> alliance = DriverStation.getAlliance();
-                    return alliance.filter(value -> value == Alliance.Red).isPresent();
-                }, // Change this if the path needs to be flipped on red vs blue
-                this); // Subsystem for requirements
+                Optional<Alliance> alliance = DriverStation.getAlliance();
+                return alliance.filter(value -> value == Alliance.Red).isPresent();
+            }, // Change this if the path needs to be flipped on red vs blue
+            this); // Subsystem for requirements
     }
 
     @Override
@@ -193,8 +192,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             DriverStation.getAlliance().ifPresent((allianceColor) -> {
                 currentAlliance = allianceColor;
                 this.setOperatorPerspectiveForward(
-                        allianceColor == Alliance.Red ? RedAlliancePerspectiveRotation
-                                : BlueAlliancePerspectiveRotation);
+                    allianceColor == Alliance.Red ? RedAlliancePerspectiveRotation
+                        : BlueAlliancePerspectiveRotation);
                 hasAppliedOperatorPerspective = true;
             });
         }

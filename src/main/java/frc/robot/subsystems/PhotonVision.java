@@ -25,16 +25,15 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import java.util.function.Function;
 
 public class PhotonVision extends SubsystemBase {
-    // private final Field2d m_field = new Field2d();
     public double[] akitPose = {0, 0, 0};
     /**
      * Creates a new PhotonVision.
      */
-    private PhotonCamera camera;
-    private Pose2d prevEstimatedRobotPose = new Pose2d();
-    private AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-    private Transform3d camToRobot;
-    private PhotonPoseEstimator photonPoseEstimator;
+    private final PhotonCamera camera;
+    private final Pose2d prevEstimatedRobotPose = new Pose2d();
+    private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+    private final Transform3d camToRobot;
+    private final PhotonPoseEstimator photonPoseEstimator;
     private boolean visionEnabled = true;
     private Function<EstimatedRobotPose, Matrix<N3, N1>> stdDevFunction;
 
