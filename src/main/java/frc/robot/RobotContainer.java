@@ -20,14 +20,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.AutoCommands;
 import frc.robot.commands.FaceAngleRequestBetter;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.*;
-import frc.robot.subsystems.LEDs;
 import frc.robot.util.AutoCommandFinder;
 import frc.robot.util.ConfigManager;
-import frc.robot.util.DoubleLookupLerp;
 import frc.robot.util.Region2D;
 import monologue.Logged;
 import monologue.Monologue;
@@ -102,17 +99,12 @@ public class RobotContainer implements Logged {
                 .withRotationalRate(-m_driverController.getRightX() * maxAngularRate) // Drive counterclockwise with negative X (left)
         ));
 
-        // reset the field-centric heading on left bumper press
-        //TODO: as we get close to the competition, make this a dashboard button rather than a joystick button
-        m_driverController.leftBumper()
-                .onTrue(m_drivetrain.runOnce(m_drivetrain::seedFieldRelative));
-
-        //face speaker while shooting sub shot
+        //face speaker or amp
         m_driverController.rightStick()
                 .whileTrue(
                         Commands.parallel(driveFaceAngle(
                                         // get x/y distance from robot to speaker and obtain rotation to transform robot to speaker
-                                        () -> m_drivetrain.getState().Pose.getTranslation().minus(SPEAKER_POSITION.toTranslation2d()).getAngle()
+                                        () -> m_pneumatics.isUp().getAsBoolean() ? Rotation2d.fromDegrees(90) : m_drivetrain.getState().Pose.getTranslation().minus(SPEAKER_POSITION.toTranslation2d()).getAngle()
                                 ),
                                 m_pivot.angleCommand(() -> {
                                     // TODO DO LOOKUP TABLE OR MATH OR SOMETHING
@@ -120,6 +112,9 @@ public class RobotContainer implements Logged {
                                 }))
                 );
 
+        // reset the field-centric heading on start button
+        m_driverController.start()
+                .onTrue(m_drivetrain.runOnce(m_drivetrain::seedFieldRelative));
 
         m_drivetrain.registerTelemetry(logger::telemeterize);
 
@@ -127,12 +122,9 @@ public class RobotContainer implements Logged {
             m_drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
         }
 
-        m_driverController.start().whileTrue(AutoCommands.shootSub());
-
 //PIVOT Commands
         //TODO: as we get close to the competition, make this a dashboard button rather than a joystick button
-        m_driverController.start()
-                .whileTrue(m_pivot.seedToPigeon());
+
 
         m_driverController.povUp()
                 .whileTrue(m_pivot.left())
@@ -162,14 +154,14 @@ public class RobotContainer implements Logged {
                 ));
 
 // LASER CAN STATE
-        new Trigger(m_lc.fullyClosed())
+        m_lc.fullyClosed()
                 .onTrue(
                         m_leds.blink(Color.kPurple, 3, 0.050, 0.200)
                                 .andThen(m_leds.breathe(271, 2.5))
                 ).onFalse(
                         m_leds.off()
                 );
-        new Trigger(m_lc.fullyOpen())
+        m_lc.fullyOpen()
                 .onTrue(
                         m_leds.blink(Color.kLime, 3, .050, .200)
                 );
@@ -205,7 +197,7 @@ public class RobotContainer implements Logged {
                 .onFalse(m_pneumatics.down());
 
         // Pod shot x
-        m_driverController.y().whileTrue(
+        m_driverController.leftBumper().whileTrue(
                 Commands.parallel(
                         m_pneumatics.down(),
                         m_pivot.angleCommand(() -> 7.4)
