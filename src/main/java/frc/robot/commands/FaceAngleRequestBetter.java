@@ -6,7 +6,7 @@ import frc.robot.generated.TunerConstants;
 
 public class FaceAngleRequestBetter extends SwerveRequest.FieldCentricFacingAngle {
     public FaceAngleRequestBetter() { // TODO TUNE THIS
-        HeadingController.setP(1);
+        HeadingController.setP(10);
         HeadingController.setI(0);
         HeadingController.setD(0);
 

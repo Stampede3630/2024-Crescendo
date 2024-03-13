@@ -14,7 +14,8 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.generated.TunerConstants;
 import org.photonvision.EstimatedRobotPose;
@@ -30,18 +31,22 @@ public class PhotonVision extends SubsystemBase {
      * Creates a new PhotonVision.
      */
     private final PhotonCamera camera;
+    private static final ShuffleboardTab SB_PV_TAB = Shuffleboard.getTab("Photon Vision");
     private final Pose2d prevEstimatedRobotPose = new Pose2d();
     private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     private final Transform3d camToRobot;
     private final PhotonPoseEstimator photonPoseEstimator;
     private boolean visionEnabled = true;
     private Function<EstimatedRobotPose, Matrix<N3, N1>> stdDevFunction;
+    private int targetsUsed = 0;
 
     public PhotonVision(String camName, Transform3d camToRobot, Function<EstimatedRobotPose, Matrix<N3, N1>> stdDevFunction) {
         camera = new PhotonCamera(camName);
         this.camToRobot = camToRobot;
         this.stdDevFunction = stdDevFunction;
         photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, camToRobot);
+        SB_PV_TAB.addDoubleArray("akitPose, " + camera.getName(), () -> akitPose);
+        SB_PV_TAB.addInteger("Targets Used", () -> targetsUsed);
     }
 
     public PhotonVision(String camName, Transform3d camToRobot) {
@@ -65,10 +70,9 @@ public class PhotonVision extends SubsystemBase {
             akitPose[0] = pose.getX();
             akitPose[1] = pose.getY();
             akitPose[2] = pose.getRotation().getRadians();
-            SmartDashboard.putNumberArray("akitPose, " + camera.getName(), akitPose);
             if (visionEnabled) {
                 // TunerConstants.DriveTrain.setVisionMeasurementStdDevs(new Matrix<>(Nat.N3(),Nat.N1(),new double[]{1,2,100000000}));
-                SmartDashboard.putNumber("stuff", ep.targetsUsed.size());
+                this.targetsUsed = ep.targetsUsed.size();
                 TunerConstants.DriveTrain.addVisionMeasurement(pose, ep.timestampSeconds, stdDevFunction.apply(ep)); // TODO: do stuff with the stddevs
 
                 if (DriverStation.isDisabled()) {

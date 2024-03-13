@@ -1,0 +1,89 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.6638166574944261,
+        "y": 6.712435265148308
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.4096091357558151,
+        "y": 7.519229022755613
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.2066580765105974,
+        "y": 7.078362464016595
+      },
+      "prevControl": {
+        "x": 1.343378259673186,
+        "y": 7.198774579840826
+      },
+      "nextControl": {
+        "x": 3.069937893348009,
+        "y": 6.957950348192364
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.6636534974458839,
+        "y": 6.741804073885925
+      },
+      "prevControl": {
+        "x": 1.1000250472723168,
+        "y": 7.654643755468067
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "npl1"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.05,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "intake",
+      "waypointRelativePos": 0.75,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 1.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 60.47318518860652,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "noPivotLeft",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}

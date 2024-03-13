@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
@@ -41,6 +42,7 @@ public final class Pivot extends SubsystemBase implements Configable {
     private final Function<Double, Double> rollDegreesToPosition = (angle) -> 0.0180932 * angle * angle + 1.11426 * angle - 47.0389; // TODO, recalibrate pigeon s.t. our 0 angle parallel with robot frame
 
     private final StringLogEntry myStringLog = new StringLogEntry(DataLogManager.getLog(), "/pivot/angle");
+    private final StatusSignal<Double> m_position;
     private double desiredPos = -10;
 
     // PIVOT RANGE OF MOTION IS 58.17431640625 pm 1.0ish
@@ -62,7 +64,8 @@ public final class Pivot extends SubsystemBase implements Configable {
         );
         m_pivotMotor.setPosition(rollDegreesToPosition.apply(TunerConstants.DriveTrain.getPigeon2().getRoll().refresh().getValue()));
         myStringLog.append("W,X,Y,Z,Roll,Pos");
-
+        m_position = m_pivotMotor.getPosition();
+        m_position.setUpdateFrequency(250);
     }
 
     public static Pivot getInstance() {
@@ -95,7 +98,7 @@ public final class Pivot extends SubsystemBase implements Configable {
 
     @Log.NT
     public double getPosition() {
-        return m_pivotMotor.getPosition().refresh().getValueAsDouble();
+        return m_position.getValueAsDouble();
     }
 
     private Command resetToZero() {

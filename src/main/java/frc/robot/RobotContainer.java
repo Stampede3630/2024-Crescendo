@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -31,9 +30,8 @@ import monologue.Monologue;
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.Constants.FieldConstants.AMP_ORIENTATION;
-import static frc.robot.Constants.FieldConstants.AMP_REGION;
-import static frc.robot.Constants.FieldConstants.SPEAKER_POSITION;
+import static frc.robot.Constants.FieldConstants.*;
+import static frc.robot.Constants.SB_TAB;
 
 @SuppressWarnings("unused")
 public class RobotContainer implements Logged {
@@ -84,11 +82,11 @@ public class RobotContainer implements Logged {
 
         AutoCommandFinder.addAutos();
         autoChooser = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData("Auto Chooser", autoChooser);
+        SB_TAB.add("Auto Chooser", autoChooser);
 
         m_gs.setEnabled(false);
-        SmartDashboard.putData("Legal Start Button",m_pneumatics.up().alongWith(m_pivot.angleCommand(() -> 17)).withName("Legal Start"));
-        
+
+        SB_TAB.add(m_pneumatics.up().alongWith(m_pivot.angleCommand(() -> 17)).withName("Legal Start"));
 
     }
 

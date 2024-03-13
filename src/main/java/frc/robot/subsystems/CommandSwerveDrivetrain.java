@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
@@ -25,6 +27,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.SB_TAB;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements
@@ -41,6 +44,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final Rotation2d RedAlliancePerspectiveRotation = Rotation2d.fromDegrees(180);
     /* Keep track if we've ever applied the operator perspective before or not */
     private boolean hasAppliedOperatorPerspective = false;
+    private StatusSignal<Double> yaw;
+    private StatusSignal<Double> pitch;
+    private StatusSignal<Double> roll;
 
     private final SwerveRequest.SysIdSwerveTranslation translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     private final SwerveRequest.SysIdSwerveRotation rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
@@ -103,6 +109,28 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        yaw = getPigeon2().getYaw();
+        pitch = getPigeon2().getPitch();
+        roll = getPigeon2().getRoll();
+        BaseStatusSignal.setUpdateFrequencyForAll(100, yaw, pitch, roll);
+        SB_TAB.addNumber("Yaw", () -> yaw.getValueAsDouble());
+        SB_TAB.addNumber("Pitch", () -> pitch.getValueAsDouble());
+        SB_TAB.addNumber("Roll", () -> roll.getValueAsDouble());
+
+        SB_TAB.addDoubleArray("CTRE pose", () -> new double[]{getState().Pose.getX(), getState().Pose.getY(), getState().Pose.getRotation().getRadians()});
+
+    }
+
+    public StatusSignal<Double> getYaw() {
+        return yaw;
+    }
+
+    public StatusSignal<Double> getPitch() {
+        return pitch;
+    }
+
+    public StatusSignal<Double> getRoll() {
+        return roll;
     }
 
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {

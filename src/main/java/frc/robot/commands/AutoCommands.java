@@ -61,20 +61,21 @@ public class AutoCommands {
                 m_pneumatics.down(),
                 m_shooter.run(),
                 m_pivot.angleCommand(() -> angle),
-                Commands.waitUntil(() -> m_shooter.upToSpeed() && m_pivot.atPosition()).withTimeout(2)
+                Commands.waitUntil(() -> m_shooter.upToSpeed() && m_pivot.atPosition()).withTimeout(.3) // the max time we wait for shooter to spin up
                     .andThen(
                         Commands.parallel(
                             m_indexer.run(),
                             m_sideBySide.run()
                         )),
                 Commands.print("Shooting")
-            ).until(LaserCanSwitch.getInstance().fullyOpen()).withTimeout(timeout)
+            ).until(LaserCanSwitch.getInstance().fullyOpen()).withTimeout(timeout) // the max time we wait for spin up + shooting before moving on
             .andThen(
                 Commands.parallel(
                     m_shooter.autoIdle(),
                     m_indexer.stop(),
                     m_sideBySide.stop()
-                )).withTimeout(timeout);
+                ).withTimeout(.01)
+            );
     }
 
 

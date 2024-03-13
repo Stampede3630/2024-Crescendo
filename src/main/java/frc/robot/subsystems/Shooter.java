@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
@@ -17,7 +18,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -30,6 +30,7 @@ import java.util.function.DoubleSupplier;
 
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.SB_TAB;
 
 public class Shooter extends SubsystemBase implements Configable {
     /**
@@ -42,6 +43,7 @@ public class Shooter extends SubsystemBase implements Configable {
     private final DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0, true, false, false, false);
     private final VelocityTorqueCurrentFOC m_velocityOut = new VelocityTorqueCurrentFOC(0, 0, 0, 0, false, false, false); // TODO: tune this
     private final TorqueCurrentFOC m_sysidControl = new TorqueCurrentFOC(0);
+    private final StatusSignal<Double> m_velocity;
     private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
         new SysIdRoutine.Config(
             Volts.per(Second).of(5),         // Default ramp rate is acceptable
@@ -64,9 +66,9 @@ public class Shooter extends SubsystemBase implements Configable {
                 .withInverted(InvertedValue.Clockwise_Positive))
             .withSlot0(new Slot0Configs()
                 .withKA(1.0475)
-                .withKV(0.15)
-                .withKS(9.6705)
-                .withKP(9.6)
+                .withKV(0.29)
+                .withKS(12)
+                .withKP(5)
             ).withSlot1(new Slot1Configs()
                 .withKA(1.0475)
                 .withKS(9.6705)
@@ -74,7 +76,13 @@ public class Shooter extends SubsystemBase implements Configable {
                 .withKP(8)
             )
         );
-        // BaseStatusSignal.setUpdateFrequencyForAll(250,
+        m_velocity = m_shootMotor.getVelocity();
+        m_velocity.setUpdateFrequency(250);
+
+        SB_TAB.addDouble("shooterSpeed", m_velocity::getValue);
+
+        // BaseStatusSignal
+        // .setUpdateFrequencyForAll(250,
         // m_shootMotor.getPosition(),
         // m_shootMotor.getVelocity(),
         // m_shootMotor.getMotorVoltage());
@@ -93,7 +101,6 @@ public class Shooter extends SubsystemBase implements Configable {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("shooterSpeed", m_shootMotor.getVelocity().refresh().getValueAsDouble());
         // This method will be called once per scheduler run
     }
 
@@ -144,7 +151,7 @@ public class Shooter extends SubsystemBase implements Configable {
     }
 
     public boolean upToSpeed() {
-        return m_shootMotor.getVelocity().refresh().getValue() > 55;
+        return m_velocity.getValue() > 55;
     }
 
     public Command autoIdle() {
