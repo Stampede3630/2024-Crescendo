@@ -13,6 +13,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.Amp;
+import frc.robot.subsystems.Pivot;
+import frc.robot.subsystems.Pneumatics;
 import monologue.Logged;
 import monologue.Monologue;
 
@@ -28,6 +31,7 @@ public class Robot extends TimedRobot implements Logged {
     private Command m_autonomousCommand;
 
     private RobotContainer m_robotContainer;
+    private boolean prevValue = false;
 
     /**
      * This function is run when the robot is first started up and should be used for any
@@ -41,6 +45,8 @@ public class Robot extends TimedRobot implements Logged {
         DriverStation.silenceJoystickConnectionWarning(true);
         DataLogManager.start();
         SignalLogger.start();
+        SmartDashboard.putBoolean("resetToLegalStart", false);
+
 //    DriverStation.startDataLog(DataLogManager.getLog());
     }
 
@@ -60,13 +66,14 @@ public class Robot extends TimedRobot implements Logged {
         // Monologue.setFileOnly(DriverStation.isFMSAttached());
         // SmartDashboard.putNumber("mySmartPose", Units.metersToInches(TunerConstants.DriveTrain.getState().Pose.getX()) );
         SmartDashboard.putNumber("roll", TunerConstants.DriveTrain.getPigeon2().getRoll().refresh().getValueAsDouble());
+        SmartDashboard.putNumber("yaw", TunerConstants.DriveTrain.getPigeon2().getYaw().refresh().getValueAsDouble());
+
         SmartDashboard.putNumber("lc", LaserCanSwitch.getInstance().laserCan());
         Pose2d myPose = TunerConstants.DriveTrain.getState().Pose;
         SmartDashboard.putNumberArray("ctrePose", new double[]{myPose.getX(), myPose.getY(), myPose.getRotation().getRadians()});
         SmartDashboard.putNumber("xdist from speaker", TunerConstants.DriveTrain.getState().Pose.getX() - SPEAKER_POSITION.get().getX());
         SmartDashboard.putNumber("ydist from speaker", TunerConstants.DriveTrain.getState().Pose.getY() - SPEAKER_POSITION.get().getY());
-
-
+        
         Monologue.updateAll();
         CommandScheduler.getInstance().run();
     }

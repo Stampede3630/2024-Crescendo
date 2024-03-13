@@ -17,6 +17,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -92,7 +93,7 @@ public class Shooter extends SubsystemBase implements Configable {
 
     @Override
     public void periodic() {
-
+        SmartDashboard.putNumber("shooterSpeed", m_shootMotor.getVelocity().refresh().getValueAsDouble());
         // This method will be called once per scheduler run
     }
 
@@ -126,7 +127,7 @@ public class Shooter extends SubsystemBase implements Configable {
     }
 
     public Command run() {
-        return velocityCommand(() -> 50);
+        return velocityCommand(() -> 62);
     }
 
     public Command idle() {
@@ -143,7 +144,7 @@ public class Shooter extends SubsystemBase implements Configable {
     }
 
     public boolean upToSpeed() {
-        return m_shootMotor.getVelocity().refresh().getValue() > 45;
+        return m_shootMotor.getVelocity().refresh().getValue() > 55;
     }
 
     public Command autoIdle() {

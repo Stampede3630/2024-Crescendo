@@ -31,6 +31,7 @@ import monologue.Monologue;
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.FieldConstants.AMP_ORIENTATION;
 import static frc.robot.Constants.FieldConstants.AMP_REGION;
 import static frc.robot.Constants.FieldConstants.SPEAKER_POSITION;
 
@@ -67,7 +68,8 @@ public class RobotContainer implements Logged {
     private final LaserCanSwitch m_lc = LaserCanSwitch.getInstance();
     private final SendableChooser<Command> autoChooser;
     private final PhotonVision m_limelight = new PhotonVision("limelight", new Transform3d(Inches.of(10).in(Meters), Inches.of(8).in(Meters), Inches.of(12.5).in(Meters), new Rotation3d(0, Degrees.of(-28.8).in(Radians), 0)));
-    private final PhotonVision m_gs = new PhotonVision("GS", new Transform3d());
+    private final PhotonVision m_gs = new PhotonVision("GS", new Transform3d(Inches.of(10.25).in(Meters), Inches.of(-10).in(Meters), Inches.of(9.25).in(Meters), new Rotation3d(0, Degrees.of(-24.09).in(Radians), Degrees.of(-30).in(Radians))));
+    private final PhotonVision m_ar2 = new PhotonVision("AR2", new Transform3d(Inches.of(10.25).in(Meters), Inches.of(10).in(Meters), Inches.of(9.25).in(Meters), new Rotation3d(0, Degrees.of(-24.09).in(Radians), Degrees.of(30).in(Radians))));
 
     public RobotContainer() {
         configureBindings();
@@ -85,6 +87,9 @@ public class RobotContainer implements Logged {
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         m_gs.setEnabled(false);
+        SmartDashboard.putData("Legal Start Button",m_pneumatics.up().alongWith(m_pivot.angleCommand(() -> 17)).withName("Legal Start"));
+        
+
     }
 
     private void configureBindings() {
@@ -112,12 +117,12 @@ public class RobotContainer implements Logged {
                 Commands.parallel(
                     driveFaceAngle(
                         // get x/y distance from robot to speaker and obtain rotation to transform robot to speaker
-                        () -> m_pneumatics.isUp().getAsBoolean() ? Rotation2d.fromDegrees(90) : m_drivetrain.getState().Pose.getTranslation().minus(SPEAKER_POSITION.get().toTranslation2d()).getAngle()
-                    ),
-                    m_pivot.angleCommand(() -> {
-                        // TODO DO LOOKUP TABLE OR MATH OR SOMETHING
-                        return 20; // dummy number
-                    })
+                        () -> m_pneumatics.isUp().getAsBoolean() ? AMP_ORIENTATION.get() : m_drivetrain.getState().Pose.getTranslation().minus(SPEAKER_POSITION.get().toTranslation2d()).getAngle()
+                    )
+                    // m_pivot.angleCommand(() -> {
+                    //     // TODO DO LOOKUP TABLE OR MATH OR SOMETHING
+                    //     return 20; // dummy number
+                    // })
                 )
             );
 
@@ -210,18 +215,18 @@ public class RobotContainer implements Logged {
         new Trigger(() -> AMP_REGION.get().inRegion(m_drivetrain.getState().Pose.getTranslation()))
             .onFalse(m_pneumatics.down());
 
-        // Pod shot x
+        // Pod shot left bumper
         m_driverController.leftBumper().whileTrue(
             Commands.parallel(
                 m_pneumatics.down(),
-                m_pivot.angleCommand(() -> 7.4)
+                m_pivot.angleCommand(() -> 7.05)
             )
         );
         // sub shot y
         m_driverController.y().whileTrue(
             Commands.parallel(
                 m_pneumatics.down(),
-                m_pivot.angleCommand(() -> 26)
+                m_pivot.angleCommand(() -> 27)
             )
         );
 

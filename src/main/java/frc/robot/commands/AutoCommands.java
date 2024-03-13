@@ -48,7 +48,7 @@ public class AutoCommands {
     }
 
     public static Command shootInitial() {
-        return shootCustom(26.0, 1); //needs 20.85 initial angle for legal start
+        return shootCustom(26.0, 3); //needs 20.85 initial angle for legal start
     }
 
     public static Command pivotSub() {
@@ -61,7 +61,7 @@ public class AutoCommands {
                 m_pneumatics.down(),
                 m_shooter.run(),
                 m_pivot.angleCommand(() -> angle),
-                Commands.waitUntil(() -> m_shooter.upToSpeed() && m_pivot.atPosition()).withTimeout(1)
+                Commands.waitUntil(() -> m_shooter.upToSpeed() && m_pivot.atPosition()).withTimeout(2)
                     .andThen(
                         Commands.parallel(
                             m_indexer.run(),
