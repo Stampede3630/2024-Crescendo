@@ -22,6 +22,8 @@ import frc.robot.util.Config;
 import frc.robot.util.Configable;
 import monologue.Annotations.Log;
 
+import static frc.robot.Constants.SB_TAB;
+
 import java.util.function.DoubleSupplier;
 import java.util.function.Function;
 
@@ -65,7 +67,9 @@ public final class Pivot extends SubsystemBase implements Configable {
         m_pivotMotor.setPosition(rollDegreesToPosition.apply(TunerConstants.DriveTrain.getPigeon2().getRoll().refresh().getValue()));
         myStringLog.append("W,X,Y,Z,Roll,Pos");
         m_position = m_pivotMotor.getPosition();
+        desiredPos = m_position.getValueAsDouble();
         m_position.setUpdateFrequency(250);
+        SB_TAB.addBoolean("pivotAtPosition", this::atPosition);
     }
 
     public static Pivot getInstance() {
@@ -131,9 +135,10 @@ public final class Pivot extends SubsystemBase implements Configable {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+        m_position.refresh();
     }
 
     public boolean atPosition() {
-        return m_pivotMotor.getPosition().refresh().getValueAsDouble() - desiredPos < .5;
+        return m_position.refresh().getValueAsDouble() - desiredPos < .5;
     }
 }

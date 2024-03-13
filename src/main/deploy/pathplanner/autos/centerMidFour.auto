@@ -1,0 +1,61 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.2083958713371972,
+      "y": 5.6065763040617
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "shootInitial"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "cmf1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootTwo"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "cmf2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootPod"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "cmf3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootPod"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

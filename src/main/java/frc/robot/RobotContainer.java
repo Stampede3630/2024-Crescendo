@@ -38,13 +38,12 @@ public class RobotContainer implements Logged {
 
     private final double maxSpeed = TunerConstants.kSpeedAt12VoltsMps;
     private final double maxAngularRate = 1.5 * Math.PI;
-    private final CommandXboxController m_driverController =
-        new CommandXboxController(OperatorConstants.kDriverControllerPort);
+    private final CommandXboxController m_driverController = new CommandXboxController(
+            OperatorConstants.kDriverControllerPort);
 
-    //DRIVETRAIN subsystem
+    // DRIVETRAIN subsystem
     private final CommandSwerveDrivetrain m_drivetrain = TunerConstants.DriveTrain;
-    private final SwerveRequest.FieldCentric drive =
-        new SwerveRequest.FieldCentric()
+    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(maxSpeed * 0.1)
             .withRotationalDeadband(maxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric driving in open loop
@@ -54,7 +53,7 @@ public class RobotContainer implements Logged {
     private final FaceAngleRequestBetter faceAngle = new FaceAngleRequestBetter();
     private final Telemetry logger = new Telemetry(maxSpeed);
 
-    //ALL teh "UHver" subsystems
+    // ALL teh "UHver" subsystems
     private final Pivot m_pivot = Pivot.getInstance();
     private final Shooter m_shooter = Shooter.getInstance();
     private final Intake m_intake = Intake.getInstance();
@@ -65,9 +64,14 @@ public class RobotContainer implements Logged {
     private final Amp m_amp = frc.robot.subsystems.Amp.getInstance();
     private final LaserCanSwitch m_lc = LaserCanSwitch.getInstance();
     private final SendableChooser<Command> autoChooser;
-    private final PhotonVision m_limelight = new PhotonVision("limelight", new Transform3d(Inches.of(10).in(Meters), Inches.of(8).in(Meters), Inches.of(12.5).in(Meters), new Rotation3d(0, Degrees.of(-28.8).in(Radians), 0)));
-    private final PhotonVision m_gs = new PhotonVision("GS", new Transform3d(Inches.of(10.25).in(Meters), Inches.of(-10).in(Meters), Inches.of(9.25).in(Meters), new Rotation3d(0, Degrees.of(-24.09).in(Radians), Degrees.of(-30).in(Radians))));
-    private final PhotonVision m_ar2 = new PhotonVision("AR2", new Transform3d(Inches.of(10.25).in(Meters), Inches.of(10).in(Meters), Inches.of(9.25).in(Meters), new Rotation3d(0, Degrees.of(-24.09).in(Radians), Degrees.of(30).in(Radians))));
+    private final PhotonVision m_limelight = new PhotonVision("limelight", new Transform3d(Inches.of(10).in(Meters),
+            Inches.of(8).in(Meters), Inches.of(12.5).in(Meters), new Rotation3d(0, Degrees.of(-28.8).in(Radians), 0)));
+    private final PhotonVision m_gs = new PhotonVision("GS",
+            new Transform3d(Inches.of(10.25).in(Meters), Inches.of(-10).in(Meters), Inches.of(9.25).in(Meters),
+                    new Rotation3d(0, Degrees.of(-24.09).in(Radians), Degrees.of(-30).in(Radians))));
+    private final PhotonVision m_ar2 = new PhotonVision("AR2",
+            new Transform3d(Inches.of(10.25).in(Meters), Inches.of(10).in(Meters), Inches.of(9.25).in(Meters),
+                    new Rotation3d(0, Degrees.of(-24.09).in(Radians), Degrees.of(30).in(Radians))));
 
     public RobotContainer() {
         configureBindings();
@@ -86,47 +90,53 @@ public class RobotContainer implements Logged {
 
         m_gs.setEnabled(false);
 
-        SB_TAB.add(m_pneumatics.up().alongWith(m_pivot.angleCommand(() -> 17)).withName("Legal Start"));
+        m_ar2.setEnabled(false);
+        m_limelight.setEnabled(false);
 
+        SB_TAB.add(m_pneumatics.up().alongWith(m_pivot.angleCommand(() -> 17)).withName("Legal Start"));
+        SB_TAB.add(m_leds.blinkConstant(Color.kRed, 1, 3).withName("Blink test leds"));
+        m_leds.setSolidColor(() -> new Color(0, 255, 0)).ignoringDisable(true).schedule();
+        SB_TAB.addBoolean("in amp region", () -> AMP_REGION.get().inRegion(m_drivetrain.getState().Pose.getTranslation()));
     }
 
     private void configureBindings() {
         new Trigger(DriverStation::isEnabled)
-            .onTrue(
-                m_leds.setSolidColor(() -> new Color(255, 90, 0))
-                    .alongWith(Commands.print("ENABLED"))
-            ).onFalse(
-                m_leds.setSolidColor(() -> new Color(0, 255, 0))
-                .alongWith(Commands.print("DISABLED"))
-                    .ignoringDisable(true)
-            );
+                .onTrue(
+                        m_leds.setSolidColor(() -> new Color(255, 90, 0))
+                                .alongWith(Commands.print("ENABLED")))
+                .onFalse(
+                        m_leds.setSolidColor(() -> new Color(0, 255, 0))
+                                .alongWith(Commands.print("DISABLED"))
+                                .ignoringDisable(true));
 
-//DRIVETRAIN COMMANDS
-        m_drivetrain.setDefaultCommand(m_drivetrain.applyRequest(() -> drive        // Drivetrain will execute this command periodically
-                .withVelocityX(-m_driverController.getLeftY() * maxSpeed)             // Drive forward with negative Y (forward)
-                .withVelocityY(-m_driverController.getLeftX() * maxSpeed)             // Drive left with negative X (left)
-                .withRotationalRate(-m_driverController.getRightX() * maxAngularRate) // Drive counterclockwise with negative X (left)
-            )
-        );
+        // DRIVETRAIN COMMANDS
+        m_drivetrain.setDefaultCommand(m_drivetrain.applyRequest(() -> drive // Drivetrain will execute this command
+                                                                             // periodically
+                .withVelocityX(-m_driverController.getLeftY() * maxSpeed) // Drive forward with negative Y (forward)
+                .withVelocityY(-m_driverController.getLeftX() * maxSpeed) // Drive left with negative X (left)
+                .withRotationalRate(-m_driverController.getRightX() * maxAngularRate) // Drive counterclockwise with
+                                                                                      // negative X (left)
+        ));
 
-        //face speaker or amp
+        // face speaker or amp
         m_driverController.rightStick()
-            .whileTrue(
-                Commands.parallel(
-                    driveFaceAngle(
-                        // get x/y distance from robot to speaker and obtain rotation to transform robot to speaker
-                        () -> m_pneumatics.isUp().getAsBoolean() ? AMP_ORIENTATION.get() : m_drivetrain.getState().Pose.getTranslation().minus(SPEAKER_POSITION.get().toTranslation2d()).getAngle()
-                    )
-                    // m_pivot.angleCommand(() -> {
-                    //     // TODO DO LOOKUP TABLE OR MATH OR SOMETHING
-                    //     return 20; // dummy number
-                    // })
-                )
-            );
+                .whileTrue(
+                        Commands.parallel(
+                                driveFaceAngle(
+                                        // get x/y distance from robot to speaker and obtain rotation to transform robot
+                                        // to speaker
+                                        () -> m_pneumatics.isUp().getAsBoolean() ? AMP_ORIENTATION.get()
+                                                : m_drivetrain.getState().Pose.getTranslation()
+                                                        .minus(SPEAKER_POSITION.get().toTranslation2d()).getAngle())
+                        // m_pivot.angleCommand(() -> {
+                        // // TODO DO LOOKUP TABLE OR MATH OR SOMETHING
+                        // return 20; // dummy number
+                        // })
+                        ));
 
         // reset the field-centric heading on start button
         m_driverController.start()
-            .onTrue(m_drivetrain.runOnce(m_drivetrain::seedFieldRelative));
+                .onTrue(m_drivetrain.runOnce(m_drivetrain::seedFieldRelative));
 
         m_drivetrain.registerTelemetry(logger::telemeterize);
 
@@ -134,110 +144,88 @@ public class RobotContainer implements Logged {
             m_drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
         }
 
-//PIVOT Commands
-        //TODO: as we get close to the competition, make this a dashboard button rather than a joystick button
-
+        // PIVOT Commands
+        // TODO: as we get close to the competition, make this a dashboard button rather
+        // than a joystick button
 
         m_driverController.povUp()
-            .whileTrue(m_pivot.left())
-            .whileFalse(m_pivot.dutyCycleCommand(() -> 0)
-        );
+                .whileTrue(m_pivot.left())
+                .whileFalse(m_pivot.dutyCycleCommand(() -> 0));
         m_driverController.povDown()
-            .whileTrue(m_pivot.right())
-            .whileFalse(m_pivot.dutyCycleCommand(() -> 0)
-        );
+                .whileTrue(m_pivot.right())
+                .whileFalse(m_pivot.dutyCycleCommand(() -> 0));
 
-
-//INTAKE Commands
-        //standard intake
+        // INTAKE Commands
+        // standard intake
         m_driverController.rightTrigger().whileTrue(
-            Commands.parallel(
-                    m_intake.run(),
-                    m_indexer.run()
-                )
-                .until(m_lc.fullyClosed())
-        );
+                Commands.parallel(
+                        m_intake.run(),
+                        m_indexer.run())
+                        .until(m_lc.fullyClosed()));
 
-        //reverse intake
+        // reverse intake
         m_driverController.b().whileTrue(
-            Commands.parallel(
-                m_intake.outtake(),
-                m_indexer.reverse(),
-                m_sideBySide.reverse(),
-                m_shooter.reverse()
-            )
-        );
+                Commands.parallel(
+                        m_intake.outtake(),
+                        m_indexer.reverse(),
+                        m_sideBySide.reverse(),
+                        m_shooter.reverse()));
 
-// LASER CAN STATE
+        // LASER CAN STATE
         m_lc.fullyClosed()
-            .onTrue(
-                m_leds.blink(Color.kPurple, 3, 0.050, 0.200)
-                    .andThen(m_leds.breathe(271, 2.5))
-            ).onFalse(
-                m_leds.off()
-            );
+                .onTrue(
+                        m_leds.blink(Color.kPurple, 3, 0.050, 0.200)
+                                .andThen(m_leds.breathe(271, 2.5)))
+                .onFalse(
+                        m_leds.off());
         m_lc.fullyOpen()
-            .onTrue(
-                m_leds.blink(Color.kLime, 3, .050, .200)
-            );
+                .onTrue(
+                        m_leds.blink(Color.kLime, 3, .050, .200));
         new Trigger(() -> m_pivot.atPosition() && faceAngle.atTarget())
-            .onTrue(
-                m_leds.blinkConstant(Color.kBlue, .050, .4)
-            );
-//SHOOTER Commands
+                .onTrue(
+                        m_leds.blinkConstant(Color.kBlue, .050, .4));
+        // SHOOTER Commands
         // TODO: DO we really want to use LC for this in tele?
         m_driverController.leftTrigger().whileTrue(
-            Commands.parallel(m_shooter.run(),
-                Commands.waitUntil(m_shooter::upToSpeed).withTimeout(3)
-                    .andThen(
-                        Commands.parallel(m_indexer.run(), m_sideBySide.run())
-                    )
-                    .until(m_lc.fullyOpen())
-            )
-        );
+                Commands.parallel(m_shooter.run(),
+                        Commands.waitUntil(m_shooter::upToSpeed).withTimeout(1)
+                                .andThen(
+                                        Commands.parallel(m_indexer.run(), m_sideBySide.run()))
+                                .until(m_lc.fullyOpen())));
 
-        //Amp Shot
+        // Amp Shot
         m_driverController.a().whileTrue(
-            Commands.parallel(
-                m_shooter.reverse(),
-                m_pneumatics.up(),
-                m_sideBySide.run(),
-                m_indexer.run(),
-                m_intake.run(),
-                m_amp.run(),
-                m_pivot.angleCommand(() -> 30.3)
-            )
-        );
+                Commands.parallel(
+                        m_shooter.reverse(),
+                        m_pneumatics.up(),
+                        m_sideBySide.run(),
+                        m_indexer.run(),
+                        m_intake.run(),
+                        m_amp.run(),
+                        m_pivot.angleCommand(() -> 30.3)));
         m_driverController.leftStick().whileTrue(m_pneumatics.down());
         // put pneumatics down when we leave the amp region
         new Trigger(() -> AMP_REGION.get().inRegion(m_drivetrain.getState().Pose.getTranslation()))
-            .onFalse(m_pneumatics.down());
+                .onFalse(m_pneumatics.down());
 
         // Pod shot left bumper
         m_driverController.leftBumper().whileTrue(
-            Commands.parallel(
-                m_pneumatics.down(),
-                m_pivot.angleCommand(() -> 7.05)
-            )
-        );
+                Commands.parallel(
+                        m_pneumatics.down(),
+                        m_pivot.angleCommand(() -> 7.05)));
         // sub shot y
         m_driverController.y().whileTrue(
-            Commands.parallel(
-                m_pneumatics.down(),
-                m_pivot.angleCommand(() -> 27)
-            )
-        );
-
+                Commands.parallel(
+                        m_pneumatics.down(),
+                        m_pivot.angleCommand(() -> 27)));
 
     }
 
     private Command driveFaceAngle(Supplier<Rotation2d> _rotation) {
-        return m_drivetrain.applyRequest(() ->
-            faceAngle
+        return m_drivetrain.applyRequest(() -> faceAngle
                 .withVelocityX(-m_driverController.getLeftY() * maxSpeed) // Drive forward with negative Y (forward)
                 .withVelocityY(-m_driverController.getLeftX() * maxSpeed) // Drive left with negative X (left)
-                .withTargetDirection(_rotation.get())
-        );
+                .withTargetDirection(_rotation.get()));
     }
 
     public Command getAutonomousCommand() {

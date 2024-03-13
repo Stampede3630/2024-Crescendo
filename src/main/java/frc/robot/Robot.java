@@ -27,7 +27,6 @@ public class Robot extends TimedRobot implements Logged {
     private Command m_autonomousCommand;
 
     private RobotContainer m_robotContainer;
-    private boolean prevValue = false;
 
     /**
      * This function is run when the robot is first started up and should be used for any
@@ -60,11 +59,8 @@ public class Robot extends TimedRobot implements Logged {
         // block in order for anything in the Command-based framework to work.
         // Monologue.setFileOnly(DriverStation.isFMSAttached());
         // SmartDashboard.putNumber("mySmartPose", Units.metersToInches(TunerConstants.DriveTrain.getState().Pose.getX()) );
-
-        SmartDashboard.putNumber("xdist from speaker", TunerConstants.DriveTrain.getState().Pose.getX() - SPEAKER_POSITION.get().getX());
-        SmartDashboard.putNumber("ydist from speaker", TunerConstants.DriveTrain.getState().Pose.getY() - SPEAKER_POSITION.get().getY());
         
-        Monologue.updateAll();
+        // Monologue.updateAll();
         CommandScheduler.getInstance().run();
     }
 

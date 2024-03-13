@@ -46,7 +46,7 @@ public class PhotonVision extends SubsystemBase {
         this.stdDevFunction = stdDevFunction;
         photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, camToRobot);
         SB_PV_TAB.addDoubleArray("akitPose, " + camera.getName(), () -> akitPose);
-        SB_PV_TAB.addInteger("Targets Used", () -> targetsUsed);
+        SB_PV_TAB.addInteger("Targets Used," + camera.getName(), () -> targetsUsed);
     }
 
     public PhotonVision(String camName, Transform3d camToRobot) {

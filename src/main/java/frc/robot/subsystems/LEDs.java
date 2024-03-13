@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import static frc.robot.Constants.SB_TAB;
+
 import java.util.function.Supplier;
 
 public class LEDs extends SubsystemBase {
@@ -25,10 +27,11 @@ public class LEDs extends SubsystemBase {
         m_led = new AddressableLED(port);
         m_led.setLength(length);
         m_LEDBuffer = new AddressableLEDBuffer(length);
+        SB_TAB.add("LEDS",this);
     }
 
     private LEDs() {
-        this(0, 10);
+        this(0, 55);
     }
 
     public static LEDs getInstance() {
@@ -41,13 +44,15 @@ public class LEDs extends SubsystemBase {
     }
 
     public Command off() {
+
         return setSolidColor(() -> new Color(0, 0, 0));
     }
 
+    
     private void setEntireStrip() {
         for (var i = 0; i < m_LEDBuffer.getLength(); i++) {
             // Sets the specified LED to the RGB values for red
-            m_LEDBuffer.setLED(0, solidColor);
+            m_LEDBuffer.setLED(i, solidColor);
         }
         m_led.setData(m_LEDBuffer);
         m_led.start();
@@ -69,7 +74,7 @@ public class LEDs extends SubsystemBase {
     public Command blink(Supplier<Color> color, int count, double pulseDuration, double waitDuration) {
         Command[] pulses = new Command[count];
         for (int i = 0; i < count; i++) {
-            pulses[i] = setSolidColor(color).andThen(Commands.waitSeconds(pulseDuration)).andThen(off()).andThen(Commands.waitSeconds(waitDuration));
+            pulses[i] = setSolidColor(color).withTimeout(pulseDuration).andThen(off().withTimeout(pulseDuration));
         }
         return new SequentialCommandGroup(pulses);
     }
@@ -151,7 +156,7 @@ public class LEDs extends SubsystemBase {
         @Override
         public void end(boolean interrupted) {
             super.end(interrupted);
-            off().initialize();
+            off().schedule();
         }
 
         @Override
@@ -185,15 +190,18 @@ public class LEDs extends SubsystemBase {
         public void execute() {
             long currentTime = System.currentTimeMillis();
             double delta = (currentTime - lastChange) / 1000.0;
-
             delta %= waitDuration + pulseDuration; // normalize to a single cycle
+            // System.out.println(delta+" "+on);
             if (!on && delta > waitDuration) {
+                // System.out.println(delta+" :"+"!on && delta > waitDuration");
                 on = true;
                 lastChange = currentTime;
-            } else if (on && delta > pulseDuration && delta < waitDuration) {
+            } else if (on && delta > pulseDuration) {
+                // System.out.println(delta+" :"+"on && delta > pulseDuration && delta < waitDuration");
                 on = false;
                 lastChange = currentTime;
             }
+            
 
             if (on) {
                 for (int i = 0; i < m_LEDBuffer.getLength(); i++) {
@@ -212,7 +220,7 @@ public class LEDs extends SubsystemBase {
         @Override
         public void end(boolean interrupted) {
             super.end(interrupted);
-            off().initialize();
+            off().schedule();
         }
 
         @Override
@@ -272,7 +280,7 @@ public class LEDs extends SubsystemBase {
         @Override
         public void end(boolean interrupted) {
             super.end(interrupted);
-            off().initialize();
+            off().schedule();
         }
 
         @Override
@@ -316,7 +324,7 @@ public class LEDs extends SubsystemBase {
         @Override
         public void end(boolean interrupted) {
             super.end(interrupted);
-            off().initialize();
+            off().schedule();
         }
 
         private void setRegionWrap(int a, int b, Color color) {
@@ -382,7 +390,7 @@ public class LEDs extends SubsystemBase {
         @Override
         public void end(boolean interrupted) {
             super.end(interrupted);
-            off().initialize();
+            off().schedule();
         }
 
         @Override

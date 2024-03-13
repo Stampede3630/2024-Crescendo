@@ -81,6 +81,8 @@ public class Shooter extends SubsystemBase implements Configable {
 
         SB_TAB.addDouble("shooterSpeed", m_velocity::getValue);
 
+                SB_TAB.addBoolean("shooterUpToSpeed", this::upToSpeed);
+
         // BaseStatusSignal
         // .setUpdateFrequencyForAll(250,
         // m_shootMotor.getPosition(),
@@ -102,6 +104,7 @@ public class Shooter extends SubsystemBase implements Configable {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+        m_velocity.refresh();
     }
 
     public Command dynamic(Direction direction) {
@@ -151,7 +154,7 @@ public class Shooter extends SubsystemBase implements Configable {
     }
 
     public boolean upToSpeed() {
-        return m_velocity.getValue() > 55;
+        return Math.abs(m_velocity.refresh().getValue()) > 55;
     }
 
     public Command autoIdle() {
