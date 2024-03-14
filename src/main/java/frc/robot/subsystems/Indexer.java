@@ -22,8 +22,8 @@ public class Indexer extends SubsystemBase implements Configable {
     private final TalonFX m_indexMotor = new TalonFX(13, "CANIVORE");
     private static final Indexer instance = new Indexer();
     private final DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0, true, false, false, false);
-    @Config(name = "Indexer velocity")
-    private double dutyCycle = .25; //CHANGE INDEX SPEED
+    @Config(name = "Indexer dutycycle")
+    private double dutyCycle = .25;
 
     /**
      * Creates a new Indexer.

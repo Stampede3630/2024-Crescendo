@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unused")
 public class ConfigManager {
     private final String tableRoot;
 
@@ -19,7 +20,7 @@ public class ConfigManager {
         this.tableRoot = tableRoot;
     }
 
-    private Set<FieldData> fields = new HashSet<>();
+    private final Set<FieldData> fields = new HashSet<>();
 
     public void configure(Object root) {
 
