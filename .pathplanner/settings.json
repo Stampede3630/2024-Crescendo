@@ -4,8 +4,9 @@
   "holonomicMode": true,
   "pathFolders": [
     "4PiecePPVersion",
-    "centerMidFour",
+    "centerMidFive",
     "center4pChor",
+    "centerMidFour",
     "centerRush",
     "noPivotCenter",
     "noPivotLeft",

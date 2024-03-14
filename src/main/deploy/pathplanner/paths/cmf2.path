@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.673008982381601,
-        "y": 6.194287297665506
+        "x": 2.2159004318008635,
+        "y": 5.0655090401089895
       },
       "isLocked": false,
       "linkedName": "cmf1"
     },
     {
       "anchor": {
-        "x": 2.169256702149768,
-        "y": 4.403168079063431
+        "x": 2.4397903341261227,
+        "y": 4.337866857551897
       },
       "prevControl": {
-        "x": 1.1151084120350057,
-        "y": 4.757660424411758
+        "x": 2.25321541552174,
+        "y": 4.655044219179348
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,16 +30,40 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "intake",
+      "waypointRelativePos": 0.35,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "pivotPod"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 6.0,
     "maxAcceleration": 1.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -41.34777721969366,
+    "rotation": -28.610459665965173,
     "rotateFast": false
   },
   "reversed": false,
@@ -48,5 +72,5 @@
     "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

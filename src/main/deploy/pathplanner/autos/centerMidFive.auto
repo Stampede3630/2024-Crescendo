@@ -20,7 +20,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "cmf1"
+            "pathName": "Copy of cmf1"
           }
         },
         {
@@ -32,7 +32,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "cmf2"
+            "pathName": "Copy of cmf2"
           }
         },
         {
@@ -44,7 +44,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "cmf3"
+            "pathName": "Copy of cmf3"
           }
         },
         {
@@ -54,9 +54,15 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": []
+            "pathName": "cmf5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootPod"
           }
         }
       ]

@@ -48,14 +48,45 @@ public class AutoCommands {
     }
 
     public static Command shootInitial() {
-        return shootCustom(26.0, 1); //needs 20.85 initial angle for legal start
+        return shootCustomInitial(26.0, 1); //needs 20.85 initial angle for legal start
     }
 
     public static Command pivotSub() {
         return pivotCustom(26.0);
     }
 
+    public static Command pivotPod() {
+        return pivotCustom(8.4);
+    }
+
+    public static Command pivotCMFThree(){ //put back to 10!!
+        return pivotCustom(10.0);
+    }
+
     private static Command shootCustom(double angle, double timeout) {
+
+        return Commands.parallel(
+                m_pneumatics.down(),
+                m_shooter.run(),
+                // m_pivot.angleCommand(() -> angle),
+                Commands.waitUntil(() -> m_shooter.upToSpeed()).withTimeout(1) // the max time we wait for shooter to spin up
+                    .andThen(
+                        Commands.parallel(
+                            m_indexer.run(),
+                            m_sideBySide.run()
+                        )),
+                Commands.print("Shooting")
+            ).until(LaserCanSwitch.getInstance().fullyOpen()).withTimeout(timeout) // the max time we wait for spin up + shooting before moving on
+            .andThen(
+                Commands.parallel(
+                    // m_shooter.stop(),
+                    m_indexer.stop(),
+                    m_sideBySide.stop()
+                ).withTimeout(.01)
+            );
+    }
+
+    private static Command shootCustomInitial(double angle, double timeout) { //this one does pivot stuff
 
         return Commands.parallel(
                 m_pneumatics.down(),
