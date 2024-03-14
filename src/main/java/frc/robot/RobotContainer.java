@@ -211,13 +211,15 @@ public class RobotContainer implements Logged {
         m_driverController.leftBumper().whileTrue(
                 Commands.parallel(
                         m_pneumatics.down(),
-                        m_pivot.angleCommand(() -> 7.05)));
+                    m_pivot.angleCommand(() -> 7.05),
+                    driveFaceAngle(PODIUM_HEADING)
+                ));
         // sub shot y
         m_driverController.y().whileTrue(
                 Commands.parallel(
                         m_pneumatics.down(),
                         m_pivot.angleCommand(() -> 27)));
-
+//        SPEAKER_POSITION.get().toTranslation2d().minus(m_drivetrain.getState().Pose.getTranslation()).getY();
     }
 
     private Command driveFaceAngle(Supplier<Rotation2d> _rotation) {

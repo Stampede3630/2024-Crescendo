@@ -31,5 +31,6 @@ public final class Constants {
         public static final AllianceDependent<Translation3d> SPEAKER_POSITION = new AllianceDependent<>(new Translation3d(.2, 5.55, 2.11), new Translation3d(.2, 5.55, 2.11)); 
         public static final AllianceDependent<Region2D> AMP_REGION = new AllianceDependent<>(new Region2D(0.5, 8.25, 3.69, 6.98), new Region2D(16.5, 8.25, 12.93, 6.98));
         public static final AllianceDependent<Rotation2d> AMP_ORIENTATION = new AllianceDependent<>(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(-90));
+        public static final AllianceDependent<Rotation2d> PODIUM_HEADING = new AllianceDependent<>(Rotation2d.fromDegrees(123.76), Rotation2d.fromDegrees(-15.85));
     }
 }

@@ -4,10 +4,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.ctre.phoenix6.mechanisms.swerve.*;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -55,6 +52,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
     private Alliance currentAlliance = Alliance.Red;
 
+    private SwerveRequest.ApplyChassisSpeeds coast = new SwerveRequest.ApplyChassisSpeeds().withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage).withSpeeds(new ChassisSpeeds());
+
 
     /* Use one of these sysidroutines for your particular test */
     private final SysIdRoutine sysIdRoutineTranslate = new SysIdRoutine(
@@ -95,15 +94,15 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency,
                                    SwerveModuleConstants... modules) {
         super(driveTrainConstants, OdometryUpdateFrequency, modules);
-        getPigeon2().reset();
-        // seedFieldRelative();
-        if (Utils.isSimulation()) {
-            startSimThread();
-        }
+        initialize();
     }
 
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
+        initialize();
+    }
+
+    private void initialize() {
         getPigeon2().reset();
         // seedFieldRelative();
         configurePathPlanner();
@@ -128,7 +127,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SB_TEST.add("Static backwards", sysIdQuasistatic(SysIdRoutine.Direction.kForward));
         SB_TEST.add("Dynamic forward", sysIdDynamic(SysIdRoutine.Direction.kForward));
         SB_TEST.add("Dynamic forward", sysIdDynamic(SysIdRoutine.Direction.kForward));
-
+        SB_TEST.add("coast", applyRequest(() -> coast));
     }
 
     public StatusSignal<Double> getYaw() {
