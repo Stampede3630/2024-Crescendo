@@ -25,13 +25,13 @@ import frc.robot.subsystems.*;
 import frc.robot.util.AutoCommandFinder;
 import frc.robot.util.ConfigManager;
 import monologue.Logged;
-import monologue.Monologue;
 
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.FieldConstants.*;
 import static frc.robot.Constants.SB_TAB;
+import static frc.robot.Constants.SB_TEST;
 
 @SuppressWarnings("unused")
 public class RobotContainer implements Logged {
@@ -93,7 +93,7 @@ public class RobotContainer implements Logged {
         m_limelight.setEnabled(false);
 
         SB_TAB.add(m_pneumatics.up().alongWith(m_pivot.angleCommand(() -> 17)).withName("Legal Start"));
-        SB_TAB.add(m_leds.blinkConstant(Color.kRed, 1, 3).withName("Blink test leds"));
+        SB_TEST.add(m_leds.blinkConstant(Color.kRed, 1, 3).withName("Blink test leds"));
         m_leds.setSolidColor(() -> new Color(0, 255, 0)).ignoringDisable(true).schedule();
         SB_TAB.addBoolean("in amp region", () -> AMP_REGION.get().inRegion(m_drivetrain.getState().Pose.getTranslation()));
     }

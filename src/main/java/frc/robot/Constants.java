@@ -25,6 +25,8 @@ public final class Constants {
     }
 
     public static final ShuffleboardTab SB_TAB = Shuffleboard.getTab("Competition");
+    public static final ShuffleboardTab SB_TEST = Shuffleboard.getTab("Test");
+
     public static class FieldConstants {
         public static final AllianceDependent<Translation3d> SPEAKER_POSITION = new AllianceDependent<>(new Translation3d(.2, 5.55, 2.11), new Translation3d(.2, 5.55, 2.11)); 
         public static final AllianceDependent<Region2D> AMP_REGION = new AllianceDependent<>(new Region2D(0.5, 8.25, 3.69, 6.98), new Region2D(16.5, 8.25, 12.93, 6.98));

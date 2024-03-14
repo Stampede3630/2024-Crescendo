@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -28,6 +29,7 @@ import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.SB_TAB;
+import static frc.robot.Constants.SB_TEST;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements
@@ -47,7 +49,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private StatusSignal<Double> yaw;
     private StatusSignal<Double> pitch;
     private StatusSignal<Double> roll;
-
     private final SwerveRequest.SysIdSwerveTranslation translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     private final SwerveRequest.SysIdSwerveRotation rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
     private final SwerveRequest.SysIdSwerveSteerGains steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
@@ -89,7 +90,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             this));
 
     /* Change this to the sysid routine you want to test */
-    private final SysIdRoutine routineToApply = sysIdRoutineTranslate;
+    private final SendableChooser<SysIdRoutine> sysIdRoutineSendableChooser = new SendableChooser<>();
 
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency,
                                    SwerveModuleConstants... modules) {
@@ -118,6 +119,15 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SB_TAB.addNumber("Roll", () -> roll.getValueAsDouble());
 
         SB_TAB.addDoubleArray("CTRE pose", () -> new double[]{getState().Pose.getX(), getState().Pose.getY(), getState().Pose.getRotation().getRadians()});
+
+        sysIdRoutineSendableChooser.addOption("translate", sysIdRoutineTranslate);
+        sysIdRoutineSendableChooser.addOption("steer", sysIdRoutineSteer);
+        sysIdRoutineSendableChooser.addOption("rotation", sysIdRoutineRotation);
+        SB_TEST.add(sysIdRoutineSendableChooser);
+        SB_TEST.add("Static forward", sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        SB_TEST.add("Static backwards", sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        SB_TEST.add("Dynamic forward", sysIdDynamic(SysIdRoutine.Direction.kForward));
+        SB_TEST.add("Dynamic forward", sysIdDynamic(SysIdRoutine.Direction.kForward));
 
     }
 
@@ -157,11 +167,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
      * which one you're trying to characterize
      */
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return routineToApply.quasistatic(direction);
+        return sysIdRoutineSendableChooser.getSelected().quasistatic(direction);
     }
 
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return routineToApply.dynamic(direction);
+        return sysIdRoutineSendableChooser.getSelected().dynamic(direction);
     }
 
     public ChassisSpeeds getCurrentRobotChassisSpeeds() {
