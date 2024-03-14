@@ -46,6 +46,8 @@ public final class Pivot extends SubsystemBase implements Configable {
     private final StringLogEntry myStringLog = new StringLogEntry(DataLogManager.getLog(), "/pivot/angle");
     private final StatusSignal<Double> m_position;
     private double desiredPos = -10;
+    @Config(name="Pivot Position Offset")
+    private double m_evanometerOffset = 0;
 
     // PIVOT RANGE OF MOTION IS 58.17431640625 pm 1.0ish
     private Pivot() {
@@ -88,7 +90,7 @@ public final class Pivot extends SubsystemBase implements Configable {
 
     public Command seedToPigeon() {
         return Commands.runOnce(() -> {
-            m_pivotMotor.setPosition(rollDegreesToPosition.apply(TunerConstants.DriveTrain.getPigeon2().getRoll().refresh().getValue()));
+            m_pivotMotor.setPosition(rollDegreesToPosition.apply(TunerConstants.DriveTrain.getPigeon2().getRoll().waitForUpdate(.500).getValue()));
         });
     }
 
@@ -111,7 +113,7 @@ public final class Pivot extends SubsystemBase implements Configable {
 
     public Command positionCommand(DoubleSupplier _position) {
         desiredPos = _position.getAsDouble();
-        return startEnd(() -> m_pivotMotor.setControl(m_positionControl.withPosition(_position.getAsDouble())), () -> {
+        return startEnd(() -> m_pivotMotor.setControl(m_positionControl.withPosition(_position.getAsDouble()+m_evanometerOffset)), () -> {
         });
     }
 

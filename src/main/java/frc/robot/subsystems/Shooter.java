@@ -37,8 +37,8 @@ public class Shooter extends SubsystemBase implements Configable {
      * Creates a new Shooter.
      */
     private final TalonFX m_shootMotor = new TalonFX(14, "CANIVORE");
-    @Config(name = "Shooter duty cycle")
-    private double dutyCycle = .8;
+    @Config(name = "Shooter Velocity (62)")
+    private double velocitySp = 62;
     private static final Shooter instance = new Shooter();
     private final DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0, true, false, false, false);
     private final VelocityTorqueCurrentFOC m_velocityOut = new VelocityTorqueCurrentFOC(0, 0, 0, 0, false, false, false); // TODO: tune this
@@ -80,20 +80,9 @@ public class Shooter extends SubsystemBase implements Configable {
         m_velocity.setUpdateFrequency(250);
 
         SB_TAB.addDouble("shooterSpeed", m_velocity::getValue);
+        SB_TAB.addBoolean("shooterUpToSpeed", this::upToSpeed);
 
-                SB_TAB.addBoolean("shooterUpToSpeed", this::upToSpeed);
-
-        // BaseStatusSignal
-        // .setUpdateFrequencyForAll(250,
-        // m_shootMotor.getPosition(),
-        // m_shootMotor.getVelocity(),
-        // m_shootMotor.getMotorVoltage());
-        // m_shootMotor.optimizeBusUtilization();
         super.setDefaultCommand(stop());
-        // config lasercan
-        //      m_lc.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
-//      m_lc.setRangingMode(LaserCan.RangingMode.SHORT);
-//          m_lc.setRegionOfInterest(new LaserCan.RegionOfInterest());
 
     }
 
@@ -115,11 +104,6 @@ public class Shooter extends SubsystemBase implements Configable {
         return m_sysIdRoutine.quasistatic(direction).alongWith(Commands.print("Q"));
     }
 
-    public void setDutyCycle(double dutyCycle) {
-        this.dutyCycle = dutyCycle;
-    }
-
-
     public Command dutyCycleCommand(DoubleSupplier _dutyCycle) {
         return startEnd(() -> m_shootMotor.setControl(m_dutyCycleOut.withOutput(_dutyCycle.getAsDouble())), () -> {
         });
@@ -137,7 +121,7 @@ public class Shooter extends SubsystemBase implements Configable {
     }
 
     public Command run() {
-        return velocityCommand(() -> 62);
+        return velocityCommand(() -> velocitySp);
     }
 
     public Command idle() {

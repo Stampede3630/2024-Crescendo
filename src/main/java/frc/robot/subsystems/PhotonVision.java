@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.generated.TunerConstants;
+import frc.robot.util.Config;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -39,6 +40,8 @@ public class PhotonVision extends SubsystemBase {
     private boolean visionEnabled = true;
     private Function<EstimatedRobotPose, Matrix<N3, N1>> stdDevFunction;
     private int targetsUsed = 0;
+    @Config(name="PhotonVision Enabled")
+    private static boolean dashboardVisionEnabled = true;
 
     public PhotonVision(String camName, Transform3d camToRobot, Function<EstimatedRobotPose, Matrix<N3, N1>> stdDevFunction) {
         camera = new PhotonCamera(camName);
@@ -65,23 +68,25 @@ public class PhotonVision extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        photonPoseEstimator.update().ifPresent(ep -> {
-            Pose2d pose = ep.estimatedPose.toPose2d();
-            akitPose[0] = pose.getX();
-            akitPose[1] = pose.getY();
-            akitPose[2] = pose.getRotation().getRadians();
-            if (visionEnabled) {
-                // TunerConstants.DriveTrain.setVisionMeasurementStdDevs(new Matrix<>(Nat.N3(),Nat.N1(),new double[]{1,2,100000000}));
-                this.targetsUsed = ep.targetsUsed.size();
-                TunerConstants.DriveTrain.addVisionMeasurement(pose, ep.timestampSeconds, stdDevFunction.apply(ep)); // TODO: do stuff with the stddevs
+        if (dashboardVisionEnabled) {
+            photonPoseEstimator.update().ifPresent(ep -> {
+                Pose2d pose = ep.estimatedPose.toPose2d();
+                akitPose[0] = pose.getX();
+                akitPose[1] = pose.getY();
+                akitPose[2] = pose.getRotation().getRadians();
+                if (visionEnabled) {
+                    // TunerConstants.DriveTrain.setVisionMeasurementStdDevs(new Matrix<>(Nat.N3(),Nat.N1(),new double[]{1,2,100000000}));
+                    this.targetsUsed = ep.targetsUsed.size();
+                    TunerConstants.DriveTrain.addVisionMeasurement(pose, ep.timestampSeconds, stdDevFunction.apply(ep)); // TODO: do stuff with the stddevs
 
-                if (DriverStation.isDisabled()) {
-                    TunerConstants.DriveTrain.getPigeon2().setYaw(pose.getRotation().getDegrees());
-                    TunerConstants.DriveTrain.seedFieldRelative(pose);
+                    if (DriverStation.isDisabled()) {
+                        TunerConstants.DriveTrain.getPigeon2().setYaw(pose.getRotation().getDegrees());
+                        TunerConstants.DriveTrain.seedFieldRelative(pose);
+                    }
+
                 }
-
-            }
-        });
+            });
+        }
 
     }
 

@@ -78,7 +78,6 @@ public class RobotContainer implements Logged {
 
         ConfigManager cm = new ConfigManager("HelloTable");
         cm.configure(this);
-        Monologue.setupMonologue(this, "/Robot", false, false);
 
         try (PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev)) {
             pdh.setSwitchableChannel(true);
