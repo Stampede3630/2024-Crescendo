@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unused")
 public class ConfigManager {
     private final String tableRoot;
 
@@ -19,7 +20,7 @@ public class ConfigManager {
         this.tableRoot = tableRoot;
     }
 
-    Set<FieldData> fields = new HashSet<>();
+    private final Set<FieldData> fields = new HashSet<>();
 
     public void configure(Object root) {
 
@@ -40,7 +41,7 @@ public class ConfigManager {
         for (Configable c : configables) {
             Set<FieldData> myFields = Arrays.stream(c.getClass().getDeclaredFields()).filter(f -> f.getAnnotation(Config.class) != null)
                 .map(f -> new FieldData(f, c,
-                    "".equals(f.getAnnotation(Config.class).name()) ? c.getClass().getSimpleName() + ":" + f.getName() : f.getAnnotation(Config.class).name()
+                        "".equals(f.getAnnotation(Config.class).name()) ? c.getClass().getSimpleName() + ":" + f.getName() : f.getAnnotation(Config.class).name()
                 ))
                 .collect(Collectors.toUnmodifiableSet());
             fields.addAll(myFields);
@@ -67,7 +68,7 @@ public class ConfigManager {
         }
     }
 
-    private class FieldData {
+    private static class FieldData {
         private final Field field;
         private final Object object;
         private final String name;
