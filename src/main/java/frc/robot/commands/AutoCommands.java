@@ -28,27 +28,27 @@ public class AutoCommands {
     }
 
     public static Command shootPod() {
-        return shootCustom(7.4, .5);
+        return shootCustom(7.4, 1);
     }
 
     public static Command shootTwo() {
-        return shootCustom(8.2, .5);
+        return shootCustom(8.2, 1);
     }
 
     public static Command shootThree() {
-        return shootCustom(26.0, .75); //10.2
+        return shootCustom(26.0, 1); //10.2
     }
 
     public static Command shootAmp() {
-        return shootCustom(10.8, .5);
+        return shootCustom(10.8, 1);
     }
 
     public static Command shootcr4() {
-        return shootCustom(4.65, .5);
+        return shootCustom(4.65, 1);
     }
 
     public static Command cmfiveShoot() {
-        return shootCustom(0, 0.25);
+        return shootCustom(0, 1);
     }
 
     public static Command shootInitial() {
@@ -121,6 +121,11 @@ public class AutoCommands {
 
     public static Command intake() {
         return m_intake.run()
-            .alongWith(m_indexer.run()).withTimeout(2).andThen(Commands.parallel(m_indexer.stop(), m_intake.stop())).withTimeout(2);
+            .alongWith(m_indexer.run())
+            .until(LaserCanSwitch.getInstance().fullyClosed()).withTimeout(3)
+            .andThen(
+                Commands.parallel(m_indexer.stop(), m_intake.stop())
+                .withTimeout(.01)
+            );
     }
 }

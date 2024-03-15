@@ -16,6 +16,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Config;
@@ -23,6 +24,7 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.common.hardware.VisionLEDMode;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import java.util.Optional;
@@ -54,6 +56,9 @@ public class PhotonVision extends SubsystemBase {
         SB_PV_TAB.addInteger("Targets Used," + camera.getName(), () -> targetsUsed);
     }
 
+    public Command blink() {
+        return startEnd(() -> camera.setLED(VisionLEDMode.kBlink), () -> camera.setLED(VisionLEDMode.kOff));
+    }
     public PhotonVision(String camName, Transform3d camToRobot) {
         this(camName, camToRobot, (ep) -> VecBuilder.fill(1.5, 1.5, 1000000000));
     }

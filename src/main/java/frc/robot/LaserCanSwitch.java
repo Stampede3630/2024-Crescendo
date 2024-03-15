@@ -17,7 +17,7 @@ public class LaserCanSwitch implements Configable {
 
     private LaserCanSwitch() {
         try {
-            m_lc = new LaserCan(3);
+            m_lc = new LaserCan(17);
             m_lc.setRangingMode(LaserCan.RangingMode.SHORT);
             m_lc.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
         } catch (ConfigurationFailedException e) {
@@ -31,24 +31,13 @@ public class LaserCanSwitch implements Configable {
     }
 
     public Trigger fullyOpen() {
-        return new Trigger(() -> {
-            if (!lcEnabled || m_lc == null)
-                return false;
-
-            Measurement a = m_lc.getMeasurement();
-            if (a != null) m = a;
-            return m.distance_mm >= 180;
+        return new Trigger(() -> {return laserCan() >= 180;
         }).debounce(.2, DebounceType.kRising);
     }
 
     public Trigger fullyClosed() {
         return new Trigger(() -> {
-            if (!lcEnabled || m_lc == null)
-                return false;
-
-            Measurement a = m_lc.getMeasurement();
-            if (a != null) m = a;
-            return m.distance_mm < 80;
+            return laserCan() < 80;
         }).debounce(.2, DebounceType.kRising);
     }
 

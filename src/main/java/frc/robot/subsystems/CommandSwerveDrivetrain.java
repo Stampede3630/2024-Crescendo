@@ -5,6 +5,8 @@ import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.*;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -17,10 +19,12 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.generated.TunerConstants;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -126,10 +130,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         sysIdRoutineSendableChooser.setDefaultOption("translate", sysIdRoutineTranslate);
         SB_TEST.add(sysIdRoutineSendableChooser);
         SB_TEST.add("Static forward", sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        SB_TEST.add("Static backwards", sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        SB_TEST.add("Static reverse", sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
         SB_TEST.add("Dynamic forward", sysIdDynamic(SysIdRoutine.Direction.kForward));
-        SB_TEST.add("Dynamic forward", sysIdDynamic(SysIdRoutine.Direction.kForward));
-        SB_TEST.add("coast", applyRequest(() -> coast));
+        SB_TEST.add("Dynamic reverse", sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        SB_TEST.add("coast", setCoast());
     }
 
     public StatusSignal<Double> getYaw() {
@@ -178,6 +182,37 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public ChassisSpeeds getCurrentRobotChassisSpeeds() {
         return m_kinematics.toChassisSpeeds(getState().ModuleStates);
     }
+
+    public Command setCoast() {
+        return startEnd(()-> setCoastHelper(), ()-> {}).ignoringDisable(true);
+    }
+
+    public void setCoastHelper() {
+        // TunerConstants.DriveTrain.getModule(0).getDriveMotor().setNeutralMode(NeutralModeValue.Coast);
+        // TunerConstants.DriveTrain.getModule(1).getDriveMotor().setNeutralMode(NeutralModeValue.Coast);
+        // TunerConstants.DriveTrain.getModule(2).getDriveMotor().setNeutralMode(NeutralModeValue.Coast);
+        // TunerConstants.DriveTrain.getModule(3).getDriveMotor().setNeutralMode(NeutralModeValue.Coast);
+
+        // TunerConstants.DriveTrain.getModule(0).getSteerMotor().setNeutralMode(NeutralModeValue.Coast);
+        // TunerConstants.DriveTrain.getModule(1).getSteerMotor().setNeutralMode(NeutralModeValue.Coast);
+        // TunerConstants.DriveTrain.getModule(2).getSteerMotor().setNeutralMode(NeutralModeValue.Coast);
+        // TunerConstants.DriveTrain.getModule(3).getSteerMotor().setNeutralMode(NeutralModeValue.Coast);
+        List.of(Modules).forEach(m -> m.configNeutralMode(NeutralModeValue.Coast));
+    }
+
+    public void setBrakeHelper() {
+        // TunerConstants.DriveTrain.getModule(0).getDriveMotor().setNeutralMode(NeutralModeValue.Brake);
+        // TunerConstants.DriveTrain.getModule(1).getDriveMotor().setNeutralMode(NeutralModeValue.Brake);
+        // TunerConstants.DriveTrain.getModule(2).getDriveMotor().setNeutralMode(NeutralModeValue.Brake);
+        // TunerConstants.DriveTrain.getModule(3).getDriveMotor().setNeutralMode(NeutralModeValue.Brake);
+
+        // TunerConstants.DriveTrain.getModule(0).getSteerMotor().setNeutralMode(NeutralModeValue.Brake);
+        // TunerConstants.DriveTrain.getModule(1).getSteerMotor().setNeutralMode(NeutralModeValue.Brake);
+        // TunerConstants.DriveTrain.getModule(2).getSteerMotor().setNeutralMode(NeutralModeValue.Brake);
+        // TunerConstants.DriveTrain.getModule(3).getSteerMotor().setNeutralMode(NeutralModeValue.Brake);
+        List.of(Modules).forEach(m -> m.configNeutralMode(NeutralModeValue.Brake));
+    }
+
 
     private void configurePathPlanner() {
         double driveBaseRadius = 0;

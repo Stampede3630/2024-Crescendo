@@ -24,6 +24,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.*;
 import frc.robot.util.AutoCommandFinder;
 import frc.robot.util.ConfigManager;
+import frc.robot.util.TimeElapsedTrigger;
 import monologue.Logged;
 
 import java.util.function.Supplier;
@@ -40,6 +41,8 @@ public class RobotContainer implements Logged {
     private final double maxAngularRate = 1.5 * Math.PI;
     private final CommandXboxController m_driverController = new CommandXboxController(
             OperatorConstants.kDriverControllerPort);
+
+            private TimeElapsedTrigger intakeTimer = new TimeElapsedTrigger(300);
 
     // DRIVETRAIN subsystem
     private final CommandSwerveDrivetrain m_drivetrain = TunerConstants.DriveTrain;
@@ -92,9 +95,10 @@ public class RobotContainer implements Logged {
         m_ar2.setEnabled(false);
         m_limelight.setEnabled(false);
 
+        SB_TAB.addNumber("Laser Can Value", m_lc::laserCan);
         SB_TAB.add(m_pneumatics.up().alongWith(m_pivot.angleCommand(() -> 17)).withName("Legal Start"));
         SB_TEST.add(m_leds.blinkConstant(Color.kRed, 1, 3).withName("Blink test leds"));
-        m_leds.setSolidColor(() -> new Color(0, 255, 0)).ignoringDisable(true).schedule();
+        m_leds.rainbow().ignoringDisable(true).schedule();
         SB_TAB.addBoolean("in amp region", () -> AMP_REGION.get().inRegion(m_drivetrain.getState().Pose.getTranslation()));
     }
 
@@ -107,6 +111,7 @@ public class RobotContainer implements Logged {
                         m_leds.setSolidColor(() -> new Color(0, 255, 0))
                                 .alongWith(Commands.print("DISABLED"))
                                 .ignoringDisable(true));
+                // .whileFalse(m_drivetrain.setCoast());
 
         // DRIVETRAIN COMMANDS
         m_drivetrain.setDefaultCommand(m_drivetrain.applyRequest(() -> drive // Drivetrain will execute this command
@@ -117,7 +122,7 @@ public class RobotContainer implements Logged {
                                                                                       // negative X (left)
         ));
 
-        // face speaker or amp
+        // face speaker or ampdriveFaceAngle(PODIUM_HEADING)
         m_driverController.rightStick()
                 .whileTrue(
                         Commands.parallel(
@@ -125,8 +130,7 @@ public class RobotContainer implements Logged {
                                         // get x/y distance from robot to speaker and obtain rotation to transform robot
                                         // to speaker
                                         () -> m_pneumatics.isUp().getAsBoolean() ? AMP_ORIENTATION.get()
-                                                : m_drivetrain.getState().Pose.getTranslation()
-                                                        .minus(SPEAKER_POSITION.get().toTranslation2d()).getAngle())
+                                                : PODIUM_HEADING.get())
                         // m_pivot.angleCommand(() -> {
                         // // TODO DO LOOKUP TABLE OR MATH OR SOMETHING
                         // return 20; // dummy number
@@ -159,8 +163,8 @@ public class RobotContainer implements Logged {
         m_driverController.rightTrigger().whileTrue(
                 Commands.parallel(
                         m_intake.run(),
-                        m_indexer.run())
-                        .until(m_lc.fullyClosed()));
+                        m_indexer.run(), Commands.runOnce(() -> intakeTimer.start()))
+                        .until(m_lc.fullyClosed().and(intakeTimer)));
 
         // reverse intake
         m_driverController.b().whileTrue(
@@ -173,13 +177,16 @@ public class RobotContainer implements Logged {
         // LASER CAN STATE
         m_lc.fullyClosed()
                 .onTrue(
-                        m_leds.blink(Color.kPurple, 3, 0.050, 0.200)
-                                .andThen(m_leds.breathe(271, 2.5)))
+                        Commands.parallel(
+                                m_leds.setSolidColor(() -> Color.kPurple),
+                                m_limelight.blink()
+                        )
+                )
                 .onFalse(
-                        m_leds.off());
-        m_lc.fullyOpen()
-                .onTrue(
-                        m_leds.blink(Color.kLime, 3, .050, .200));
+                        m_leds.setSolidColor(() -> Color.kOrange));
+        // m_lc.fullyOpen()
+                // .onTrue(
+                        // m_leds.blink(Color.kLime, 3, .050, .200));
         new Trigger(() -> m_pivot.atPosition() && faceAngle.atTarget())
                 .onTrue(
                         m_leds.blinkConstant(Color.kBlue, .050, .4));
