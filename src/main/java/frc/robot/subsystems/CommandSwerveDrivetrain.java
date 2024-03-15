@@ -60,7 +60,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final SysIdRoutine sysIdRoutineTranslate = new SysIdRoutine(
         new SysIdRoutine.Config(
             null,
-            Volts.of(4),
+            Volts.of(6),
             null,
             (state) -> SignalLogger.writeString("state", state.toString())),
         new SysIdRoutine.Mechanism(
@@ -97,9 +97,30 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         super(driveTrainConstants, OdometryUpdateFrequency, modules);
         getPigeon2().reset();
         // seedFieldRelative();
+        configurePathPlanner();
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        yaw = getPigeon2().getYaw();
+        pitch = getPigeon2().getPitch();
+        roll = getPigeon2().getRoll();
+        BaseStatusSignal.setUpdateFrequencyForAll(100, yaw, pitch, roll);
+        // BaseStatusSignal.setUpdateFrequencyForAll(250, )
+        SB_TAB.addNumber("Yaw", () -> yaw.getValueAsDouble());
+        SB_TAB.addNumber("Pitch", () -> pitch.getValueAsDouble());
+        SB_TAB.addNumber("Roll", () -> roll.getValueAsDouble());
+
+        SB_TAB.addDoubleArray("CTRE pose", () -> new double[]{getState().Pose.getX(), getState().Pose.getY(), getState().Pose.getRotation().getRadians()});
+
+        sysIdRoutineSendableChooser.addOption("translate", sysIdRoutineTranslate);
+        sysIdRoutineSendableChooser.addOption("steer", sysIdRoutineSteer);
+        sysIdRoutineSendableChooser.addOption("rotation", sysIdRoutineRotation);
+        sysIdRoutineSendableChooser.setDefaultOption("translate", sysIdRoutineTranslate);
+        SB_TEST.add(sysIdRoutineSendableChooser);
+        SB_TEST.add("Static forward", sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        SB_TEST.add("Static backwards", sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        SB_TEST.add("Dynamic forward", sysIdDynamic(SysIdRoutine.Direction.kForward));
+        SB_TEST.add("Dynamic backwards", sysIdDynamic(SysIdRoutine.Direction.kReverse));
     }
 
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
@@ -114,6 +135,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         pitch = getPigeon2().getPitch();
         roll = getPigeon2().getRoll();
         BaseStatusSignal.setUpdateFrequencyForAll(100, yaw, pitch, roll);
+        // BaseStatusSignal.setUpdateFrequencyForAll(250, )
         SB_TAB.addNumber("Yaw", () -> yaw.getValueAsDouble());
         SB_TAB.addNumber("Pitch", () -> pitch.getValueAsDouble());
         SB_TAB.addNumber("Roll", () -> roll.getValueAsDouble());
@@ -123,11 +145,12 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         sysIdRoutineSendableChooser.addOption("translate", sysIdRoutineTranslate);
         sysIdRoutineSendableChooser.addOption("steer", sysIdRoutineSteer);
         sysIdRoutineSendableChooser.addOption("rotation", sysIdRoutineRotation);
+        sysIdRoutineSendableChooser.setDefaultOption("translate", sysIdRoutineTranslate);
         SB_TEST.add(sysIdRoutineSendableChooser);
         SB_TEST.add("Static forward", sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        SB_TEST.add("Static backwards", sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        SB_TEST.add("Static backwards", sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
         SB_TEST.add("Dynamic forward", sysIdDynamic(SysIdRoutine.Direction.kForward));
-        SB_TEST.add("Dynamic forward", sysIdDynamic(SysIdRoutine.Direction.kForward));
+        SB_TEST.add("Dynamic backwards", sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     }
 

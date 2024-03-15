@@ -1,0 +1,76 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.7233010829658023,
+        "y": 4.365853095342555
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.169256702149768,
+        "y": 0.839587133719723
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.05569538411804,
+        "y": 0.7742859122081884
+      },
+      "prevControl": {
+        "x": 7.0556953841180405,
+        "y": 0.7742859122081884
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "sst1"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intake"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "pivotPod"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 6.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "sourceSideThree",
+  "previewStartingState": {
+    "rotation": -59.85861444792464,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

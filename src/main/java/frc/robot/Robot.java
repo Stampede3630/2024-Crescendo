@@ -39,7 +39,7 @@ public class Robot extends TimedRobot implements Logged {
         m_robotContainer = new RobotContainer();
         DriverStation.silenceJoystickConnectionWarning(true);
 //        DataLogManager.start();
-//        SignalLogger.start();
+       SignalLogger.start();
 
 //    DriverStation.startDataLog(DataLogManager.getLog());
     }

@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2083958713371972,
-      "y": 5.6065763040617
+      "x": 0.7233010829658023,
+      "y": 4.365853095342555
     },
-    "rotation": 0
+    "rotation": -59.0362434679265
   },
   "command": {
     "type": "sequential",
@@ -14,25 +14,19 @@
         {
           "type": "named",
           "data": {
-            "name": "shootInitial"
+            "name": "shootSub"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Copy of cmf1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shootTwo"
+            "pathName": "sst1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Copy of cmf2"
+            "pathName": "sst2"
           }
         },
         {
@@ -44,25 +38,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Copy of cmf3"
+            "pathName": "sst3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "sst4"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "shootPod"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "cmf5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "cmfiveShoot"
           }
         }
       ]

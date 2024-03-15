@@ -47,6 +47,10 @@ public class AutoCommands {
         return shootCustom(4.65, .5);
     }
 
+    public static Command cmfiveShoot() {
+        return shootCustom(0, 0.25);
+    }
+
     public static Command shootInitial() {
         return shootCustomInitial(26.0, 1); //needs 20.85 initial angle for legal start
     }
