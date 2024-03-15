@@ -30,17 +30,15 @@ public class Pneumatics extends SubsystemBase {
     }
 
     public Command up() {
-        return Commands.runOnce(() -> m_lift.set(DoubleSolenoid.Value.kForward), this);
+        return startEnd(() -> m_lift.set(DoubleSolenoid.Value.kForward), () -> {});
     }
 
     public Command down() {
-        return Commands.runOnce(() -> m_lift.set(DoubleSolenoid.Value.kReverse), this);
+        return startEnd(() -> m_lift.set(DoubleSolenoid.Value.kReverse), () -> {});
     }
 
     public Command off() {
-        return startEnd(() -> m_lift.set(DoubleSolenoid.Value.kOff), () -> {
-        });
-
+        return startEnd(() -> m_lift.set(DoubleSolenoid.Value.kOff), () -> {});  
     }
 
     public Trigger isUp() {
