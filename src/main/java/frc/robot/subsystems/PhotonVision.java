@@ -23,25 +23,27 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 public class PhotonVision extends SubsystemBase {
-    public double[] akitPose = {0, 0, 0};
+    private static final ShuffleboardTab SB_PV_TAB = Shuffleboard.getTab("Photon Vision");
+    @Config(name = "PhotonVision Enabled")
+    private static boolean dashboardVisionEnabled = true;
     /**
      * Creates a new PhotonVision.
      */
     private final PhotonCamera camera;
-    private static final ShuffleboardTab SB_PV_TAB = Shuffleboard.getTab("Photon Vision");
     private final Pose2d prevEstimatedRobotPose = new Pose2d();
     private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     private final Transform3d camToRobot;
     private final PhotonPoseEstimator photonPoseEstimator;
+    public double[] akitPose = {0, 0, 0};
     private boolean visionEnabled = true;
     private Function<EstimatedRobotPose, Matrix<N3, N1>> stdDevFunction;
     private int targetsUsed = 0;
-    @Config(name="PhotonVision Enabled")
-    private static boolean dashboardVisionEnabled = true;
 
     public PhotonVision(String camName, Transform3d camToRobot, Function<EstimatedRobotPose, Matrix<N3, N1>> stdDevFunction) {
         camera = new PhotonCamera(camName);
@@ -69,6 +71,7 @@ public class PhotonVision extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         if (dashboardVisionEnabled) {
+
             photonPoseEstimator.update().ifPresent(ep -> {
                 Pose2d pose = ep.estimatedPose.toPose2d();
                 akitPose[0] = pose.getX();
@@ -88,6 +91,14 @@ public class PhotonVision extends SubsystemBase {
             });
         }
 
+    }
+
+    public Optional<Transform3d> robotToSpeaker() {
+        PhotonTrackedTarget tag = camera.getLatestResult().targets.stream().filter(t -> t.getFiducialId() == 4 || t.getFiducialId() == 7).findFirst().orElse(null);
+        if (tag == null) {
+            return Optional.empty();
+        } else
+            return Optional.of(tag.getBestCameraToTarget().plus(camToRobot.inverse()));
     }
 
     public void setEnabled(boolean enabled) {
