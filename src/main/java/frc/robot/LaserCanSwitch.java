@@ -31,13 +31,13 @@ public class LaserCanSwitch implements Configable {
     }
 
     public Trigger fullyOpen() {
-        return new Trigger(() -> {return laserCan() >= 180;
+        return new Trigger(() -> {return laserCan() >= 180 && lcEnabled;
         }).debounce(.2, DebounceType.kRising);
     }
 
     public Trigger fullyClosed() {
         return new Trigger(() -> {
-            return laserCan() < 80;
+            return laserCan() < 80 && lcEnabled;
         }).debounce(.2, DebounceType.kRising);
     }
 
