@@ -106,6 +106,10 @@ public class PhotonVision extends SubsystemBase {
             return Optional.of(tag.getBestCameraToTarget().plus(camToRobot.inverse()));
     }
 
+    public boolean seeTheSpeaker() {
+        return camera.getLatestResult().targets.stream().filter(t -> t.getFiducialId() == 4 || t.getFiducialId() == 7).count() > 0;
+ 
+    }
     public void setEnabled(boolean enabled) {
         this.visionEnabled = enabled;
     }

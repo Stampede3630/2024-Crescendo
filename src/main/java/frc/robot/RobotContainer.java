@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
@@ -11,6 +12,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.util.Color;
@@ -42,14 +44,14 @@ public class RobotContainer implements Logged {
     private final CommandXboxController m_driverController = new CommandXboxController(
             OperatorConstants.kDriverControllerPort);
 
-            private TimeElapsedTrigger intakeTimer = new TimeElapsedTrigger(300);
+            private TimeElapsedTrigger intakeTimer = new TimeElapsedTrigger(60_000);
 
     // DRIVETRAIN subsystem
     private final CommandSwerveDrivetrain m_drivetrain = TunerConstants.DriveTrain;
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(maxSpeed * 0.1)
             .withRotationalDeadband(maxAngularRate * 0.1) // Add a 10% deadband
-            .withDriveRequestType(DriveRequestType.Velocity); // I want field-centric driving in open loop
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric driving in open loop
 
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
@@ -81,10 +83,7 @@ public class RobotContainer implements Logged {
 
         ConfigManager cm = new ConfigManager("HelloTable");
         cm.configure(this);
-
-        try (PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev)) {
-            pdh.setSwitchableChannel(true);
-        }
+        PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
 
         AutoCommandFinder.addAutos();
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -100,6 +99,7 @@ public class RobotContainer implements Logged {
         SB_TEST.add(m_leds.blinkConstant(Color.kRed, 1, 3).withName("Blink test leds"));
         m_leds.rainbow().ignoringDisable(true).schedule();
         SB_TAB.addBoolean("in amp region", () -> AMP_REGION.get().inRegion(m_drivetrain.getState().Pose.getTranslation()));
+        SB_TEST.addNumber("PDH TOTAL CURRENT (A)", pdh::getTotalCurrent);
     }
 
     private void configureBindings() {
@@ -125,17 +125,19 @@ public class RobotContainer implements Logged {
         // face speaker or ampdriveFaceAngle(PODIUM_HEADING)
         m_driverController.rightStick()
                 .whileTrue(
-                        Commands.parallel(
-                                driveFaceAngle(
-                                        // get x/y distance from robot to speaker and obtain rotation to transform robot
-                                        // to speaker
-                                        () -> m_pneumatics.isUp().getAsBoolean() ? AMP_ORIENTATION.get()
-                                                : PODIUM_HEADING.get())
+                        Commands.either(
+                                driveFaceAngle(AMP_ORIENTATION),
+                                // Commands.none(),
+                                // driveFaceAngle(() -> m_drivetrain.getState().Pose.getTranslation().minus(SPEAKER_POSITION.get().toTranslation2d()).getAngle()),
+                        
+                                driveFaceAngle(() -> m_limelight.robotToSpeaker().map(t -> t.getRotation().toRotation2d()).orElse(m_drivetrain.getState().Pose.getRotation())).onlyIf(m_limelight::seeTheSpeaker),
+                                m_pneumatics.isUp()
+                        )
                         // m_pivot.angleCommand(() -> {
                         // // TODO DO LOOKUP TABLE OR MATH OR SOMETHING
                         // return 20; // dummy number
                         // })
-                        ));
+                        );
 
         // reset the field-centric heading on start button
         m_driverController.start()
@@ -179,7 +181,8 @@ public class RobotContainer implements Logged {
                 .onTrue(
                         Commands.parallel(
                                 m_leds.setSolidColor(() -> Color.kPurple),
-                                m_limelight.blink()
+                                m_limelight.blink().withTimeout(1.5), 
+                                Commands.startEnd(() -> m_driverController.getHID().setRumble(RumbleType.kBothRumble, 1), () -> m_driverController.getHID().setRumble(RumbleType.kBothRumble, 0)).withTimeout(0.3)
                         )
                 )
                 .onFalse(
@@ -226,7 +229,8 @@ public class RobotContainer implements Logged {
                 Commands.parallel(
                         m_pneumatics.down(),
                         m_pivot.angleCommand(() -> 27)));
-//        SPEAKER_POSITION.get().toTranslation2d().minus(m_drivetrain.getState().Pose.getTranslation()).getY();
+        
+        // m_limelight.robotToSpeaker().ifPresent(t -> t.getRotation());
     }
 
     private Command driveFaceAngle(Supplier<Rotation2d> _rotation) {

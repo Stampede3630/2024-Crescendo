@@ -12,7 +12,7 @@ public class LaserCanSwitch implements Configable {
     private static final LaserCanSwitch instance = new LaserCanSwitch();
     private LaserCan m_lc;
     @Config(name = "LC Enabled?")
-    private boolean lcEnabled;
+    private boolean lcEnabled = true;
     private Measurement m = new Measurement(0, 0, 0, false, 0, null);
 
     private LaserCanSwitch() {

@@ -32,7 +32,7 @@ public class AutoCommands {
     }
 
     public static Command shootTwo() {
-        return shootCustom(8.2, 1);
+        return shootCustom(8.7, 1);
     }
 
     public static Command shootThree() {
@@ -52,7 +52,7 @@ public class AutoCommands {
     }
 
     public static Command shootInitial() {
-        return shootCustomInitial(26.0, 1); //needs 20.85 initial angle for legal start
+        return shootCustomInitial(26.0, 2.0); //needs 20.85 initial angle for legal start
     }
 
     public static Command pivotSub() {
