@@ -46,6 +46,7 @@ public class PhotonVision extends SubsystemBase {
     private boolean visionEnabled = true;
     private Function<EstimatedRobotPose, Matrix<N3, N1>> stdDevFunction;
     private int targetsUsed = 0;
+    private PhotonTrackedTarget tag;
 
     public PhotonVision(String camName, Transform3d camToRobot, Function<EstimatedRobotPose, Matrix<N3, N1>> stdDevFunction) {
         camera = new PhotonCamera(camName);
@@ -95,11 +96,13 @@ public class PhotonVision extends SubsystemBase {
                 }
             });
         }
+        tag = camera.getLatestResult().targets.stream().filter(t -> t.getFiducialId() == 4 || t.getFiducialId() == 7).findFirst().orElse(null);
+
 
     }
 
     public Optional<Transform3d> robotToSpeaker() {
-        PhotonTrackedTarget tag = camera.getLatestResult().targets.stream().filter(t -> t.getFiducialId() == 4 || t.getFiducialId() == 7).findFirst().orElse(null);
+        // PhotonTrackedTarget tag = camera.getLatestResult().targets.stream().filter(t -> t.getFiducialId() == 4 || t.getFiducialId() == 7).findFirst().orElse(null);
         if (tag == null) {
             return Optional.empty();
         } else
@@ -107,7 +110,7 @@ public class PhotonVision extends SubsystemBase {
     }
 
     public boolean seeTheSpeaker() {
-        return camera.getLatestResult().targets.stream().filter(t -> t.getFiducialId() == 4 || t.getFiducialId() == 7).count() > 0;
+        return tag != null;
  
     }
     public void setEnabled(boolean enabled) {

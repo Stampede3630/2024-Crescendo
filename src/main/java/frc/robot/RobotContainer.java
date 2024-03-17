@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -100,6 +101,8 @@ public class RobotContainer implements Logged {
         m_leds.rainbow().ignoringDisable(true).schedule();
         SB_TAB.addBoolean("in amp region", () -> AMP_REGION.get().inRegion(m_drivetrain.getState().Pose.getTranslation()));
         SB_TEST.addNumber("PDH TOTAL CURRENT (A)", pdh::getTotalCurrent);
+        SB_TEST.addNumber("LL to speaker", () -> m_limelight.robotToSpeaker().map(t -> t.getRotation().toRotation2d()).orElse(Rotation2d.fromDegrees(0)).getDegrees());
+        
     }
 
     private void configureBindings() {
@@ -130,7 +133,10 @@ public class RobotContainer implements Logged {
                                 // Commands.none(),
                                 // driveFaceAngle(() -> m_drivetrain.getState().Pose.getTranslation().minus(SPEAKER_POSITION.get().toTranslation2d()).getAngle()),
                         
-                                driveFaceAngle(() -> m_limelight.robotToSpeaker().map(t -> t.getRotation().toRotation2d()).orElse(m_drivetrain.getState().Pose.getRotation())).onlyIf(m_limelight::seeTheSpeaker),
+                                driveFaceAngle(
+                                        () -> m_limelight.robotToSpeaker().map(t -> t.getRotation().toRotation2d()).orElse(m_drivetrain.getState().Pose.getRotation())
+                                ).until(() -> !m_limelight.seeTheSpeaker())
+                                        .onlyIf(m_limelight::seeTheSpeaker),
                                 m_pneumatics.isUp()
                         )
                         // m_pivot.angleCommand(() -> {

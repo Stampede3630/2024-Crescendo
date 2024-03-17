@@ -28,7 +28,7 @@ public class AutoCommands {
     }
 
     public static Command shootPod() {
-        return shootCustom(8.0, 2);
+        return shootCustom(8.4, 2);
     }
 
     public static Command shootTwo() {

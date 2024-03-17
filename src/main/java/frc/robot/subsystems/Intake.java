@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
@@ -33,7 +34,13 @@ public class Intake extends SubsystemBase implements Configable {
         m_intakeMotor.getConfigurator().apply(new TalonFXConfiguration()
             .withMotorOutput(new MotorOutputConfigs()
                 .withNeutralMode(NeutralModeValue.Coast)
-                .withInverted(InvertedValue.CounterClockwise_Positive)));
+                .withInverted(InvertedValue.CounterClockwise_Positive)
+            )
+            // .withCurrentLimits(new CurrentLimitsConfigs()
+                // .withStatorCurrentLimit(100)
+                // .withStatorCurrentLimitEnable(true)
+            // )
+        );
         m_intakeMotor.setNeutralMode(NeutralModeValue.Coast);
         super.setDefaultCommand(stop());
 

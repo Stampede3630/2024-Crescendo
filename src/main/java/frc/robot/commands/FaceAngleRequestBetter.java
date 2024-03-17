@@ -10,7 +10,7 @@ public class FaceAngleRequestBetter extends SwerveRequest.FieldCentricFacingAngl
         HeadingController.setP(10);
         HeadingController.setI(0);
         HeadingController.setD(0);
-
+        Deadband = Math.toRadians(3);
     }
 
     public boolean atTarget() {
