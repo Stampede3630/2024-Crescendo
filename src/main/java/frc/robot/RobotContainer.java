@@ -227,7 +227,7 @@ public class RobotContainer implements Logged {
         m_driverController.leftBumper().whileTrue(
                 Commands.parallel(
                         m_pneumatics.down(),
-                    m_pivot.angleCommand(() -> 7.8),
+                    m_pivot.angleCommand(() -> 9.0),
                     driveFaceAngle(PODIUM_HEADING)
                 ));
         // sub shot y
