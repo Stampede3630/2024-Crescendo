@@ -11,6 +11,8 @@ import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -20,9 +22,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Config;
 import frc.robot.util.Configable;
+import frc.robot.util.DoubleLookupLerp;
 import monologue.Annotations.Log;
 
 import static frc.robot.Constants.SB_TAB;
+import static frc.robot.Constants.SB_TEST;
+import static frc.robot.Constants.FieldConstants.SPEAKER_POSITION;
 
 import java.util.function.DoubleSupplier;
 import java.util.function.Function;
@@ -45,6 +50,7 @@ public final class Pivot extends SubsystemBase implements Configable {
 
     private final StringLogEntry myStringLog = new StringLogEntry(DataLogManager.getLog(), "/pivot/angle");
     private final StatusSignal<Double> m_position;
+    private DoubleLookupLerp dll = DoubleLookupLerp.loadFromCsv("pivotDistance.csv");
     private double desiredPos = -10;
     @Config(name="Pivot Position Offset")
     private double m_evanometerOffset = 0;
@@ -67,13 +73,31 @@ public final class Pivot extends SubsystemBase implements Configable {
                 .withSensorToMechanismRatio(1))
         );
         m_pivotMotor.setPosition(rollDegreesToPosition.apply(TunerConstants.DriveTrain.getPigeon2().getRoll().refresh().getValue()));
-        myStringLog.append("W,X,Y,Z,Roll,Pos");
+        myStringLog.append("X,Y,degrees");
         m_position = m_pivotMotor.getPosition();
         desiredPos = m_position.getValueAsDouble();
         m_position.setUpdateFrequency(250);
         SB_TAB.addBoolean("pivotAtPosition", this::atPosition);
+        SB_TEST.addNumber("PIVOT DLL", () -> {
+            double distFromSPeaker = SPEAKER_POSITION.get().toTranslation2d().getDistance(TunerConstants.DriveTrain.getState().Pose.getTranslation());
+            return dll.get(distFromSPeaker);
+        });
     }
 
+    public Command autoAim() {
+        return angleCommand(() -> {
+            double distFromSPeaker = SPEAKER_POSITION.get().toTranslation2d().getDistance(TunerConstants.DriveTrain.getState().Pose.getTranslation());
+            return dll.get(distFromSPeaker);
+        });
+    }
+
+    public Command save() {
+        return runOnce(() -> {
+            Pose2d p = TunerConstants.DriveTrain.getState().Pose;
+        myStringLog.append(p.getX()+","+p.getY()+","+TunerConstants.DriveTrain.getPigeon2().getRoll().waitForUpdate(1).getValue());
+        System.out.println("SAVED");
+    });
+    }
     public static Pivot getInstance() {
         return instance;
     }
@@ -94,13 +118,13 @@ public final class Pivot extends SubsystemBase implements Configable {
         });
     }
 
-    public Command save() {
-        return Commands.runOnce(() -> {
-            double roll = TunerConstants.DriveTrain.getPigeon2().getRoll().refresh().getValueAsDouble();
-            Quaternion q = TunerConstants.DriveTrain.getPigeon2().getRotation3d().getQuaternion();
-            myStringLog.append(q.getW() + "," + q.getX() + "," + q.getY() + "," + q.getZ() + "," + roll + "," + m_pivotMotor.getPosition().getValue());
-        });
-    }
+    // public Command save() {
+    //     return Commands.runOnce(() -> {
+    //         double roll = TunerConstants.DriveTrain.getPigeon2().getRoll().refresh().getValueAsDouble();
+    //         Quaternion q = TunerConstants.DriveTrain.getPigeon2().getRotation3d().getQuaternion();
+    //         myStringLog.append(q.getW() + "," + q.getX() + "," + q.getY() + "," + q.getZ() + "," + roll + "," + m_pivotMotor.getPosition().getValue());
+    //     });
+    // }
 
     @Log.NT
     public double getPosition() {

@@ -30,7 +30,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import java.util.Optional;
 import java.util.function.Function;
 
-public class PhotonVision extends SubsystemBase {
+public class PhotonVision extends SubsystemBase{
     private static final ShuffleboardTab SB_PV_TAB = Shuffleboard.getTab("Photon Vision");
     @Config(name = "PhotonVision Enabled")
     private static boolean dashboardVisionEnabled = true;
@@ -106,7 +106,7 @@ public class PhotonVision extends SubsystemBase {
         if (tag == null) {
             return Optional.empty();
         } else
-            return Optional.of(tag.getBestCameraToTarget().plus(camToRobot.inverse()));
+            return Optional.of(tag.getBestCameraToTarget().plus(camToRobot));
     }
 
     public boolean seeTheSpeaker() {

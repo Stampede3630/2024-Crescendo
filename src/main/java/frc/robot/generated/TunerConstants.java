@@ -34,7 +34,7 @@ public class TunerConstants {
 
     // The stator current at which the wheels start to slip;
     // This needs to be tuned to your individual robot
-    private static final double kSlipCurrentA = 90.0; // used to be 100.0 A in M1
+    private static final double kSlipCurrentA = 300.0; // used to be 100.0 A in M1
 
     // Theoretical free speed (m/s) at 12v applied output;
     // This needs to be tuned to your individual robot

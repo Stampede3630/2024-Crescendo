@@ -9,12 +9,12 @@ public class FaceAngleRequestBetter extends SwerveRequest.FieldCentricFacingAngl
         super();
         HeadingController.setP(10);
         HeadingController.setI(0);
-        HeadingController.setD(0);
+        HeadingController.setD(0.5);
         Deadband = Math.toRadians(3);
     }
 
     public boolean atTarget() {
-        return Math.abs(TargetDirection.minus(TunerConstants.DriveTrain.getState().Pose.getRotation()).getDegrees()) < 3; // 3 degree leeway
+        return Math.abs(TargetDirection.minus(TunerConstants.DriveTrain.getState().Pose.getRotation()).getDegrees()) < Deadband; 
     }
 
     public Trigger inPositionTrigger() {

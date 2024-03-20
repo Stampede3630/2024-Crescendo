@@ -56,9 +56,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
     private Alliance currentAlliance = Alliance.Red;
 
-    private SwerveRequest.ApplyChassisSpeeds coast = new SwerveRequest.ApplyChassisSpeeds().withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage).withSpeeds(new ChassisSpeeds());
-
-
     /* Use one of these sysidroutines for your particular test */
     private final SysIdRoutine sysIdRoutineTranslate = new SysIdRoutine(
         new SysIdRoutine.Config(
@@ -134,6 +131,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SB_TEST.add("Dynamic forward", sysIdDynamic(SysIdRoutine.Direction.kForward));
         SB_TEST.add("Dynamic reverse", sysIdDynamic(SysIdRoutine.Direction.kReverse));
         SB_TEST.add("coast", setCoast());
+        SB_TEST.addNumber("Translational Speed", () -> {ChassisSpeeds speeds = getState().speeds; return Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);});
     }
 
     public StatusSignal<Double> getYaw() {

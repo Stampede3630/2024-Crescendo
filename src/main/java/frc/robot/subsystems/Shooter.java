@@ -138,7 +138,7 @@ public class Shooter extends SubsystemBase implements Configable {
     }
 
     public boolean upToSpeed() {
-        return Math.abs(m_velocity.refresh().getValue()) > 55;
+        return Math.abs(m_velocity.refresh().getValue()) > velocitySp - 5;
     }
 
     public Command autoIdle() {

@@ -41,7 +41,7 @@ import static frc.robot.Constants.SB_TEST;
 public class RobotContainer implements Logged {
 
     private final double maxSpeed = TunerConstants.kSpeedAt12VoltsMps;
-    private final double maxAngularRate = 1.5 * Math.PI;
+    private final double maxAngularRate = 2 * Math.PI;
     private final CommandXboxController m_driverController = new CommandXboxController(
             OperatorConstants.kDriverControllerPort);
 
@@ -71,13 +71,7 @@ public class RobotContainer implements Logged {
     private final LaserCanSwitch m_lc = LaserCanSwitch.getInstance();
     private final SendableChooser<Command> autoChooser;
     private final PhotonVision m_limelight = new PhotonVision("limelight", new Transform3d(Inches.of(10).in(Meters),
-            Inches.of(8).in(Meters), Inches.of(12.5).in(Meters), new Rotation3d(0, Degrees.of(-28.8).in(Radians), 0)));
-    private final PhotonVision m_gs = new PhotonVision("GS",
-            new Transform3d(Inches.of(10.25).in(Meters), Inches.of(-10).in(Meters), Inches.of(9.25).in(Meters),
-                    new Rotation3d(0, Degrees.of(-24.09).in(Radians), Degrees.of(-30).in(Radians))));
-    private final PhotonVision m_ar2 = new PhotonVision("AR2",
-            new Transform3d(Inches.of(10.25).in(Meters), Inches.of(10).in(Meters), Inches.of(9.25).in(Meters),
-                    new Rotation3d(0, Degrees.of(-24.09).in(Radians), Degrees.of(30).in(Radians))));
+            Inches.of(8).in(Meters), Inches.of(12.5).in(Meters), new Rotation3d(0, Degrees.of(-28.8).in(Radians), Math.PI)));
 
     public RobotContainer() {
         configureBindings();
@@ -89,20 +83,19 @@ public class RobotContainer implements Logged {
         AutoCommandFinder.addAutos();
         autoChooser = AutoBuilder.buildAutoChooser();
         SB_TAB.add("Auto Chooser", autoChooser);
-
-        m_gs.setEnabled(false);
-
-        m_ar2.setEnabled(false);
-        m_limelight.setEnabled(false);
+        m_limelight.setEnabled(true);
 
         SB_TAB.addNumber("Laser Can Value", m_lc::laserCan);
         SB_TAB.add(m_pneumatics.up().alongWith(m_pivot.angleCommand(() -> 17)).withName("Legal Start"));
         SB_TEST.add(m_leds.blinkConstant(Color.kRed, 1, 3).withName("Blink test leds"));
         m_leds.rainbow().ignoringDisable(true).schedule();
         SB_TAB.addBoolean("in amp region", () -> AMP_REGION.get().inRegion(m_drivetrain.getState().Pose.getTranslation()));
-        SB_TEST.addNumber("PDH TOTAL CURRENT (A)", pdh::getTotalCurrent);
-        SB_TEST.addNumber("LL to speaker", () -> m_limelight.robotToSpeaker().map(t -> t.getRotation().toRotation2d()).orElse(Rotation2d.fromDegrees(0)).getDegrees());
-        
+        // SB_TEST.addNumber("PDH TOTAL CURRENT (A)", pdh::getTotalCurrent);
+        SB_TEST.addDoubleArray("Speaker Position", () -> 
+                new double[]{SPEAKER_POSITION.get().getX(),SPEAKER_POSITION.get().getY(),0}
+        );
+        // SB_TEST.addNumber("LL to speaker", () -> m_limelight.robotToSpeaker().map(t -> t.getRotation().toRotation2d()).orElse(Rotation2d.fromDegrees(0)).getDegrees());
+        // SB_TEST.addNumber("rbt to speaker", () -> m_drivetrain.getState().Pose.getTranslation().minus(SPEAKER_POSITION.get().toTranslation2d()).getAngle().getDegrees());
     }
 
     private void configureBindings() {
@@ -131,14 +124,14 @@ public class RobotContainer implements Logged {
                         Commands.either(
                                 driveFaceAngle(AMP_ORIENTATION),
                                 // Commands.none(),
-                                // driveFaceAngle(() -> m_drivetrain.getState().Pose.getTranslation().minus(SPEAKER_POSITION.get().toTranslation2d()).getAngle()),
+                                driveFaceAngle(() -> m_drivetrain.getState().Pose.getTranslation().minus(SPEAKER_POSITION.get().toTranslation2d()).getAngle().rotateBy(Rotation2d.fromDegrees(180))),
                         
-                                driveFaceAngle(
-                                        () -> m_limelight.robotToSpeaker().map(t -> t.getRotation().toRotation2d()).orElse(m_drivetrain.getState().Pose.getRotation())
-                                ).until(() -> !m_limelight.seeTheSpeaker())
-                                        .onlyIf(m_limelight::seeTheSpeaker),
+                                // driveFaceAngle(
+                                //         () -> m_limelight.robotToSpeaker().map(t -> t.getRotation().toRotation2d()).orElse(m_drivetrain.getState().Pose.getRotation())
+                                // ).until(() -> !m_limelight.seeTheSpeaker())
+                                        // .onlyIf(m_limelight::seeTheSpeaker),
                                 m_pneumatics.isUp()
-                        )
+                        ).alongWith(m_pivot.autoAim())
                         // m_pivot.angleCommand(() -> {
                         // // TODO DO LOOKUP TABLE OR MATH OR SOMETHING
                         // return 20; // dummy number
@@ -166,6 +159,7 @@ public class RobotContainer implements Logged {
                 .whileTrue(m_pivot.right())
                 .whileFalse(m_pivot.dutyCycleCommand(() -> 0));
 
+        // m_driverController.rightBumper().whileTrue(m_pivot.save());
         // INTAKE Commands
         // standard intake
         m_driverController.rightTrigger().whileTrue(
