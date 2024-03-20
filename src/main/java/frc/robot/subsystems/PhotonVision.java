@@ -86,7 +86,7 @@ public class PhotonVision extends SubsystemBase{
                 if (visionEnabled) {
                     // TunerConstants.DriveTrain.setVisionMeasurementStdDevs(new Matrix<>(Nat.N3(),Nat.N1(),new double[]{1,2,100000000}));
                     this.targetsUsed = ep.targetsUsed.size();
-                    TunerConstants.DriveTrain.addVisionMeasurement(pose, ep.timestampSeconds, stdDevFunction.apply(ep)); // TODO: do stuff with the stddevs
+                    //TunerConstants.DriveTrain.addVisionMeasurement(pose, ep.timestampSeconds, stdDevFunction.apply(ep)); // TODO: do stuff with the stddevs
 
                     if (DriverStation.isDisabled()) {
                         TunerConstants.DriveTrain.getPigeon2().setYaw(pose.getRotation().getDegrees());
