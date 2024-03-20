@@ -11,9 +11,7 @@ import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,14 +21,13 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.util.Config;
 import frc.robot.util.Configable;
 import frc.robot.util.DoubleLookupLerp;
-import monologue.Annotations.Log;
-
-import static frc.robot.Constants.SB_TAB;
-import static frc.robot.Constants.SB_TEST;
-import static frc.robot.Constants.FieldConstants.SPEAKER_POSITION;
 
 import java.util.function.DoubleSupplier;
 import java.util.function.Function;
+
+import static frc.robot.Constants.FieldConstants.SPEAKER_POSITION;
+import static frc.robot.Constants.SB_TAB;
+import static frc.robot.Constants.SB_TEST;
 
 public final class Pivot extends SubsystemBase implements Configable {
     /**
@@ -107,7 +104,6 @@ public final class Pivot extends SubsystemBase implements Configable {
         return Commands.runOnce(() -> m_pivotMotor.setPosition(rollDegreesToPosition.apply(pigeonRoll())));
     }
 
-    @Log
     public double pigeonRoll() {
         return Math.toDegrees(TunerConstants.DriveTrain.getPigeon2().getRoll().refresh().getValueAsDouble());
     }
@@ -126,7 +122,6 @@ public final class Pivot extends SubsystemBase implements Configable {
     //     });
     // }
 
-    @Log.NT
     public double getPosition() {
         return m_position.getValueAsDouble();
     }

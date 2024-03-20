@@ -4,18 +4,16 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -28,7 +26,6 @@ import frc.robot.subsystems.*;
 import frc.robot.util.AutoCommandFinder;
 import frc.robot.util.ConfigManager;
 import frc.robot.util.TimeElapsedTrigger;
-import monologue.Logged;
 
 import java.util.function.Supplier;
 
@@ -38,7 +35,7 @@ import static frc.robot.Constants.SB_TAB;
 import static frc.robot.Constants.SB_TEST;
 
 @SuppressWarnings("unused")
-public class RobotContainer implements Logged {
+public class RobotContainer {
 
     private final double maxSpeed = TunerConstants.kSpeedAt12VoltsMps;
     private final double maxAngularRate = 2 * Math.PI;
