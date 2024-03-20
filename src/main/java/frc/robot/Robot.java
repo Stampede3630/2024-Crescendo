@@ -4,18 +4,11 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.generated.TunerConstants;
-import monologue.Logged;
-import monologue.Monologue;
-
-import static frc.robot.Constants.FieldConstants.SPEAKER_POSITION;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -23,7 +16,7 @@ import static frc.robot.Constants.FieldConstants.SPEAKER_POSITION;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot implements Logged {
+public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
 
     private RobotContainer m_robotContainer;

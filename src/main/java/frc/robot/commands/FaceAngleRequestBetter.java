@@ -4,17 +4,27 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 
+import static frc.robot.Constants.SB_TEST;
+
 public class FaceAngleRequestBetter extends SwerveRequest.FieldCentricFacingAngle {
     public FaceAngleRequestBetter() { // TODO TUNE THIS
         super();
-        HeadingController.setP(10);
+        SB_TEST.add("FaceAngleRequest", HeadingController);
+        HeadingController.setP(5);
         HeadingController.setI(0);
-        HeadingController.setD(0.5);
-        Deadband = Math.toRadians(3);
+        HeadingController.setD(0);
+        Deadband = 0.1;
+        RotationalDeadband = Math.toRadians(3);
     }
 
     public boolean atTarget() {
-        return Math.abs(TargetDirection.minus(TunerConstants.DriveTrain.getState().Pose.getRotation()).getDegrees()) < Deadband; 
+        return Math.abs(TargetDirection.minus(TunerConstants.DriveTrain.getState().Pose.getRotation()).getDegrees()) < RotationalDeadband;
+    }
+
+    @Override
+    public FaceAngleRequestBetter withDeadband(double deadband) {
+        this.Deadband = deadband;
+        return this;
     }
 
     public Trigger inPositionTrigger() {
