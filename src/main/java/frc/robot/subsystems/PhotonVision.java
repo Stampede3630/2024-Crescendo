@@ -61,7 +61,15 @@ public class PhotonVision extends SubsystemBase{
         return startEnd(() -> camera.setLED(VisionLEDMode.kBlink), () -> camera.setLED(VisionLEDMode.kOff));
     }
     public PhotonVision(String camName, Transform3d camToRobot) {
-        this(camName, camToRobot, (ep) -> VecBuilder.fill(1.5, 1.5, 1000000000));
+        this(camName, camToRobot, ep -> {
+            double poseAmbiguity = ep.targetsUsed.stream().mapToDouble(PhotonTrackedTarget::getPoseAmbiguity).average().orElse(-1);
+            if (poseAmbiguity > .3 || poseAmbiguity < 0)
+                return VecBuilder.fill(100000000, 100000000, 100000000);
+            if (ep.targetsUsed.size() > 1)
+                return VecBuilder.fill(1.5, 1.5, 1000000000);
+            else
+                return VecBuilder.fill(.9, .9, 1000000000);
+        });
     }
 
 

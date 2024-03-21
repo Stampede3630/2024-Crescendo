@@ -42,7 +42,7 @@ public class RobotContainer {
     private final CommandXboxController m_driverController = new CommandXboxController(
             OperatorConstants.kDriverControllerPort);
 
-            private TimeElapsedTrigger intakeTimer = new TimeElapsedTrigger(60_000);
+    private TimeElapsedTrigger intakeTimer = new TimeElapsedTrigger(60_000);
 
     // DRIVETRAIN subsystem
     private final CommandSwerveDrivetrain m_drivetrain = TunerConstants.DriveTrain;
@@ -80,7 +80,6 @@ public class RobotContainer {
         AutoCommandFinder.addAutos();
         autoChooser = AutoBuilder.buildAutoChooser();
         SB_TAB.add("Auto Chooser", autoChooser);
-        m_limelight.setEnabled(true);
 
         SB_TAB.addNumber("Laser Can Value", m_lc::laserCan);
         SB_TAB.add(m_pneumatics.up().alongWith(m_pivot.angleCommand(() -> 17)).withName("Legal Start"));
@@ -212,6 +211,7 @@ public class RobotContainer {
         m_driverController.leftStick().whileTrue(m_pneumatics.down());
         // put pneumatics down when we leave the amp region
         new Trigger(() -> AMP_REGION.get().inRegion(m_drivetrain.getState().Pose.getTranslation()))
+                .and(m_pneumatics.isUp())
                 .onFalse(m_pneumatics.down());
 
         // Pod shot left bumper
@@ -237,6 +237,13 @@ public class RobotContainer {
                 .withTargetDirection(_rotation.get()));
     }
 
+    public void autonomousInit() {
+        m_limelight.setEnabled(false);
+    }
+
+    public void teleopInit() {
+        m_limelight.setEnabled(true);
+    }
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
