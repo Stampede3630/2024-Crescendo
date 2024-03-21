@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -118,6 +119,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SB_TAB.addNumber("Yaw", () -> yaw.getValueAsDouble());
         SB_TAB.addNumber("Pitch", () -> pitch.getValueAsDouble());
         SB_TAB.addNumber("Roll", () -> roll.getValueAsDouble());
+        SB_TAB.addNumber("X", ()-> TunerConstants.DriveTrain.m_odometry.getEstimatedPosition().getX());
+        SB_TAB.addNumber("Y", ()-> TunerConstants.DriveTrain.m_odometry.getEstimatedPosition().getY());
 
         SB_TAB.addDoubleArray("CTRE pose", () -> new double[]{getState().Pose.getX(), getState().Pose.getY(), getState().Pose.getRotation().getRadians()});
 
@@ -243,6 +246,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     @Override
     public void periodic() {
+
         /* Periodically try to apply the operator perspective */
         /*
          * If we haven't applied the operator perspective before, then we should apply

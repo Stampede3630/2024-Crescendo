@@ -3,38 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.512803934698777,
-        "y": 7.42568176045443
+        "x": 1.7351279067495533,
+        "y": 7.313469796885927
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.240238298658415,
-        "y": 7.593599187198374
+        "x": 1.9554131415955147,
+        "y": 7.166612973655286
       },
       "isLocked": false,
-      "linkedName": "cr1"
+      "linkedName": "asf2"
     },
     {
       "anchor": {
-        "x": 1.5722169626157434,
-        "y": 7.304408063361582
+        "x": 2.542840434518079,
+        "y": 6.7994709155786826
       },
       "prevControl": {
-        "x": 2.8071827163332332,
-        "y": 7.886211407485427
+        "x": 2.3666122466413095,
+        "y": 6.9022706918401315
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "cr2"
+      "linkedName": "asf3"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.7,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
@@ -47,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "pivotPod"
+                "name": "intake"
               }
             }
           ]
@@ -56,21 +50,21 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 18.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 1.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 46.82940404228632,
+    "rotation": 17.818888914522866,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "centerRush",
+  "folder": "ampSideFour",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
