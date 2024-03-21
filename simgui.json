@@ -12,6 +12,10 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/Pose": "Field2d",
+      "/Shuffleboard/Competition/Auto Chooser": "String Chooser",
+      "/Shuffleboard/Competition/Blink test leds": "Command",
+      "/Shuffleboard/Competition/LEDS": "Subsystem",
+      "/Shuffleboard/Competition/Legal Start": "Command",
       "/SmartDashboard/Auto Chooser": "String Chooser",
       "/SmartDashboard/Module 0": "Mechanism2d",
       "/SmartDashboard/Module 1": "Mechanism2d",
