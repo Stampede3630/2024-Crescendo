@@ -10,15 +10,16 @@ public class FaceAngleRequestBetter extends SwerveRequest.FieldCentricFacingAngl
     public FaceAngleRequestBetter() { // TODO TUNE THIS
         super();
         SB_TEST.add("FaceAngleRequest", HeadingController);
-        HeadingController.setP(5);
+        HeadingController.setP(6);
         HeadingController.setI(0);
         HeadingController.setD(0);
-        Deadband = 0.1;
-        RotationalDeadband = Math.toRadians(3);
+        HeadingController.enableContinuousInput(-Math.PI, Math.PI);
+        RotationalDeadband = Math.toRadians(.5);
+
     }
 
     public boolean atTarget() {
-        return Math.abs(TargetDirection.minus(TunerConstants.DriveTrain.getState().Pose.getRotation()).getDegrees()) < RotationalDeadband;
+        return HeadingController.atSetpoint();
     }
 
     @Override

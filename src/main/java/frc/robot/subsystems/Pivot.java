@@ -47,7 +47,7 @@ public final class Pivot extends SubsystemBase implements Configable {
 
     private final StringLogEntry myStringLog = new StringLogEntry(DataLogManager.getLog(), "/pivot/angle");
     private final StatusSignal<Double> m_position;
-    private DoubleLookupLerp dll = DoubleLookupLerp.loadFromCsv("pivotDistance.csv");
+    private DoubleLookupLerp dll = DoubleLookupLerp.loadFromXYCsv("pivotDistance.csv");
     private double desiredPos = -10;
     @Config(name="Pivot Position Offset")
     private double m_evanometerOffset = 0;
@@ -62,15 +62,18 @@ public final class Pivot extends SubsystemBase implements Configable {
                 .withForwardSoftLimitEnable(true)
                 .withForwardSoftLimitThreshold(2)
                 .withReverseSoftLimitEnable(true)
-                .withReverseSoftLimitThreshold(-54.26))
+                .withReverseSoftLimitThreshold(-45))
             .withSlot0(new Slot0Configs()
                 .withKS(130)
-                .withKP(200))
-            .withFeedback(new FeedbackConfigs()
+                .withKP(200)
+            ).withFeedback(new FeedbackConfigs()
                 .withSensorToMechanismRatio(1))
+            .withTorqueCurrent(new TorqueCurrentConfigs()
+                .withTorqueNeutralDeadband(50)
+            )
         );
         m_pivotMotor.setPosition(rollDegreesToPosition.apply(TunerConstants.DriveTrain.getPigeon2().getRoll().refresh().getValue()));
-        myStringLog.append("X,Y,degrees");
+        myStringLog.append("X,Y,distance,degrees");
         m_position = m_pivotMotor.getPosition();
         desiredPos = m_position.getValueAsDouble();
         m_position.setUpdateFrequency(250);
@@ -79,6 +82,7 @@ public final class Pivot extends SubsystemBase implements Configable {
             double distFromSPeaker = SPEAKER_POSITION.get().toTranslation2d().getDistance(TunerConstants.DriveTrain.getState().Pose.getTranslation());
             return dll.get(distFromSPeaker);
         });
+        SB_TEST.addNumber("desiredPos", () -> desiredPos);
     }
 
     public Command autoAim() {
@@ -91,7 +95,9 @@ public final class Pivot extends SubsystemBase implements Configable {
     public Command save() {
         return runOnce(() -> {
             Pose2d p = TunerConstants.DriveTrain.getState().Pose;
-        myStringLog.append(p.getX()+","+p.getY()+","+TunerConstants.DriveTrain.getPigeon2().getRoll().waitForUpdate(1).getValue());
+                        double distFromSPeaker = SPEAKER_POSITION.get().toTranslation2d().getDistance(TunerConstants.DriveTrain.getState().Pose.getTranslation());
+
+        myStringLog.append(p.getX()+","+p.getY()+","+distFromSPeaker+","+TunerConstants.DriveTrain.getPigeon2().getRoll().waitForUpdate(1).getValue());
         System.out.println("SAVED");
     });
     }
@@ -131,8 +137,10 @@ public final class Pivot extends SubsystemBase implements Configable {
     }
 
     public Command positionCommand(DoubleSupplier _position) {
-        desiredPos = _position.getAsDouble();
-        return startEnd(() -> m_pivotMotor.setControl(m_positionControl.withPosition(_position.getAsDouble()+m_evanometerOffset)), () -> {
+        return runEnd(() -> {
+            desiredPos = _position.getAsDouble() > 2 ? Math.min(_position.getAsDouble(), 2) : Math.max(_position.getAsDouble(), -45);
+            m_pivotMotor.setControl(m_positionControl.withPosition(_position.getAsDouble()+m_evanometerOffset));
+        }, () -> {
         });
     }
 

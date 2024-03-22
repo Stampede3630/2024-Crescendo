@@ -10,6 +10,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -38,11 +39,11 @@ public class PhotonVision extends SubsystemBase{
      * Creates a new PhotonVision.
      */
     private final PhotonCamera camera;
-    private final Pose2d prevEstimatedRobotPose = new Pose2d();
     private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     private final Transform3d camToRobot;
     private final PhotonPoseEstimator photonPoseEstimator;
-    public double[] akitPose = {0, 0, 0};
+    private Pose3d m_cachedPose = new Pose3d();
+    private double[] akitPose = {0, 0, 0};
     private boolean visionEnabled = true;
     private Function<EstimatedRobotPose, Matrix<N3, N1>> stdDevFunction;
     private int targetsUsed = 0;
@@ -62,13 +63,14 @@ public class PhotonVision extends SubsystemBase{
     }
     public PhotonVision(String camName, Transform3d camToRobot) {
         this(camName, camToRobot, ep -> {
-            double poseAmbiguity = ep.targetsUsed.stream().mapToDouble(PhotonTrackedTarget::getPoseAmbiguity).average().orElse(-1);
-            if (poseAmbiguity > .3 || poseAmbiguity < 0)
-                return VecBuilder.fill(100000000, 100000000, 100000000);
             if (ep.targetsUsed.size() > 1)
                 return VecBuilder.fill(1.5, 1.5, 1000000000);
-            else
+            else {
+                double poseAmbiguity = ep.targetsUsed.stream().mapToDouble(PhotonTrackedTarget::getPoseAmbiguity).average().orElse(-1);
+                if (poseAmbiguity > .3 || poseAmbiguity < 0)
+                    return VecBuilder.fill(100000000, 100000000, 100000000);
                 return VecBuilder.fill(.9, .9, 1000000000);
+            }
         });
     }
 
@@ -83,18 +85,20 @@ public class PhotonVision extends SubsystemBase{
 
     @Override
     public void periodic() {
+        // TODO: make this a daemon
         // This method will be called once per scheduler run
         if (dashboardVisionEnabled) {
 
             photonPoseEstimator.update().ifPresent(ep -> {
-                Pose2d pose = ep.estimatedPose.toPose2d();
+                m_cachedPose = ep.estimatedPose;
+                Pose2d pose = m_cachedPose.toPose2d();
                 akitPose[0] = pose.getX();
                 akitPose[1] = pose.getY();
                 akitPose[2] = pose.getRotation().getRadians();
                 if (visionEnabled) {
                     // TunerConstants.DriveTrain.setVisionMeasurementStdDevs(new Matrix<>(Nat.N3(),Nat.N1(),new double[]{1,2,100000000}));
                     this.targetsUsed = ep.targetsUsed.size();
-                    //TunerConstants.DriveTrain.addVisionMeasurement(pose, ep.timestampSeconds, stdDevFunction.apply(ep)); // TODO: do stuff with the stddevs
+                    TunerConstants.DriveTrain.addVisionMeasurement(pose, ep.timestampSeconds, stdDevFunction.apply(ep)); // TODO: do stuff with the stddevs
 
                     if (DriverStation.isDisabled()) {
                         TunerConstants.DriveTrain.getPigeon2().setYaw(pose.getRotation().getDegrees());
@@ -107,6 +111,10 @@ public class PhotonVision extends SubsystemBase{
         tag = camera.getLatestResult().targets.stream().filter(t -> t.getFiducialId() == 4 || t.getFiducialId() == 7).findFirst().orElse(null);
 
 
+    }
+
+    public Pose3d getPose() {
+        return m_cachedPose;
     }
 
     public Optional<Transform3d> robotToSpeaker() {

@@ -22,6 +22,48 @@
           "data": {
             "pathName": "asf1"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "asf2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootPod"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "asf3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootPod"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "asf4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "asf5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootPod"
+          }
         }
       ]
     }

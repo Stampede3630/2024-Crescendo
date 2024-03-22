@@ -53,6 +53,7 @@ public class Robot extends TimedRobot {
         // Monologue.setFileOnly(DriverStation.isFMSAttached());
         // SmartDashboard.putNumber("mySmartPose", Units.metersToInches(TunerConstants.DriveTrain.getState().Pose.getX()) );
         
+        m_robotContainer.periodic();
         // Monologue.updateAll();
         CommandScheduler.getInstance().run();
     }

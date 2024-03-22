@@ -29,6 +29,8 @@ import frc.robot.util.TimeElapsedTrigger;
 
 import java.util.function.Supplier;
 
+import org.photonvision.proto.Photon;
+
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.FieldConstants.*;
 import static frc.robot.Constants.SB_TAB;
@@ -53,7 +55,7 @@ public class RobotContainer {
 
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-    private final FaceAngleRequestBetter faceAngle = new FaceAngleRequestBetter();
+private final FaceAngleRequestBetter faceAngle = new FaceAngleRequestBetter().withDeadband(maxSpeed * 0.1);
     private final Telemetry logger = new Telemetry(maxSpeed);
 
     // ALL teh "UHver" subsystems
@@ -67,9 +69,11 @@ public class RobotContainer {
     private final Amp m_amp = frc.robot.subsystems.Amp.getInstance();
     private final LaserCanSwitch m_lc = LaserCanSwitch.getInstance();
     private final SendableChooser<Command> autoChooser;
-    private final PhotonVision m_limelight = new PhotonVision("limelight", new Transform3d(Inches.of(10).in(Meters),
-            Inches.of(8).in(Meters), Inches.of(12.5).in(Meters), new Rotation3d(0, Degrees.of(-28.8).in(Radians), Math.PI)));
-
+    private final PhotonVision m_op = new PhotonVision("AR3", new Transform3d(new Translation3d(-0.42, -0.23, 0.26), new Rotation3d(new Quaternion(0.017393876016947588, -0.2912996803947241, 0.056750208894468, -0.9547886483769448))));
+    private final PhotonVision m_limelight = new PhotonVision("limelight", new Transform3d(Inches.of(-10).in(Meters),
+            Inches.of(-8).in(Meters), Inches.of(11.7).in(Meters), new Rotation3d(0, Degrees.of(-32).in(Radians), Math.PI)));
+private final PhotonVision m_gs = new PhotonVision("GS",new Transform3d(new Translation3d(-0.19, -0.25, 0.21), new Rotation3d(new Quaternion(-0.2498722234548812, 0.1766210211718658, 0.03960115339809317, 0.9512100900828702))));
+    private final PhotonVision m_ar1 = new PhotonVision("AR1", new Transform3d(new Translation3d(-0.22, 0.29, 0.24), new Rotation3d(new Quaternion(0.2524621912463476, 0.19911228399695993, -0.08272830741928577, 0.943277884562204))));
     public RobotContainer() {
         configureBindings();
 
@@ -155,7 +159,7 @@ public class RobotContainer {
                 .whileTrue(m_pivot.right())
                 .whileFalse(m_pivot.dutyCycleCommand(() -> 0));
 
-        // m_driverController.rightBumper().whileTrue(m_pivot.save());
+        m_driverController.rightBumper().whileTrue(m_pivot.save());
         // INTAKE Commands
         // standard intake
         m_driverController.rightTrigger().whileTrue(
@@ -237,13 +241,24 @@ public class RobotContainer {
                 .withTargetDirection(_rotation.get()));
     }
 
+    public void periodic() {
+        // System.out.println("AR1:"+m_ar1.getPose().minus(m_limelight.getPose()));
+        // System.out.println("OP:"+m_op.getPose().minus(m_gs.getPose()));
+
+    }
     public void autonomousInit() {
+        m_op.setEnabled(false);
+        m_ar1.setEnabled(false);
+        m_gs.setEnabled(false);
         m_limelight.setEnabled(false);
     }
 
     public void teleopInit() {
-        m_limelight.setEnabled(true);
-    }
+        m_op.setEnabled(true);
+        m_ar1.setEnabled(true);
+        m_gs.setEnabled(true);    
+        m_limelight.setEnabled(false);
+}
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
